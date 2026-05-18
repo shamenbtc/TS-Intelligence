@@ -1288,6 +1288,12 @@ var App={
 };
 
 App.init();
+
+// Expose to window so inline onclick= handlers can call them
+window.showPage = showPage;
+window.App = App;
+window.R = R;
+window.A = A;
 })();
 </script>
 </body>
