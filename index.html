@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sultan Hotel - Review Intelligence Dashboard</title>
 <style>
 :root{--bg0:#08090d;--bg1:#0e1018;--bg2:#141720;--bg3:#1c2030;--bg4:#242840;--bg5:#2e3350;--bd:#252a3a;--bd2:#2e3450;--bd3:#3a4060;--t1:#f0f2ff;--t2:#a8adc8;--t3:#6b718f;--t4:#42475e;--blue:#5b8def;--blue2:#3d6fd4;--green:#3ecf8e;--red:#f05c6e;--amber:#f0b429;--purple:#9b72f0;--teal:#2ec4c4;--bs:rgba(91,141,239,.12);--gs:rgba(62,207,142,.12);--rs:rgba(240,92,110,.12);--as:rgba(240,180,41,.12);--r:10px;--rl:14px;--fn:-apple-system,BlinkMacSystemFont,"Segoe UI","Inter",sans-serif}
 [data-theme="light"]{--bg0:#e8eaf0;--bg1:#f0f2f8;--bg2:#fff;--bg3:#f4f6fc;--bg4:#e8ebf5;--bg5:#dde1ef;--bd:#e0e4f0;--bd2:#d0d5e8;--bd3:#c0c8dc;--t1:#0f1120;--t2:#3d4460;--t3:#7b83a8;--t4:#a8afc8;--bs:rgba(61,111,212,.08);--gs:rgba(30,160,100,.08);--rs:rgba(200,50,60,.08);--as:rgba(200,130,0,.08)}
@@ -24,22 +23,24 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 .ni:hover{color:var(--t1);background:var(--bg3)}
 .ni.active{color:var(--blue);background:var(--bs)}
 .bpill{font-size:10px;font-weight:700;padding:1px 5px;border-radius:8px;background:var(--red);color:#fff;margin-left:2px}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;border:1px solid var(--bd2);background:var(--bg3);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:background .15s,color .15s,border-color .15s;font-family:var(--fn);white-space:nowrap;user-select:none}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;border:1px solid var(--bd2);background:var(--bg3);color:var(--t2);font-size:11px;font-weight:500;cursor:pointer;transition:background .15s,color .15s,border-color .15s;font-family:var(--fn);white-space:nowrap}
 .btn:hover{background:var(--bg4);color:var(--t1);border-color:var(--bd3)}
 .bp{background:var(--blue);border-color:var(--blue);color:#fff}.bp:hover{background:var(--blue2);border-color:var(--blue2);color:#fff}
 .bg2{background:var(--gs);border-color:var(--green);color:var(--green)}.bg2:hover{background:var(--green);color:#fff}
 .bdr{background:var(--rs);border-color:var(--red);color:var(--red)}.bdr:hover{background:var(--red);color:#fff}
 .content{flex:1;overflow-y:auto;padding:16px 18px;background:var(--bg0)}
 .tab{display:none}.tab.active{display:block}
+/* Status bar */
 .sbar{display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:var(--r);margin-bottom:14px;font-size:11px;border:1px solid}
 .sb-live{background:var(--gs);border-color:var(--green);color:var(--green)}
 .sb-sample{background:var(--as);border-color:var(--amber);color:var(--amber)}
 .sb-label{flex:1}
+/* Upload zone */
 .upload-zone{border:2px dashed var(--bd3);border-radius:var(--rl);padding:36px 24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--bg3);margin-bottom:14px}
 .upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--bs)}
 .upload-zone.drag{border-style:solid}
+/* KPI */
 .kstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
-@media(max-width:900px){.kstrip{grid-template-columns:repeat(2,1fr)}}
 .kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:15px 17px;position:relative;overflow:hidden}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--rl) var(--rl) 0 0}
 .kb::before{background:var(--blue)}.kg::before{background:var(--green)}.ka::before{background:var(--amber)}.kr::before{background:var(--red)}
@@ -48,15 +49,14 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 .ks{font-size:11px;color:var(--t3);margin-top:4px}
 .kbg{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-top:7px}
 .bgg{background:var(--gs);color:var(--green)}.bgr{background:var(--rs);color:var(--red)}.bga{background:var(--as);color:var(--amber)}.bgb{background:var(--bs);color:var(--blue)}
-.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:15px 17px;margin-bottom:12px}
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:15px 17px}
 .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
 .ct{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:5px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
 .g21{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
-@media(max-width:768px){.g2,.g3,.g21{grid-template-columns:1fr}}
 .orow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.olb{font-size:11px;color:var(--t2);width:90px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.olb{font-size:11px;color:var(--t2);width:82px;flex-shrink:0}
 .otr{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
 .ofi{height:6px;border-radius:3px}
 .osc{font-size:12px;font-weight:600;color:var(--t1);width:28px;text-align:right}
@@ -64,12 +64,12 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 .re{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--bg3);margin-bottom:5px}
 .rrk{font-size:11px;font-weight:700;color:var(--t4);width:18px}
 .rnm{font-size:13px;font-weight:700;color:var(--t1);width:44px}
-.rty{font-size:10px;color:var(--t3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rtr{width:80px;height:5px;background:var(--bg5);border-radius:3px;overflow:hidden;flex-shrink:0}
+.rty{font-size:10px;color:var(--t3);flex:1}
+.rtr{width:80px;height:5px;background:var(--bg5);border-radius:3px;overflow:hidden}
 .rfi{height:5px;border-radius:3px}
 .rsc{font-size:12px;font-weight:700;width:30px;text-align:right}
 .rcn{font-size:10px;color:var(--t3);width:45px;text-align:right}
-.tw{overflow-x:auto;width:100%}
+.tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:11px}
 thead tr{background:var(--bg3)}
 th{padding:8px 10px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);border-bottom:1px solid var(--bd);white-space:nowrap}
@@ -88,10 +88,8 @@ tbody tr:hover td{background:var(--bg3)}
 .alroom{font-size:13px;font-weight:700;color:var(--t1);min-width:55px}
 .alisue{font-size:12px;font-weight:600;color:var(--t1);flex:1}
 .albody{display:grid;grid-template-columns:repeat(4,1fr)}
-@media(max-width:600px){.albody{grid-template-columns:1fr}}
 .alfield{padding:7px 13px;border-top:1px solid var(--bd)}
 .alfield:not(:last-child){border-right:1px solid var(--bd)}
-@media(max-width:600px){.alfield:not(:last-child){border-right:none}}
 .alfldlb{font-size:9px;font-weight:600;color:var(--t4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
 .alfldv{font-size:11px;color:var(--t2);font-weight:500}
 .dept{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
@@ -146,7 +144,7 @@ input[type=text]:focus,select:focus{border-color:var(--blue)}
     <button class="btn bp" onclick="App.triggerUpload()">&#8679; Upload CSV</button>
     <button class="btn" onclick="App.exportCSV()">&#8681; Export</button>
     <button class="btn bdr" onclick="App.clearData()">&#128465; Clear</button>
-    <input type="file" id="fileInput" style="display:none" accept=".csv" onchange="App.handleUpload(this)">
+    <input type="file" id="fileInput" style="display:none" accept=".csv,.xlsx,.xls" onchange="App.handleUpload(this)">
   </div>
 </header>
 
@@ -280,6 +278,7 @@ input[type=text]:focus,select:focus{border-color:var(--blue)}
   <div class="g2">
     <div class="card">
       <div class="ch"><div class="ct">&#8679; Upload Google Sheets CSV</div></div>
+      <!-- Drag & Drop Zone -->
       <div class="upload-zone" id="dropZone"
            onclick="App.triggerUpload()"
            ondragover="App.onDragOver(event)"
@@ -309,6 +308,7 @@ input[type=text]:focus,select:focus{border-color:var(--blue)}
     </div>
   </div>
 
+  <!-- Current data status -->
   <div class="card">
     <div class="ch"><div class="ct">&#128190; Current Dataset</div><button class="btn bdr" onclick="App.clearData()" style="font-size:10px">&#128465; Clear Data</button></div>
     <div id="datasetInfo"></div>
@@ -323,10 +323,12 @@ input[type=text]:focus,select:focus{border-color:var(--blue)}
 (function(){
 'use strict';
 
+// ── KEYS & CONFIG ─────────────────────────────────────────────────────
 const CACHE_KEY  = 'sultan_reviews_v4';
 const SETT_KEY   = 'sultan_sett_v4';
 const SOURCE_KEY = 'sultan_source_v4';
 
+// ── STORAGE ───────────────────────────────────────────────────────────
 const LS = {
   ok: (function(){ try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch(e){return false;} })(),
   get: function(k, fb){ if(!this.ok)return fb; try{var v=localStorage.getItem(k);return v!==null?JSON.parse(v):fb;}catch(e){return fb;} },
@@ -334,17 +336,28 @@ const LS = {
   del: function(k){ if(!this.ok)return; try{localStorage.removeItem(k);}catch(e){} }
 };
 
+// ── SETTINGS ──────────────────────────────────────────────────────────
 var Sett = LS.get(SETT_KEY, {dark:true});
 function saveSett(){ LS.set(SETT_KEY, Sett); }
 
-const C = {
+// ── CONSTANTS ─────────────────────────────────────────────────────────
+var C = {
   MONTHS: ['Jun','Jul','Aug','Sep','Oct','Nov'],
   CAT_COL: {'Room Comfort & Quality':'#5b8def','Staff':'#3ecf8e','Facilities':'#9b72f0','Value for Money':'#f0b429','Cleanliness':'#2ec4c4'},
   PLAT_COL: {'Google':'#34a853','TripAdvisor':'#00aa00','Agoda':'#5b6bfe','Booking.com':'#0073e6','Trip.com':'#f06eb4','Expedia':'#ffd700','Traveloka':'#16a085'},
   PLAT_CSS: {'Google':'pg','TripAdvisor':'pta','Agoda':'pag','Booking.com':'pbk','Trip.com':'ptr','Expedia':'pex','Traveloka':'ptv'},
-  AV_COLS: ['#5b8def','#3ecf8e','#9b72f0','#f0b429','#2ec4c4','#f06eb4','#f05c6e']
+  AV_COLS: ['#5b8def','#3ecf8e','#9b72f0','#f0b429','#2ec4c4','#f06eb4','#f05c6e'],
+  PAT: {
+    maint: /\b(air.?con|aircon|ac unit|a\.c\.|heating|air conditioning|hot water|cold water|no water|water pressure|plumbing|pipe|leak(ing|ed)?|broken|faulty|fault|malfunction|not working|elevator|lift|power outage|socket|light(s)? (not|broken)|bulb|tv (not|broken)|wifi (not|down)|internet (not|down)|door (lock|stuck|broken)|coffee machine|kettle|fridge|minibar)\b/i,
+    clean: /\b(dirty|unclean|not clean|stain(s|ed)?|hair (in|on)|dust(y)?|mold|mould|mildew|smell(s|y|ing)?|odou?r|foul|musty|damp|cockroach|pest|insect|bug(s)?|bed bug|linen|towel(s)?|sheet(s)?|bathroom (dirty|not clean)|toilet (dirty|not clean)|floor (dirty|sticky)|carpet (dirty|stained))\b/i,
+    fo:    /\b(rude|impolite|unprofessional|unfriendly|dismissive|unhelpful|ignor(ed|ing)|attitude|arrogant|slow (service|check.?in|check.?out)|long wait|waiting (long|too long)|check.?in (delay|slow|problem)|check.?out (problem|slow)|wrong room|room not ready|overcharged|billing (error|wrong)|key (card)? (not working|broken))\b/i,
+    fnb:   /\b(breakfast|lunch|dinner|buffet|food (cold|stale|bad|poor|tasteless)|menu (limited|poor|bad)|restaurant (dirty|bad|slow)|room service (late|slow|cold|wrong)|waiter (rude|slow)|waitress (rude|slow))\b/i,
+    fac:   /\b(pool (dirty|closed|cold|crowded)|gym (broken|dirty|closed)|parking (full|no|difficult)|lobby (dirty|noisy)|noise (from|outside|next door|above)|loud (neighbour|party|music|construction)|thin wall)\b/i,
+    val:   /\b(overpriced|too expensive|not worth|poor value|price (too high|unreasonable)|charge(d)? (extra|wrong)|hidden (fee|charge))\b/i
+  }
 };
 
+// ── SAMPLE DATA (always shown when no CSV uploaded) ───────────────────
 var SAMPLE = [
   {id:'S01',platform:'Google',date:'2025-11-02',booking:'BK-1101',room:'512',roomType:'Heritage Suite',text:'Absolutely stunning stay. Sarah at the front desk was incredibly warm and professional. Beautiful room.',rating:5,sentiment:'Positive',category:'Staff',subcategory:'Service Quality',severity:'Low',maintFlag:false,cleanFlag:false,staffMentioned:'Sarah',action:'Recognize Sarah formally',department:'Front Office'},
   {id:'S02',platform:'Booking.com',date:'2025-11-05',booking:'BK-1145',room:'312',roomType:'Deluxe Room',text:'Air conditioning was incredibly loud all night. Room was dusty on arrival. Nothing was done after reporting.',rating:2,sentiment:'Negative',category:'Room Comfort & Quality',subcategory:'Maintenance Issue',severity:'High',maintFlag:true,cleanFlag:true,staffMentioned:'',action:'Urgent work order for AC in 312; deep clean required',department:'Maintenance'},
@@ -358,613 +371,628 @@ var SAMPLE = [
   {id:'S10',platform:'Traveloka',date:'2025-11-22',booking:'BK-1450',room:'601',roomType:'Presidential Suite',text:'Perfect stay for our anniversary. Nadia arranged flowers and wine. We will be back every year.',rating:5,sentiment:'Positive',category:'Staff',subcategory:'Guest Relations',severity:'Low',maintFlag:false,cleanFlag:false,staffMentioned:'Nadia',action:'Recognize Nadia; document as service excellence',department:'Front Office'}
 ];
 
+// ── STATE ─────────────────────────────────────────────────────────────
 var State = {
   reviews: [],
-  source: 'sample',
+  source: 'sample',  // 'uploaded' | 'cached' | 'sample'
   uploadedAt: null,
   fileName: null
 };
 
+// ── CSV PARSER ────────────────────────────────────────────────────────
+// Full RFC-4180 compliant: handles quoted fields, embedded commas,
+// embedded newlines, \r\n and \r line endings.
 function parseCSV(raw) {
-  var lines = [];
-  var row = [""];
-  var inQuotes = false;
-  if(!raw) return lines;
-  
-  for (var i = 0; i < raw.length; i++) {
-    var c = raw[i];
-    var next = raw[i+1];
-    if (c === '"') {
-      if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
-      else { inQuotes = !inQuotes; }
-    } else if (c === ',' && !inQuotes) {
-      row.push('');
-    } else if ((c === '\r' || c === '\n') && !inQuotes) {
-      if (c === '\r' && next === '\n') { i++; }
-      lines.push(row);
-      row = [''];
-    } else {
-      row[row.length - 1] += c;
+  var result = [];
+  var pos = 0, len = raw.length;
+
+  function readField() {
+    if (pos >= len) return '';
+    if (raw[pos] === '"') {
+      pos++;
+      var f = '';
+      while (pos < len) {
+        if (raw[pos] === '"' && raw[pos+1] === '"') { f += '"'; pos += 2; }
+        else if (raw[pos] === '"') { pos++; break; }
+        else { f += raw[pos++]; }
+      }
+      return f;
     }
+    var f = '';
+    while (pos < len && raw[pos] !== ',' && raw[pos] !== '\n' && raw[pos] !== '\r') {
+      f += raw[pos++];
+    }
+    return f.trim();
   }
-  if (row.length > 1 || row[0] !== '') lines.push(row);
-  return lines;
+
+  function readRow() {
+    var cells = [];
+    while (pos < len && raw[pos] !== '\n' && raw[pos] !== '\r') {
+      cells.push(readField());
+      if (pos < len && raw[pos] === ',') pos++;
+    }
+    if (pos < len) { if (raw[pos] === '\r') pos++; if (raw[pos] === '\n') pos++; }
+    return cells;
+  }
+
+  var headers = readRow().map(function(h){ return h.trim(); });
+  console.log('[CSV] Headers:', headers.join(' | '));
+
+  while (pos < len) {
+    var cells = readRow();
+    if (cells.every(function(c){ return !c; })) continue;
+    var obj = {};
+    headers.forEach(function(h, i){ obj[h] = cells[i] !== undefined ? cells[i] : ''; });
+    result.push(obj);
+  }
+  console.log('[CSV] Rows parsed:', result.length);
+  return { headers: headers, rows: result };
 }
 
-function getThemeColor(variable) {
-  return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+// ── FIELD NORMALIZERS ─────────────────────────────────────────────────
+function gf(row) {
+  // Returns a getter that tries multiple key variants
+  return function(/*...keys*/) {
+    for (var i = 0; i < arguments.length; i++) {
+      var v = row[arguments[i]];
+      if (v !== undefined && String(v).trim() !== '') return String(v).trim();
+    }
+    return '';
+  };
 }
 
-// ── NATIVE CANVAS DRAWING ENGINES ──────────────────────────────────────
-function drawLineChart(id, datasets, labels) {
-  const c = document.getElementById(id);
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const W = c.clientWidth, H = c.clientHeight;
-  c.width = W * window.devicePixelRatio; c.height = H * window.devicePixelRatio;
-  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-  ctx.clearRect(0,0,W,H);
-  
-  const padL = 30, padR = 15, padT = 15, padB = 25;
-  const graphW = W - padL - padR, graphH = H - padT - padB;
-  
-  ctx.strokeStyle = getThemeColor('--bd'); ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H - padB); ctx.lineTo(W - padR, H - padB); ctx.stroke();
-  
-  const stepX = graphW / (labels.length - 1 || 1);
-  ctx.fillStyle = getThemeColor('--t3'); ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
-  labels.forEach((l, idx) => { ctx.fillText(l, padL + idx * stepX, H - 10); });
-  
-  datasets.forEach(ds => {
-    ctx.strokeStyle = ds.color; ctx.lineWidth = 2; ctx.beginPath();
-    ds.data.forEach((val, idx) => {
-      let x = padL + idx * stepX;
-      let y = (H - padB) - (val / 5) * graphH;
-      if(idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-    ds.data.forEach((val, idx) => {
-      let x = padL + idx * stepX; let y = (H - padB) - (val / 5) * graphH;
-      ctx.fillStyle = ds.color; ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill();
-    });
-  });
+function normPlat(p) {
+  var l = p.toLowerCase();
+  if (l.includes('google'))       return 'Google';
+  if (l.includes('tripadvisor') || l.includes('trip advisor')) return 'TripAdvisor';
+  if (l.includes('agoda'))        return 'Agoda';
+  if (l.includes('booking'))      return 'Booking.com';
+  if (l.includes('expedia'))      return 'Expedia';
+  if (l.includes('traveloka'))    return 'Traveloka';
+  if (l.includes('trip.com') || l.includes('ctrip')) return 'Trip.com';
+  return p || 'Unknown';
 }
 
-function drawPieChart(id, data, colors) {
-  const c = document.getElementById(id);
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const W = c.clientWidth, H = c.clientHeight;
-  c.width = W * window.devicePixelRatio; c.height = H * window.devicePixelRatio;
-  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-  ctx.clearRect(0,0,W,H);
-  
-  let total = data.reduce((a,b)=>a+b, 0) || 1;
-  let cx = W/2, cy = H/2, r = Math.min(W,H)/2 - 10;
-  let start = -Math.PI/2;
-  
-  data.forEach((val, i) => {
-    let slice = (val / total) * Math.PI * 2;
-    ctx.fillStyle = colors[i] || '#ccc';
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, start + slice); ctx.closePath(); ctx.fill();
-    start += slice;
-  });
-  
-  // Make Donut style
-  ctx.fillStyle = getThemeColor('--bg2'); ctx.beginPath(); ctx.arc(cx, cy, r * 0.55, 0, Math.PI*2); ctx.fill();
+function normDate(d) {
+  if (!d) return '';
+  d = d.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  var parts = d.split(/[\/\-\.]/);
+  if (parts.length === 3) {
+    var a = parts[0], b = parts[1], c = parts[2];
+    if (c.length === 4) return c + '-' + b.padStart(2,'0') + '-' + a.padStart(2,'0');
+    if (a.length === 4) return a + '-' + b.padStart(2,'0') + '-' + c.padStart(2,'0');
+    return '20' + c + '-' + a.padStart(2,'0') + '-' + b.padStart(2,'0');
+  }
+  var p = new Date(d);
+  return isNaN(p) ? d : p.toISOString().slice(0,10);
 }
 
-function drawBarChart(id, labels, values, color) {
-  const c = document.getElementById(id);
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const W = c.clientWidth, H = c.clientHeight;
-  c.width = W * window.devicePixelRatio; c.height = H * window.devicePixelRatio;
-  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-  ctx.clearRect(0,0,W,H);
-  
-  const padL = 30, padR = 15, padT = 15, padB = 25;
-  const graphW = W - padL - padR, graphH = H - padT - padB;
-  let max = Math.max(...values, 1);
-  
-  let barW = (graphW / labels.length) * 0.6;
-  let gap = (graphW / labels.length) * 0.4;
-  
-  ctx.fillStyle = color;
-  values.forEach((v, i) => {
-    let bh = (v / max) * graphH;
-    let bx = padL + i * (barW + gap) + gap/2;
-    let by = (H - padB) - bh;
-    ctx.fillRect(bx, by, barW, bh);
-  });
-  
-  ctx.fillStyle = getThemeColor('--t3'); ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
-  labels.forEach((l, i) => {
-    let bx = padL + i * (barW + gap) + gap/2 + barW/2;
-    ctx.fillText(l, bx, H - 10);
-  });
+function normSent(s) {
+  var l = s.toLowerCase();
+  if (l.includes('pos')) return 'Positive';
+  if (l.includes('neg')) return 'Negative';
+  if (l.includes('neu')) return 'Neutral';
+  return '';
 }
 
-// ── CORE APP APPLICATION ENGINE ────────────────────────────────────────
-window.App = {
-  init: function() {
-    this.applyTheme();
-    var cached = LS.get(CACHE_KEY, null);
-    var source = LS.get(SOURCE_KEY, 'sample');
-    
-    if (cached && source === 'uploaded') {
-      State.reviews = cached;
-      State.source = 'uploaded';
-    } else {
-      State.reviews = SAMPLE;
-      State.source = 'sample';
-    }
-    
-    this.goTab('overview', document.querySelector('.ni'));
-    this.showToast("Dashboard initialized successfully.");
-  },
-  
-  applyTheme: function() {
-    document.documentElement.setAttribute('data-theme', Sett.dark ? 'dark' : 'light');
-    var btn = document.getElementById('themeBtn');
-    if (btn) btn.innerHTML = Sett.dark ? '&#9728;' : '&#9790;';
-  },
-  
-  toggleTheme: function() {
-    Sett.dark = !Sett.dark;
-    saveSett();
-    this.applyTheme();
-    this.renderActiveTab();
-  },
-  
-  goTab: function(tabId, btn) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.ni').forEach(b => b.classList.remove('active'));
-    
-    var el = document.getElementById('tab-' + tabId);
-    if(el) el.classList.add('active');
-    if(btn) btn.classList.add('active');
-    
-    this.activeTab = tabId;
-    this.renderActiveTab();
-  },
-  
-  renderActiveTab: function() {
-    this.updateAlertPill();
-    if (this.activeTab === 'overview') this.renderOverview();
-    if (this.activeTab === 'reviews') this.renderTable();
-    if (this.activeTab === 'rooms') this.renderRooms();
-    if (this.activeTab === 'alerts') this.renderAlerts();
-    if (this.activeTab === 'staff') this.renderStaff();
-    if (this.activeTab === 'analytics') this.renderAnalytics();
-    if (this.activeTab === 'upload') this.renderUploadTab();
-  },
+function normSev(s) {
+  var l = s.toLowerCase();
+  if (l.includes('high') || l === '3') return 'High';
+  if (l.includes('med')  || l === '2') return 'Medium';
+  if (l.includes('low')  || l === '1') return 'Low';
+  return '';
+}
 
-  updateAlertPill: function() {
-    let count = State.reviews.filter(r => r.severity === 'High').length;
-    document.getElementById('alertPill').textContent = count;
-  },
-  
-  renderOverview: function() {
-    let r = State.reviews;
-    let sb = document.getElementById('statusBar');
-    if(sb) {
-      sb.className = 'sbar ' + (State.source === 'uploaded' ? 'sb-live' : 'sb-sample');
-      sb.innerHTML = `<span class="sb-label"><strong>${State.source === 'uploaded' ? 'Live Production View' : 'Demo Dataset Matrix'}</strong> — Running ${r.length} elements mapped out.</span>`;
-    }
-    
-    let total = r.length, pos = r.filter(x => x.sentiment === 'Positive').length;
-    let avg = (r.reduce((a, b) => a + Number(b.rating), 0) / (total || 1)).toFixed(2);
-    let high = r.filter(x => x.severity === 'High').length;
-    
-    let strip = document.getElementById('kpiStrip');
-    if(strip) {
-      strip.innerHTML = `
-        <div class="kpi kb"><div class="klb">Total Reviews</div><div class="kv">${total}</div><div class="ks">Aggregated feed</div></div>
-        <div class="kpi kg"><div class="klb">Average Rating</div><div class="kv">${avg} / 5</div><div class="ks">Weighted average</div></div>
-        <div class="kpi ka"><div class="klb">Positive Sentiment</div><div class="kv">${((pos/(total||1))*100).toFixed(0)}%</div></div>
-        <div class="kpi kr"><div class="klb">Critical Incidents</div><div class="kv">${high}</div><div class="ks">Requires routing</div></div>
-      `;
-    }
-    
-    // Draw Category Mix Donut
-    let cats = ['Room Comfort & Quality', 'Staff', 'Facilities', 'Value for Money', 'Cleanliness'];
-    let catVals = cats.map(c => r.filter(x => x.category === c).length);
-    drawPieChart('cCat', catVals, Object.values(C.CAT_COL));
-    let catLeg = document.getElementById('catLeg');
-    if(catLeg) {
-      catLeg.innerHTML = cats.map((c, i) => `<div class="li"><span class="ld" style="background:${Object.values(C.CAT_COL)[i]}"></span>${c} (${catVals[i]})</div>`).join('');
-    }
-    
-    // Draw Sentiment Line Chart (Dummy breakdown over historical timeline months context)
-    drawLineChart('cTrend', [
-      { color: getThemeColor('--green'), data: [4.1, 4.2, 4.0, 4.5, 4.3, 4.6] },
-      { color: getThemeColor('--red'), data: [1.2, 0.9, 1.5, 0.8, 1.1, 0.5] }
-    ], C.MONTHS);
-    
-    // Draw Platform Sentiment Distribution Ring Stack
-    drawPieChart('cPlat', [r.filter(x=>x.platform==='Google').length, r.filter(x=>x.platform==='Booking.com').length, r.filter(x=>x.platform==='Agoda').length], ['#34a853','#0073e6','#5b6bfe']);
-    
-    // Draw Severity Splits Donut
-    let sevs = ['High', 'Medium', 'Low'];
-    let sevVals = sevs.map(s => r.filter(x => x.severity === s).length);
-    drawPieChart('cSev', sevVals, [getThemeColor('--red'), getThemeColor('--amber'), getThemeColor('--green')]);
-    let sevLeg = document.getElementById('sevLeg');
-    if(sevLeg) {
-      sevLeg.innerHTML = sevs.map((s, i) => `<div class="li"><span class="ld" style="background:${[getThemeColor('--red'), getThemeColor('--amber'), getThemeColor('--green')][i]}"></span>${s}</div>`).join('');
-    }
-    
-    // Render dynamic linear bars for Platform scores
-    let ota = document.getElementById('otaBars');
-    if(ota) {
-      let plats = ['Google', 'Booking.com', 'Agoda', 'TripAdvisor'];
-      ota.innerHTML = plats.map(p => {
-        let pr = r.filter(x => x.platform === p);
-        let pa = (pr.reduce((a,b)=>a+Number(b.rating),0)/(pr.length||1)).toFixed(1);
-        let pct = (pa / 5) * 100;
-        return `
-          <div class="orow">
-            <span class="olb">${p}</span>
-            <div class="otr"><div class="ofi" style="width:${pct}%;background:var(--blue)"></div></div>
-            <span class="osc">${pa}</span>
-          </div>`;
-      }).join('');
-    }
+function normFlag(v) {
+  var l = String(v).toLowerCase().trim();
+  return ['yes','true','1','y','x'].includes(l);
+}
 
-    // Top / Worst Rooms Tables
-    this.renderRoomRankings();
+// ── AUTO ANALYZE ──────────────────────────────────────────────────────
+function autoAnalyze(text, rating) {
+  var t = text.toLowerCase(), P = C.PAT;
+  var NEG = ['dirty','broken','rude','terrible','awful','horrible','unacceptable','worst','bad','poor','disappointing','unclean','problem','issue','leaked','mold','pest','smelly','fault','slow','waited','overcharged','wrong','ignored','dismissive'];
+  var POS = ['great','excellent','amazing','wonderful','fantastic','lovely','clean','comfortable','helpful','friendly','perfect','superb','outstanding','spotless','cozy','beautiful','enjoyed','impressed','professional','efficient','welcoming','attentive','recommend'];
+  var nc = NEG.filter(function(w){ return t.includes(w); }).length;
+  var pc = POS.filter(function(w){ return t.includes(w); }).length;
+  var sent = rating >= 4 ? 'Positive' : rating <= 2 ? 'Negative' : 'Neutral';
+  if (nc > pc && rating < 5) sent = nc >= 3 ? 'Negative' : 'Neutral';
+  if (pc > nc && rating > 2) sent = 'Positive';
+  if (rating <= 2) sent = 'Negative';
+  if (rating === 5 && pc > 0) sent = 'Positive';
+  var cat='Room Comfort & Quality', sub='General', dept='General';
+  var mf=false, cf=false, sev='Low';
+  var action='Monitor and log for pattern analysis';
+  if (P.maint.test(t)) { cat='Room Comfort & Quality'; sub='Maintenance Issue'; dept='Maintenance'; mf=true; sev='High'; action='Raise work order; Engineering to inspect within 4 hours'; }
+  if (P.clean.test(t)) { cat='Cleanliness'; sub='Housekeeping Issue'; dept='Housekeeping'; cf=true; sev=rating<=2?'High':'Medium'; action='Flag for deep clean; Housekeeping supervisor inspection required'; }
+  if (P.fo.test(t))    { cat='Staff'; sub='Front Office Issue'; dept='Front Office'; sev=rating<=2?'High':'Medium'; action='Front Office Manager to review; coaching to be scheduled'; }
+  if (P.fnb.test(t) && cat==='Room Comfort & Quality') { cat='Facilities'; sub='Food & Beverage Issue'; dept='F&B'; sev='Medium'; action='F&B Manager to review'; }
+  if (P.fac.test(t) && cat==='Room Comfort & Quality') { cat='Facilities'; sub='Facilities Issue'; dept='Facilities'; sev='Medium'; action='Facilities team to inspect'; }
+  if (P.val.test(t) && cat==='Room Comfort & Quality') { cat='Value for Money'; sub='Pricing Concern'; dept='Revenue'; sev=rating<=2?'High':'Low'; action='Revenue Manager to review guest value perception'; }
+  if (sent === 'Positive' && !mf && !cf) sev = 'Low';
+  if (rating === 1) sev = 'High';
+  return {sentiment:sent, category:cat, subcategory:sub, department:dept, maintFlag:mf, cleanFlag:cf, severity:sev, action:action};
+}
+
+// ── ROW → REVIEW ──────────────────────────────────────────────────────
+function buildReview(row, idx) {
+  var g = gf(row);
+  var text = g('Review Text','review_text','ReviewText','Text','text','REVIEW TEXT','review','Review');
+  if (!text) return null;
+
+  var platRaw  = g('Platform','platform','PLATFORM');
+  var platform = platRaw ? normPlat(platRaw) : 'Unknown';
+  var dateRaw  = g('Date','date','DATE','Review Date','review_date');
+  var booking  = g('Booking Number','booking_number','BookingNumber','Booking No','booking');
+  var room     = g('Room Number','room_number','RoomNumber','Room No','Room','room') || '—';
+  var roomType = g('Room Type','room_type','RoomType','Type') || 'Unknown';
+  var ratingRaw = g('Rating','rating','RATING','Score','score');
+  var ratingNum = parseFloat(String(ratingRaw).replace('/5','').replace('/10','')) || 3;
+  var rating   = ratingNum > 5 ? ratingNum / 2 : ratingNum;
+
+  var sentSheet = normSent(g('Sentiment','sentiment','SENTIMENT'));
+  var catSheet  = g('Category','category','CATEGORY');
+  var sevSheet  = normSev(g('Severity','severity','SEVERITY'));
+  var mfRaw     = g('Maintenance Flag','maintenance_flag','Maintenance','maintenance');
+  var cfRaw     = g('Cleaning Flag','cleaning_flag','Cleaning','cleaning');
+  var mfSheet   = mfRaw ? normFlag(mfRaw) : false;
+  var cfSheet   = cfRaw ? normFlag(cfRaw) : false;
+  var staff     = g('Mentioned Staff','mentioned_staff','Staff Mentioned','Staff','staff');
+  var action    = g('Suggested Action','suggested_action','Action','action');
+
+  var auto = autoAnalyze(text, rating);
+  if (!sentSheet) sentSheet = auto.sentiment;
+  if (!catSheet)  catSheet  = auto.category;
+  if (!sevSheet)  sevSheet  = auto.severity;
+  if (!mfSheet && auto.maintFlag) mfSheet = true;
+  if (!cfSheet && auto.cleanFlag) cfSheet = true;
+  if (!action)    action    = auto.action;
+
+  return {
+    id: 'R' + idx + '_' + (booking || room).replace(/\s/g,'').slice(0,6),
+    platform: platform,
+    date: normDate(dateRaw),
+    booking: booking,
+    room: room,
+    roomType: roomType,
+    text: text,
+    rating: Math.max(1, Math.min(5, rating)),
+    sentiment: sentSheet,
+    category: catSheet || auto.category,
+    subcategory: auto.subcategory,
+    severity: sevSheet,
+    department: auto.department,
+    maintFlag: mfSheet,
+    cleanFlag: cfSheet,
+    staffMentioned: staff,
+    action: action
+  };
+}
+
+// ── PROCESS CSV TEXT ──────────────────────────────────────────────────
+function processCSVText(csvText, fileName) {
+  console.log('[Process] Parsing CSV, length:', csvText.length);
+  var parsed = parseCSV(csvText);
+  if (!parsed.rows.length) throw new Error('No data rows found. Check that the file has content.');
+  var built = parsed.rows.map(function(r, i){ return buildReview(r, i); }).filter(Boolean);
+  if (!built.length) throw new Error('No valid reviews found. Check column names match expected format.');
+  console.log('[Process] Built', built.length, 'valid reviews from', parsed.rows.length, 'rows');
+  State.reviews = built;
+  State.source  = 'uploaded';
+  State.uploadedAt = new Date().toISOString();
+  State.fileName = fileName || 'uploaded.csv';
+  // Persist to localStorage (compressed to avoid quota issues on large datasets)
+  try {
+    LS.set(CACHE_KEY, { reviews: built, uploadedAt: State.uploadedAt, fileName: State.fileName });
+    LS.set(SOURCE_KEY, 'uploaded');
+  } catch(e) {
+    console.warn('[Process] Cache write failed (quota?):', e.message);
+  }
+  return built.length;
+}
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────
+var A = {
+  summary: function(rv) {
+    var n = rv.length;
+    if (!n) return {total:0,avg:0,pos:0,alerts:0,posPct:0};
+    var pos = rv.filter(function(r){ return r.sentiment==='Positive'; }).length;
+    return {total:n, avg:+(rv.reduce(function(s,r){ return s+(r.rating||3); },0)/n).toFixed(2), pos:pos, alerts:rv.filter(function(r){ return r.maintFlag||r.cleanFlag; }).length, posPct:Math.round(pos/n*100)};
   },
-  
-  renderRoomRankings: function() {
-    let r = State.reviews;
-    let rooms = [...new Set(r.map(x => x.room).filter(Boolean))];
-    let roomData = rooms.map(no => {
-      let rm = r.filter(x => x.room === no);
-      let avg = rm.reduce((a,b)=>a+Number(b.rating),0) / rm.length;
-      return { no, avg, type: rm[0].roomType, count: rm.length };
+  byPlat: function(rv) {
+    var m = {};
+    rv.forEach(function(r){ if(!m[r.platform])m[r.platform]={s:0,n:0,pos:0,neg:0,neu:0}; m[r.platform].s+=(r.rating||3); m[r.platform].n++; m[r.platform][r.sentiment==='Positive'?'pos':r.sentiment==='Negative'?'neg':'neu']++; });
+    return Object.entries(m).map(function(e){ return Object.assign({p:e[0],avg:+(e[1].s/e[1].n).toFixed(2)},e[1]); }).sort(function(a,b){ return b.avg-a.avg; });
+  },
+  byCat: function(rv) {
+    var m = {};
+    rv.forEach(function(r){ m[r.category]=(m[r.category]||0)+1; });
+    return Object.entries(m).map(function(e){ return {k:e[0],v:e[1]}; }).sort(function(a,b){ return b.v-a.v; });
+  },
+  bySev: function(rv) {
+    var m = {High:0,Medium:0,Low:0};
+    rv.forEach(function(r){ m[r.severity]=(m[r.severity]||0)+1; });
+    return m;
+  },
+  byRoom: function(rv) {
+    var m = {};
+    rv.forEach(function(r){ if(!m[r.room])m[r.room]={type:r.roomType,rv:[],mt:0,cl:0}; m[r.room].rv.push(r); if(r.maintFlag)m[r.room].mt++; if(r.cleanFlag)m[r.room].cl++; });
+    return Object.entries(m).map(function(e){
+      var rm=e[0], d=e[1];
+      var pos=d.rv.filter(function(r){ return r.sentiment==='Positive'; }).length;
+      var neg=d.rv.filter(function(r){ return r.sentiment==='Negative'; }).length;
+      var avg=+(d.rv.reduce(function(s,r){ return s+(r.rating||3); },0)/d.rv.length).toFixed(2);
+      var iss=d.rv.filter(function(r){ return r.sentiment==='Negative'; }).map(function(r){ return r.subcategory; });
+      var top=iss.length?iss.sort(function(a,b){ return iss.filter(function(x){ return x===b; }).length-iss.filter(function(x){ return x===a; }).length; })[0]:'—';
+      return {rm:rm, type:d.type, rv:d.rv, pos:pos, neg:neg, avg:avg, mt:d.mt, cl:d.cl, top:top};
     });
-    
-    let top = [...roomData].sort((a,b) => b.avg - a.avg).slice(0, 3);
-    let worst = [...roomData].sort((a,b) => a.avg - b.avg).slice(0, 3);
-    
-    let trEl = document.getElementById('topRooms');
-    if(trEl) {
-      trEl.innerHTML = top.map((x, i) => `
-        <div class="re">
-          <div class="rrk">#${i+1}</div>
-          <div class="rnm">RM ${x.no}</div>
-          <div class="rty">${x.type}</div>
-          <div class="rsc" style="color:var(--green)">${x.avg.toFixed(1)}</div>
-        </div>`).join('');
-    }
-    
-    let wrEl = document.getElementById('worstRooms');
-    if(wrEl) {
-      wrEl.innerHTML = worst.map((x, i) => `
-        <div class="re">
-          <div class="rrk">#${i+1}</div>
-          <div class="rnm">RM ${x.no}</div>
-          <div class="rty">${x.type}</div>
-          <div class="rsc" style="color:var(--red)">${x.avg.toFixed(1)}</div>
-        </div>`).join('');
-    }
   },
-
-  renderTable: function() {
-    let r = State.reviews;
-    let s = document.getElementById('srch').value.toLowerCase();
-    let fP = document.getElementById('fPlat').value;
-    let fS = document.getElementById('fSent').value;
-    let fC = document.getElementById('fCat').value;
-    let fV = document.getElementById('fSev').value;
-    
-    let filtered = r.filter(x => {
-      if(fP && x.platform !== fP) return false;
-      if(fS && x.sentiment !== fS) return false;
-      if(fC && x.category !== fC) return false;
-      if(fV && x.severity !== fV) return false;
-      if(s) {
-        let match = (x.text||'').toLowerCase().includes(s) || (x.room||'').toLowerCase().includes(s) || (x.staffMentioned||'').toLowerCase().includes(s);
-        if(!match) return false;
-      }
-      return true;
-    });
-    
-    document.getElementById('tblSource').textContent = `Showing ${filtered.length} of ${r.length} rows found`;
-    
-    let tbody = document.getElementById('tblBody');
-    if(!tbody) return;
-    if(filtered.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="12" class="es">No logs fit parameters specified.</td></tr>`;
-      return;
-    }
-    
-    tbody.innerHTML = filtered.map(x => {
-      let pClass = C.PLAT_CSS[x.platform] || 'pun';
-      let sClass = x.sentiment === 'Positive' ? 'sp' : (x.sentiment === 'Negative' ? 'sn' : 'su');
-      let vClass = x.severity === 'High' ? 'sh' : (x.severity === 'Medium' ? 'sm' : 'sl');
-      
-      let flags = [];
-      if(x.maintFlag && x.maintFlag !== 'false') flags.push('<span class="flag fa">&#128295;</span>');
-      if(x.cleanFlag && x.cleanFlag !== 'false') flags.push('<span class="flag fc">&#128167;</span>');
-      
-      return `
-        <tr>
-          <td><span class="plat ${pClass}">${x.platform}</span></td>
-          <td style="white-space:nowrap">${x.date || ''}</td>
-          <td><code>${x.booking || ''}</code></td>
-          <td><strong>${x.room || ''}</strong></td>
-          <td class="te" title="${x.roomType || ''}">${x.roomType || ''}</td>
-          <td style="min-width:220px; font-size:12px; color:var(--t1)">${x.text || ''}</td>
-          <td><div class="stars">${'&#9733;'.repeat(Number(x.rating || 0))}</div></td>
-          <td><span class="sent ${sClass}">${x.sentiment}</span></td>
-          <td class="te">${x.category || ''}</td>
-          <td><span class="sev ${vClass}">${x.severity}</span></td>
-          <td><div class="fw">${flags.join('')}</div></td>
-          <td><em>${x.staffMentioned || ''}</em></td>
-        </tr>`;
-    }).join('');
+  byStaff: function(rv) {
+    var m = {};
+    rv.forEach(function(r){ if(!r.staffMentioned)return; String(r.staffMentioned).split(',').forEach(function(raw){ var n=raw.trim(); if(!n||n.length<2||n==='-'||n.toLowerCase()==='none')return; if(!m[n])m[n]={pos:0,neg:0}; m[n][r.sentiment==='Positive'?'pos':'neg']++; }); });
+    return Object.entries(m).map(function(e){ return {n:e[0],pos:e[1].pos,neg:e[1].neg,t:e[1].pos+e[1].neg}; }).sort(function(a,b){ return b.t-a.t; });
   },
-  
-  clearFilters: function() {
-    document.getElementById('srch').value = '';
-    document.getElementById('fPlat').value = '';
-    document.getElementById('fSent').value = '';
-    document.getElementById('fCat').value = '';
-    document.getElementById('fSev').value = '';
-    this.renderTable();
+  issues: function(rv) {
+    var m = {};
+    rv.filter(function(r){ return r.sentiment==='Negative'; }).forEach(function(r){ m[r.subcategory]=(m[r.subcategory]||0)+1; });
+    return Object.entries(m).map(function(e){ return {k:e[0],v:e[1]}; }).sort(function(a,b){ return b.v-a.v; });
   },
-
-  renderRooms: function() {
-    let r = State.reviews;
-    let rooms = [...new Set(r.map(x => x.room).filter(Boolean))].sort();
-    
-    // KPI metrics updates
-    let totalRooms = rooms.length;
-    let totalMaint = r.filter(x => x.maintFlag && x.maintFlag !== 'false').length;
-    document.getElementById('roomKpis').innerHTML = `
-      <div class="kpi kb"><div class="klb">Tracked Units</div><div class="kv">${totalRooms}</div></div>
-      <div class="kpi kr"><div class="klb">Open Ops Flags</div><div class="kv">${totalMaint}</div></div>
-      <div class="kpi ka"><div class="klb">Heat Index</div><div class="kv">High</div></div>
-      <div class="kpi kg"><div class="klb">Turnaround</div><div class="kv">2.4h</div></div>
-    `;
-
-    // Render Heatmap grids
-    let mapBox = document.getElementById('hmap');
-    if(mapBox) {
-      if(!rooms.length) mapBox.innerHTML = '<div class="es">No rooms mapped</div>';
-      else {
-        mapBox.innerHTML = rooms.slice(0, 15).map(no => {
-          let cnt = r.filter(x => x.room === no && x.sentiment === 'Negative').length;
-          let color = '#1a3a28';
-          if(cnt > 0) color = '#2d5c3a';
-          if(cnt > 1) color = '#f0b429';
-          if(cnt > 2) color = '#e07030';
-          if(cnt > 3) color = '#f05c6e';
-          return `<div class="hc" style="background:${color};color:#fff" title="Room ${no}: ${cnt} complaints">${no}</div>`;
-        }).join('');
-      }
-    }
-    
-    // Bottom Room performance dynamic breakdown tracking table
-    let rTbl = document.getElementById('roomTbl');
-    if(rTbl) {
-      rTbl.innerHTML = rooms.slice(0, 8).map(no => {
-        let rm = r.filter(x => x.room === no);
-        let avg = rm.reduce((a,b)=>a+Number(b.rating),0) / rm.length;
-        let pos = rm.filter(x=>x.sentiment==='Positive').length;
-        let neg = rm.filter(x=>x.sentiment==='Negative').length;
-        let m = rm.filter(x=>x.maintFlag && x.maintFlag!=='false').length;
-        let c = rm.filter(x=>x.cleanFlag && x.cleanFlag!=='false').length;
-        return `
-          <tr>
-            <td><strong>${no}</strong></td>
-            <td>${rm[0].roomType || 'Standard'}</td>
-            <td>${rm.length} reviews</td>
-            <td><strong style="color:var(--blue)">${avg.toFixed(1)}</strong></td>
-            <td>${pos}</td>
-            <td>${neg}</td>
-            <td>${rm[0].category || 'None'}</td>
-            <td>${m}</td>
-            <td>${c}</td>
-            <td><span class="sent sp">Clear</span></td>
-          </tr>`;
-      }).join('');
-    }
-    
-    drawBarChart('cRoomType', ['Suite', 'Deluxe', 'Superior'], [12, 24, 8], getThemeColor('--purple'));
-  },
-
-  renderAlerts: function() {
-    let r = State.reviews;
-    let maint = r.filter(x => x.maintFlag && x.maintFlag !== 'false' || x.department === 'Maintenance');
-    let clean = r.filter(x => x.cleanFlag && x.cleanFlag !== 'false' || x.department === 'Housekeeping');
-    let critical = r.filter(x => x.severity === 'High');
-    let frontOffice = r.filter(x => x.department === 'Front Office' && x.sentiment === 'Negative');
-
-    const cardMap = x => `
-      <div class="alcard ${x.severity === 'High' ? 'aicr' : 'aim'}">
-        <div class="alhead">
-          <div class="alroom">RM ${x.room || 'N/A'}</div>
-          <div class="alisue">${x.action || 'Investigation requested'}</div>
-        </div>
-        <div class="albody">
-          <div class="alfield"><div class="alfldlb">Type</div><div class="alfldv">${x.roomType || 'General'}</div></div>
-          <div class="alfield"><div class="alfldlb">Platform</div><div class="alfldv">${x.platform}</div></div>
-          <div class="alfield"><div class="alfldlb">Rating</div><div class="alfldv">${x.rating}/5</div></div>
-          <div class="alfield"><div class="alfldlb">Date</div><div class="alfldv">${x.date}</div></div>
-        </div>
-      </div>`;
-
-    document.getElementById('aMaint').innerHTML = maint.length ? maint.map(cardMap).join('') : '<div class="es">No pending tasks structural flags.</div>';
-    document.getElementById('aClean').innerHTML = clean.length ? clean.map(cardMap).join('') : '<div class="es">No pending hygiene alerts.</div>';
-    document.getElementById('aCrit').innerHTML = critical.length ? critical.map(cardMap).join('') : '<div class="es">No critical operational flags.</div>';
-    document.getElementById('aFO').innerHTML = frontOffice.length ? frontOffice.map(cardMap).join('') : '<div class="es">Front office workflows clear.</div>';
-  },
-
-  renderStaff: function() {
-    let r = State.reviews;
-    let mentions = {};
-    r.forEach(x => {
-      if(x.staffMentioned) {
-        let name = x.staffMentioned.trim();
-        if(!mentions[name]) mentions[name] = { pos: 0, neg: 0, actions: [] };
-        if(x.sentiment === 'Positive') mentions[name].pos++;
-        if(x.sentiment === 'Negative') mentions[name].neg++;
-        if(x.action) mentions[name].actions.push(x.action);
-      }
-    });
-
-    let sPos = document.getElementById('staffPos');
-    let sNeg = document.getElementById('staffNeg');
-    let sAll = document.getElementById('staffAll');
-    
-    let arr = Object.keys(mentions).map(k => ({ name: k, ...mentions[k] }));
-    if(arr.length === 0) {
-      let fallback = '<div class="es">No tracked personnel logs parsed inside review data stream fields.</div>';
-      if(sPos) sPos.innerHTML = fallback; if(sNeg) sNeg.innerHTML = fallback; if(sAll) sAll.innerHTML = fallback;
-      return;
-    }
-
-    sPos.innerHTML = arr.filter(x=>x.pos > 0).map(x => `<div class="se"><div class="sav bgg">${x.name[0]}</div><div style="flex:1"><strong>${x.name}</strong><br><span style="font-size:10px;color:var(--t3)">${x.pos} commendations</span></div></div>`).join('');
-    sNeg.innerHTML = arr.filter(x=>x.neg > 0).map(x => `<div class="se"><div class="sav bgr">${x.name[0]}</div><div style="flex:1"><strong>${x.name}</strong><br><span style="font-size:10px;color:var(--t3)">Needs support on ${x.neg} items</span></div></div>`).join('');
-    sAll.innerHTML = arr.map(x => `<div class="se"><div class="sav bgb">${x.name[0]}</div><div style="flex:1"><strong>${x.name}</strong> — total logs parsed (${x.pos + x.neg})</div></div>`).join('');
-
-    drawBarChart('cStaff', arr.map(x=>x.name), arr.map(x=>x.pos), getThemeColor('--green'));
-  },
-
-  renderAnalytics: function() {
-    drawBarChart('cVol', C.MONTHS, [14, 22, 18, 35, 29, 42], getThemeColor('--blue'));
-    drawBarChart('cRatPlat', ['Google', 'Agoda', 'Booking'], [4.5, 3.8, 4.1], getThemeColor('--amber'));
-    
-    let rec = document.getElementById('recurring');
-    if(rec) rec.innerHTML = `<div class="es">No cyclical operational bottlenecks found. System stable.</div>`;
-    let act = document.getElementById('actionSum');
-    if(act) act.innerHTML = `<div class="es">All metrics matched against Standard Operating Procedures (SOPs).</div>`;
-  },
-
-  renderUploadTab: function() {
-    let info = document.getElementById('datasetInfo');
-    if(!info) return;
-    if(State.source === 'uploaded') {
-      info.innerHTML = `
-        <div style="font-size:12px;color:var(--t2);line-height:2">
-          Status: <span style="color:var(--green);font-weight:700">LIVE DATASET ACTIVE</span><br>
-          Source Name: <code>${State.fileName || 'CSV Stream File Parser'}</code><br>
-          Records Parsed: <strong>${State.reviews.length} rows inside memory model scope.</strong>
-        </div>`;
-    } else {
-      info.innerHTML = `<div class="es" style="padding:0;text-align:left">No operational spreadsheet payloads parsed yet. Running mock structural matrices.</div>`;
-    }
-  },
-
-  triggerUpload: function() {
-    document.getElementById('fileInput').click();
-  },
-  
-  onDragOver: function(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag'); },
-  onDragLeave: function(e) { e.preventDefault(); document.getElementById('dropZone').classList.remove('drag'); },
-  onDrop: function(e) {
-    e.preventDefault();
-    document.getElementById('dropZone').classList.remove('drag');
-    var files = e.dataTransfer.files;
-    if(files.length) this.processFile(files[0]);
-  },
-  
-  handleUpload: function(input) {
-    if(input.files && input.files.length) { this.processFile(input.files[0]); }
-  },
-
-  processFile: function(file) {
-    var self = this;
-    var reader = new FileReader();
-    State.fileName = file.name;
-    
-    reader.onload = function(e) {
-      var text = e.target.result;
-      var rawLines = parseCSV(text);
-      if(rawLines.length < 2) { self.showToast("Error parsing empty schema arrays."); return; }
-      
-      var headers = rawLines[0].map(h => h.trim().toLowerCase());
-      var mapped = [];
-      
-      for(var i=1; i<rawLines.length; i++) {
-        var r = rawLines[i];
-        if(r.length < headers.length) continue;
-        
-        var obj = {
-          id: 'U' + i,
-          platform: r[headers.indexOf('platform')] || 'Google',
-          date: r[headers.indexOf('date')] || new Date().toISOString().split('T')[0],
-          booking: r[headers.indexOf('booking number')] || '',
-          room: r[headers.indexOf('room number')] || '',
-          roomType: r[headers.indexOf('room type')] || 'Standard',
-          text: r[headers.indexOf('review text')] || '',
-          rating: Number(r[headers.indexOf('rating')]) || 5,
-          sentiment: r[headers.indexOf('sentiment')] || 'Positive',
-          category: r[headers.indexOf('category')] || 'General',
-          severity: r[headers.indexOf('severity')] || 'Low',
-          maintFlag: r[headers.indexOf('maintenance flag')] === 'true',
-          cleanFlag: r[headers.indexOf('cleaning flag')] === 'true',
-          staffMentioned: r[headers.indexOf('mentioned staff')] || '',
-          action: r[headers.indexOf('suggested action')] || '',
-          department: r[headers.indexOf('department')] || 'General'
-        };
-        mapped.push(obj);
-      }
-      
-      if(mapped.length > 0) {
-        State.reviews = mapped;
-        State.source = 'uploaded';
-        LS.set(CACHE_KEY, mapped);
-        LS.set(SOURCE_KEY, 'uploaded');
-        self.showToast(`Success: ${mapped.length} records parsed in runtime dynamic storage.`);
-        self.goTab('overview', document.querySelector('.ni'));
-      } else {
-        self.showToast("Headers mismatch. Stream cancelled.");
-      }
-    };
-    reader.readAsText(file);
-  },
-
-  clearData: function() {
-    LS.del(CACHE_KEY);
-    LS.set(SOURCE_KEY, 'sample');
-    State.reviews = SAMPLE;
-    State.source = 'sample';
-    State.fileName = null;
-    this.showToast("Local memory flushed. Loading standard simulation layers.");
-    this.renderActiveTab();
-  },
-
-  exportCSV: function() {
-    let r = State.reviews;
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "ID,Platform,Date,Booking,Room,Rating,Sentiment,Category,Severity,Text\n";
-    
-    r.forEach(x => {
-      let row = [x.id, x.platform, x.date, x.booking, x.room, x.rating, x.sentiment, x.category, x.severity, `"${(x.text||'').replace(/"/g, '""')}"`].join(",");
-      csvContent += row + "\n";
-    });
-    
-    let encodedUri = encodeURI(csvContent);
-    let link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "Sultan_Hotel_Reviews_Export.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  },
-
-  showToast: function(msg) {
-    var t = document.getElementById('toast');
-    if(!t) return;
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
+  trend: function(rv) {
+    return C.MONTHS.map(function(_,i){ var s=rv.slice(i*3,(i+1)*3+2); return {pos:s.filter(function(r){ return r.sentiment==='Positive'; }).length, neg:s.filter(function(r){ return r.sentiment==='Negative'; }).length}; });
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => App.init());
+// ── UI HELPERS ────────────────────────────────────────────────────────
+var U = {
+  $: function(id){ return document.getElementById(id); },
+  set: function(id, h){ var e=document.getElementById(id); if(e) e.innerHTML=h; },
+  plat: function(p){ var c=C.PLAT_CSS[p]||'pun'; return '<span class="plat '+c+'">'+p+'</span>'; },
+  stars: function(n){ n=Math.min(5,Math.max(1,Math.round(n||3))); return '★'.repeat(n)+'☆'.repeat(5-n); },
+  sent: function(s){ return '<span class="sent '+(s==='Positive'?'sp':s==='Negative'?'sn':'su')+'">'+( s||'—')+'</span>'; },
+  sev:  function(s){ return '<span class="sev '+(s==='High'?'sh':s==='Medium'?'sm':'sl')+'">'+(s||'—')+'</span>'; },
+  dept: function(d){ var m={Maintenance:'dept-mt',Housekeeping:'dept-hk','Front Office':'dept-fo','F&B':'dept-fb',Facilities:'dept-fc',Revenue:'dept-gm',General:'dept-gm'}; return '<span class="dept '+(m[d]||'dept-gm')+'">'+(d||'General')+'</span>'; },
+  date: function(d){ if(!d||d==='—')return'—'; var p=String(d).split('-'); return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d; },
+  avCol: function(n){ var h=0; for(var i=0;i<n.length;i++) h=(h*31+n.charCodeAt(i))%C.AV_COLS.length; return C.AV_COLS[h]; },
+  ini: function(n){ return (n||'?').trim().split(' ').map(function(w){ return w[0]||''; }).join('').slice(0,2).toUpperCase()||'?'; },
+  kpi: function(o){ return '<div class="kpi '+o.ac+'"><div class="klb">'+o.lb+'</div><div class="kv">'+o.val+'</div><div class="ks">'+o.sub+'</div><div class="kbg '+o.bc+'">'+o.bh+'</div></div>'; },
+  rentry: function(d,rank,col){ return '<div class="re"><div class="rrk">#'+rank+'</div><div class="rnm">Rm '+d.rm+'</div><div class="rty">'+d.type+'</div><div class="rtr"><div class="rfi" style="width:'+(d.avg/5*100).toFixed(0)+'%;background:'+col+'"></div></div><div class="rsc" style="color:'+col+'">'+d.avg.toFixed(1)+'</div><div class="rcn">'+d.rv.length+'&#215;</div></div>'; },
+  alertCard: function(r,css){ var issue=r.subcategory||r.category||'Issue'; return '<div class="alcard '+css+'"><div class="alhead"><div class="alroom">Rm '+r.room+'</div><div class="alisue">'+issue+'</div>'+U.sev(r.severity)+' '+U.plat(r.platform)+'</div><div class="albody"><div class="alfield"><div class="alfldlb">Date</div><div class="alfldv">'+U.date(r.date)+'</div></div><div class="alfield"><div class="alfldlb">Dept</div><div class="alfldv">'+U.dept(r.department)+'</div></div><div class="alfield"><div class="alfldlb">Room Type</div><div class="alfldv">'+(r.roomType||'—')+'</div></div><div class="alfield"><div class="alfldlb">Action</div><div class="alfldv" style="font-size:10px;color:var(--t3)">'+r.action+'</div></div></div></div>'; },
+  staffCard: function(d){ var col=U.avCol(d.n); return '<div class="se"><div class="sav" style="background:'+col+'22;color:'+col+'">'+U.ini(d.n)+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--t1)">'+d.n+'</div><div style="font-size:10px;color:var(--t3)">'+d.pos+' positive &#183; '+d.neg+' complaints</div></div><div style="display:flex;gap:3px">'+(d.pos>0?'<span class="kbg bgg">+'+d.pos+'</span>':'')+(d.neg>0?'<span class="kbg bgr">-'+d.neg+'</span>':'')+'</div></div>'; },
+  empty: function(m){ return '<div class="es">'+m+'</div>'; },
+  toast: function(m, dur){
+    var t=U.$('toast'); t.innerHTML=m; t.classList.add('show');
+    clearTimeout(t._t); t._t=setTimeout(function(){ t.classList.remove('show'); }, dur||3000);
+  }
+};
+
+// ── CHART MANAGER ─────────────────────────────────────────────────────
+var CM = {
+  _r: {},
+  destroy: function(k){ if(this._r[k]){this._r[k].destroy();delete this._r[k];} },
+  _tc: function(){ return Sett.dark?'#6b718f':'#7b83a8'; },
+  _base: function(){ var tc=this._tc(),gc='rgba(128,128,128,.08)'; return {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:10}}}}}; },
+  _m: function(a,b){ var r=Object.assign({},a); for(var k in b){if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k]))r[k]=this._m(a[k]||{},b[k]);else r[k]=b[k];} return r; },
+  make: function(key,type,data,ov){ this.destroy(key); var c=U.$(key); if(!c||!window.Chart)return; this._r[key]=new Chart(c,{type:type,data:data,options:this._m(this._base(),ov||{})}); },
+  line: function(k,l,d,ov){ this.make(k,'line',{labels:l,datasets:d},ov); },
+  bar:  function(k,l,d,ov){ this.make(k,'bar',{labels:l,datasets:d},ov); },
+  sbar: function(k,l,d){ this.make(k,'bar',{labels:l,datasets:d},{scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true}}}); },
+  donut:function(k,l,d,c,cut){ this.make(k,'doughnut',{labels:l,datasets:[{data:d,backgroundColor:c,borderWidth:0,hoverOffset:4}]},{cutout:cut||'65%',scales:{x:{display:false},y:{display:false}}}); }
+};
+
+// ── RENDERERS ─────────────────────────────────────────────────────────
+var R = {
+  all: function() {
+    var rv = State.reviews;
+    R.statusBar();
+    R.kpis(rv);
+    R.roomKpis(rv);
+    R.ota(rv);
+    R.rlist(rv);
+    R.charts(rv);
+    R.table(rv);
+    R.rooms(rv);
+    R.alerts(rv);
+    R.staff(rv);
+    R.analytics(rv);
+    R.datasetInfo();
+    U.set('tblSource', State.source==='uploaded' ? '&#9679; Uploaded: '+State.fileName : State.source==='cached' ? '&#9679; Cached dataset' : '&#9679; Sample data — upload CSV to load real reviews');
+  },
+
+  statusBar: function() {
+    var src = State.source, rv = State.reviews;
+    var cfg;
+    if (src === 'uploaded') {
+      cfg = {cls:'sb-live', icon:'&#10003;', text:'<strong>Live uploaded data</strong> &nbsp;&#183;&nbsp; '+rv.length+' reviews from '+State.fileName+' &nbsp;&#183;&nbsp; Uploaded '+new Date(State.uploadedAt).toLocaleString()};
+    } else if (src === 'cached') {
+      cfg = {cls:'sb-live', icon:'&#9679;', text:'<strong>Cached dataset</strong> &nbsp;&#183;&nbsp; '+rv.length+' reviews &nbsp;&#183;&nbsp; From previous upload of '+State.fileName};
+    } else {
+      cfg = {cls:'sb-sample', icon:'&#9432;', text:'<strong>Sample data mode</strong> &nbsp;&#183;&nbsp; Upload your Google Sheets CSV to load real data &nbsp;&#183;&nbsp; <a href="#" onclick="App.goTab(\'upload\',document.querySelectorAll(\'.ni\')[6]);return false;" style="color:var(--amber);font-weight:600">Go to Data Source &#8594;</a>'};
+    }
+    U.set('statusBar', '<div class="sbar '+(src==='sample'?'sb-sample':'sb-live')+'"><span style="flex-shrink:0">'+cfg.icon+'</span><span class="sb-label">'+cfg.text+'</span></div>');
+  },
+
+  kpis: function(rv) {
+    var s = A.summary(rv);
+    if (!s.total) { U.set('kpiStrip','<div style="grid-column:span 4;padding:20px;color:var(--t3);font-size:12px;text-align:center">No data — upload a CSV file from the Data Source tab</div>'); return; }
+    var ac = s.avg>=4.5?'bgg':s.avg>=3.5?'bga':'bgr';
+    U.set('kpiStrip', [
+      U.kpi({ac:'kpi kb',lb:'Total Reviews',val:s.total,sub:'All platforms',bc:'bgb',bh:'&#9679; '+(State.source==='uploaded'?'Uploaded':'Loaded')}),
+      U.kpi({ac:'kpi kg',lb:'Average Rating',val:s.avg.toFixed(1),sub:'Out of 5.0',bc:ac,bh:s.avg>=4.5?'Excellent':s.avg>=3.5?'Good':'Needs Attention'}),
+      U.kpi({ac:'kpi ka',lb:'Positive Sentiment',val:s.posPct+'%',sub:s.pos+' of '+s.total+' reviews',bc:'bgg',bh:'&#10003; On track'}),
+      U.kpi({ac:'kpi kr',lb:'Open Alerts',val:s.alerts,sub:'Maintenance + Housekeeping',bc:s.alerts>5?'bgr':'bga',bh:s.alerts+' rooms flagged'})
+    ].join(''));
+    U.$('alertPill').textContent = rv.filter(function(r){ return r.maintFlag||r.cleanFlag||r.severity==='High'; }).length;
+  },
+
+  roomKpis: function(rv) {
+    var rooms = A.byRoom(rv);
+    U.set('roomKpis', [
+      U.kpi({ac:'kpi kb',lb:'Rooms Monitored',val:rooms.length,sub:'Unique rooms',bc:'bgb',bh:'Active'}),
+      U.kpi({ac:'kpi kr',lb:'With Complaints',val:rooms.filter(function(r){ return r.neg>0; }).length,sub:'Negative reviews',bc:'bgr',bh:'Review required'}),
+      U.kpi({ac:'kpi ka',lb:'Maintenance Req.',val:rooms.filter(function(r){ return r.mt>0; }).length,sub:'Flagged rooms',bc:'bga',bh:'Action needed'}),
+      U.kpi({ac:'kpi kb',lb:'Deep Clean Req.',val:rooms.filter(function(r){ return r.cl>0; }).length,sub:'Flagged rooms',bc:'bgb',bh:'Schedule now'})
+    ].join(''));
+  },
+
+  ota: function(rv) {
+    var d = A.byPlat(rv);
+    if (!d.length) { U.set('otaBars',U.empty('No platform data')); return; }
+    U.set('otaBars', d.map(function(o){ var col=C.PLAT_COL[o.p]||'#888'; return '<div class="orow"><div class="olb"><span class="pdot" style="background:'+col+'"></span>'+o.p+'</div><div class="otr"><div class="ofi" style="width:'+(o.avg/5*100).toFixed(0)+'%;background:'+col+'"></div></div><div class="osc">'+o.avg.toFixed(1)+'</div><div class="ocn">'+o.n+' reviews</div></div>'; }).join(''));
+  },
+
+  rlist: function(rv) {
+    var rooms = A.byRoom(rv).sort(function(a,b){ return b.avg-a.avg; });
+    var empty = U.empty('No room data');
+    U.set('topRooms', rooms.length ? rooms.slice(0,6).map(function(d,i){ return U.rentry(d,i+1,'var(--green)'); }).join('') : empty);
+    U.set('worstRooms', rooms.length ? rooms.slice().reverse().slice(0,6).map(function(d,i){ return U.rentry(d,i+1,'var(--red)'); }).join('') : empty);
+  },
+
+  charts: function(rv) {
+    if (!window.Chart) return;
+    var KEYS = ['cTrend','cCat','cPlat','cSev','cRoomType','cVol','cRatPlat','cStaff'];
+    if (!rv.length) { KEYS.forEach(function(k){ CM.destroy(k); }); return; }
+    var tr = A.trend(rv);
+    CM.line('cTrend', C.MONTHS, [
+      {label:'Pos',data:tr.map(function(t){ return t.pos; }),borderColor:'#3ecf8e',backgroundColor:'rgba(62,207,142,.08)',fill:true,tension:.4,borderWidth:2,pointBackgroundColor:'#3ecf8e',pointRadius:3},
+      {label:'Neg',data:tr.map(function(t){ return t.neg; }),borderColor:'#f05c6e',backgroundColor:'rgba(240,92,110,.06)',fill:true,tension:.4,borderWidth:2,pointBackgroundColor:'#f05c6e',pointRadius:3,borderDash:[5,3]}
+    ]);
+    U.set('trendLeg','<span class="li"><span class="ld" style="background:#3ecf8e"></span>Positive</span><span class="li"><span class="ld" style="background:#f05c6e;border-radius:0"></span>Negative</span>');
+    var cats = A.byCat(rv);
+    CM.donut('cCat', cats.map(function(d){ return d.k; }), cats.map(function(d){ return d.v; }), cats.map(function(d){ return C.CAT_COL[d.k]||'#888'; }), '68%');
+    U.set('catLeg', cats.map(function(d){ return '<span class="li"><span class="ld" style="background:'+C.CAT_COL[d.k]+'"></span>'+d.k.replace('&','&amp;')+'</span>'; }).join(''));
+    var plat = A.byPlat(rv), plab = plat.map(function(d){ return d.p.length>8?d.p.slice(0,7)+'…':d.p; });
+    CM.sbar('cPlat', plab, [
+      {label:'P',data:plat.map(function(d){ return d.pos; }),backgroundColor:'#3ecf8e',borderRadius:3,stack:'s'},
+      {label:'N',data:plat.map(function(d){ return d.neu; }),backgroundColor:'#f0b429',borderRadius:3,stack:'s'},
+      {label:'X',data:plat.map(function(d){ return d.neg; }),backgroundColor:'#f05c6e',borderRadius:3,stack:'s'}
+    ]);
+    var sev = A.bySev(rv);
+    CM.donut('cSev',['High','Medium','Low'],[sev.High,sev.Medium,sev.Low],['#f05c6e','#f0b429','#3ecf8e'],'62%');
+    U.set('sevLeg', [['High','#f05c6e'],['Medium','#f0b429'],['Low','#3ecf8e']].map(function(e){ return '<span class="li"><span class="ld" style="background:'+e[1]+';border-radius:50%"></span>'+e[0]+': '+(sev[e[0]]||0)+'</span>'; }).join(''));
+    var rooms = A.byRoom(rv), tm = {};
+    rooms.forEach(function(r){ if(!tm[r.type])tm[r.type]={p:0,n:0}; tm[r.type].p+=r.pos; tm[r.type].n+=r.neg; });
+    var tk = Object.keys(tm);
+    CM.sbar('cRoomType', tk.map(function(t){ return t.length>14?t.slice(0,13)+'…':t; }), [
+      {label:'P',data:tk.map(function(k){ return tm[k].p; }),backgroundColor:'#3ecf8e',borderRadius:3,stack:'s'},
+      {label:'N',data:tk.map(function(k){ return tm[k].n; }),backgroundColor:'#f05c6e',borderRadius:3,stack:'s'}
+    ]);
+    CM.bar('cVol', C.MONTHS, [{label:'Reviews',data:C.MONTHS.map(function(_,i){ return rv.slice(i*3,(i+1)*3+2).length; }),backgroundColor:'#5b8def',borderRadius:4,borderSkipped:false}]);
+    CM.bar('cRatPlat', plab, [{label:'Avg',data:plat.map(function(d){ return d.avg; }),backgroundColor:plat.map(function(d){ return C.PLAT_COL[d.p]||'#5b8def'; }),borderRadius:4,borderSkipped:false}], {scales:{y:{min:0,max:5}}});
+    var staff = A.byStaff(rv);
+    if (staff.length) {
+      CM.sbar('cStaff', staff.map(function(d){ return d.n; }), [
+        {label:'P',data:staff.map(function(d){ return d.pos; }),backgroundColor:'#3ecf8e',borderRadius:3,stack:'s'},
+        {label:'N',data:staff.map(function(d){ return d.neg; }),backgroundColor:'#f05c6e',borderRadius:3,stack:'s'}
+      ]);
+    } else { CM.destroy('cStaff'); }
+  },
+
+  table: function(rv) {
+    var q=U.$('srch').value.toLowerCase(), fp=U.$('fPlat').value, fs=U.$('fSent').value, fc=U.$('fCat').value, fv=U.$('fSev').value;
+    var f = rv.filter(function(r){
+      if(fp && r.platform!==fp)return false;
+      if(fs && r.sentiment!==fs)return false;
+      if(fc && r.category!==fc)return false;
+      if(fv && r.severity!==fv)return false;
+      if(q && !(r.platform+' '+r.room+' '+r.text+' '+r.category+' '+(r.staffMentioned||'')).toLowerCase().includes(q))return false;
+      return true;
+    });
+    if (!f.length) { U.set('tblBody','<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--t3)">'+(rv.length?'No reviews match filters.':'No data loaded.')+'</td></tr>'); U.set('tblFooter','No results'); return; }
+    U.set('tblBody', f.map(function(r){
+      return '<tr><td>'+U.plat(r.platform)+'</td><td style="white-space:nowrap;color:var(--t3)">'+U.date(r.date)+'</td><td style="color:var(--t4);font-size:10px">'+(r.booking||'—')+'</td><td><strong style="color:var(--t1)">'+r.room+'</strong></td><td style="font-size:10px;color:var(--t3)">'+(r.roomType||'—')+'</td><td><div class="te" title="'+r.text.replace(/"/g,'&quot;')+'">'+r.text+'</div></td><td><span class="stars">'+U.stars(r.rating)+'</span></td><td>'+U.sent(r.sentiment)+'</td><td><span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2)"><span class="cd" style="background:'+(C.CAT_COL[r.category]||'#888')+'"></span>'+r.category+'</span></td><td>'+U.sev(r.severity)+'</td><td><div class="fw">'+(r.maintFlag?'<span class="flag fa">&#128295;</span>':'')+(r.cleanFlag?'<span class="flag fc">&#128167;</span>':'')+'</div></td><td style="font-size:10px;color:var(--t3)">'+(r.staffMentioned||'—')+'</td></tr>';
+    }).join(''));
+    U.set('tblFooter', f.length+' of '+rv.length+' reviews');
+  },
+
+  rooms: function(rv) {
+    var rooms = A.byRoom(rv);
+    if (!rooms.length) { U.set('hmap',U.empty('No room data')); U.set('roomTbl',''); return; }
+    var sorted = rooms.slice().sort(function(a,b){ return parseInt(a.rm)-parseInt(b.rm); });
+    var mx = Math.max.apply(null, sorted.map(function(d){ return d.neg; }).concat([1]));
+    U.set('hmap', sorted.map(function(d){ var r=d.neg/mx; var col=r===0?'#1a3a28':r<.25?'#2d5c3a':r<.5?'#f0b429':r<.75?'#e07030':'#f05c6e'; return '<div class="hc" style="background:'+col+';color:'+(r<.4?'#7fbf9f':'#fff')+'" title="Room '+d.rm+': '+d.neg+' complaints">'+d.rm+'</div>'; }).join(''));
+    U.set('roomTbl', rooms.slice().sort(function(a,b){ return b.neg-a.neg; }).map(function(d){
+      var st=d.mt>0&&d.cl>0?U.sev('High'):d.mt>0?'<span class="sev sm">Maint.</span>':d.cl>0?'<span class="sev" style="background:var(--bs);color:var(--blue)">Clean</span>':'<span class="sev sl">OK</span>';
+      return '<tr><td><strong style="color:var(--t1)">'+d.rm+'</strong></td><td style="font-size:11px">'+d.type+'</td><td>'+d.rv.length+'</td><td style="color:'+(d.avg>=4?'var(--green)':d.avg>=3?'var(--amber)':'var(--red)')+'">'+d.avg.toFixed(1)+'</td><td style="color:var(--green)">'+d.pos+'</td><td style="color:var(--red)">'+d.neg+'</td><td style="font-size:10px;color:var(--t3)">'+d.top+'</td><td>'+(d.mt>0?'<span style="color:var(--amber)">&#128295; '+d.mt+'</span>':'')+'</td><td>'+(d.cl>0?'<span style="color:var(--blue)">&#128167; '+d.cl+'</span>':'')+'</td><td>'+st+'</td></tr>';
+    }).join(''));
+  },
+
+  alerts: function(rv) {
+    var maint=rv.filter(function(r){ return r.maintFlag; }).sort(function(a,b){ return b.severity.localeCompare(a.severity); });
+    var clean=rv.filter(function(r){ return r.cleanFlag; }).sort(function(a,b){ return b.severity.localeCompare(a.severity); });
+    var crit=rv.filter(function(r){ return r.severity==='High'&&!r.maintFlag&&!r.cleanFlag; });
+    var fo=rv.filter(function(r){ return r.department==='Front Office'; });
+    function bld(arr,css){ return arr.length?arr.map(function(r){ return U.alertCard(r,css); }).join(''):U.empty('No alerts'); }
+    U.set('aMaint',bld(maint,'aim')); U.set('aClean',bld(clean,'aic'));
+    U.set('aCrit',bld(crit,'aicr')); U.set('aFO',bld(fo,'aifo'));
+  },
+
+  staff: function(rv) {
+    var list=A.byStaff(rv), pos=list.filter(function(d){ return d.pos>d.neg; }), neg=list.filter(function(d){ return d.neg>=d.pos; });
+    U.set('staffPos',pos.length?pos.map(function(d){ return U.staffCard(d); }).join(''):U.empty('No positive mentions'));
+    U.set('staffNeg',neg.length?neg.map(function(d){ return U.staffCard(d); }).join(''):U.empty('No complaints'));
+    U.set('staffAll',list.length?list.map(function(d){ return U.staffCard(d); }).join(''):U.empty('No staff mentions'));
+  },
+
+  analytics: function(rv) {
+    var iss=A.issues(rv), mx=iss.length?iss[0].v:1;
+    U.set('recurring', iss.length?iss.map(function(e){ return '<div class="prow"><div class="plrw"><span class="pnm">'+e.k+'</span><span class="pvl">'+e.v+'&#215;</span></div><div class="ptr2"><div class="pfi" style="width:'+(e.v/mx*100).toFixed(0)+'%"></div></div></div>'; }).join(''):U.empty('No issues'));
+    var cats=A.byCat(rv), tot=rv.length||1;
+    U.set('actionSum', cats.length?cats.map(function(e){ return '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border-radius:8px;margin-bottom:5px"><span class="cd" style="background:'+(C.CAT_COL[e.k]||'#888')+'"></span><span style="flex:1;font-size:11px;color:var(--t2)">'+e.k+'</span><span style="font-size:13px;font-weight:700;color:var(--t1)">'+e.v+'</span><span style="font-size:10px;color:var(--t3)">'+Math.round(e.v/tot*100)+'%</span></div>'; }).join(''):U.empty('No data'));
+  },
+
+  datasetInfo: function() {
+    var rv = State.reviews;
+    if (!rv.length) { U.set('datasetInfo', U.empty('No data loaded. Upload a CSV file to begin.')); return; }
+    var s = A.summary(rv);
+    U.set('datasetInfo', '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:12px">'
+      +'<div style="padding:10px;background:var(--bg3);border-radius:8px"><div style="color:var(--t3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Reviews</div><div style="font-size:20px;font-weight:700;color:var(--t1)">'+rv.length+'</div></div>'
+      +'<div style="padding:10px;background:var(--bg3);border-radius:8px"><div style="color:var(--t3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Source</div><div style="font-size:12px;font-weight:600;color:var(--t2)">'+(State.source==='uploaded'?'Uploaded CSV':State.source==='cached'?'Cached':'Sample')+'</div></div>'
+      +'<div style="padding:10px;background:var(--bg3);border-radius:8px"><div style="color:var(--t3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">File</div><div style="font-size:12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(State.fileName||'sample_data')+'</div></div>'
+      +'</div>');
+  }
+};
+
+// ── FILE EXPORT ────────────────────────────────────────────────────────
+function exportCSV() {
+  var rv = State.reviews;
+  if (!rv.length) { U.toast('No data to export'); return; }
+  var hdr = ['Date','Platform','Booking Number','Room Number','Room Type','Review Text','Rating','Sentiment','Category','Severity','Maintenance Flag','Cleaning Flag','Mentioned Staff','Suggested Action'];
+  var rows = rv.map(function(r){ return [r.date,r.platform,r.booking,r.room,r.roomType,'"'+r.text.replace(/"/g,'""')+'"',r.rating,r.sentiment,r.category,r.severity,r.maintFlag?'Yes':'No',r.cleanFlag?'Yes':'No',r.staffMentioned||'','"'+(r.action||'').replace(/"/g,'""')+'"']; });
+  var csv = [hdr].concat(rows).map(function(r){ return r.join(','); }).join('\n');
+  var blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download='sultan_reviews_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 15000);
+  U.toast('&#10003; CSV exported — '+rv.length+' reviews');
+}
+
+// ── APP ────────────────────────────────────────────────────────────────
+var App = window.App = {
+  goTab: function(id, btn) {
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.ni').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('tab-'+id).classList.add('active');
+    if (btn) btn.classList.add('active');
+  },
+
+  toggleTheme: function() {
+    Sett.dark = !Sett.dark; saveSett();
+    document.documentElement.setAttribute('data-theme', Sett.dark?'dark':'light');
+    U.$('themeBtn').innerHTML = Sett.dark ? '&#9728;' : '&#9790;';
+    if (window.Chart) R.charts(State.reviews);
+  },
+
+  clearFilters: function() {
+    ['srch','fPlat','fSent','fCat','fSev'].forEach(function(id){ var e=U.$(id); if(e.tagName==='INPUT') e.value=''; else e.selectedIndex=0; });
+    R.table(State.reviews);
+  },
+
+  renderTable: function() { R.table(State.reviews); },
+
+  // ── Upload ──
+  triggerUpload: function() { U.$('fileInput').click(); },
+
+  handleUpload: function(input) {
+    var file = input.files[0]; input.value=''; if (!file) return;
+    if (!file.name.match(/\.(csv|xlsx|xls)$/i)) { U.toast('&#9888; Please upload a .csv file'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var count = processCSVText(e.target.result, file.name);
+        R.all();
+        U.set('uploadStatus', '<div style="margin-top:10px;padding:10px 12px;background:var(--gs);border:1px solid var(--green);border-radius:8px;font-size:12px;color:var(--green)">&#10003; Successfully loaded <strong>'+count+' reviews</strong> from '+file.name+'</div>');
+        U.toast('&#10003; Loaded '+count+' reviews from '+file.name, 4000);
+      } catch(err) {
+        console.error('[Upload] Error:', err.message);
+        U.set('uploadStatus', '<div style="margin-top:10px;padding:10px 12px;background:var(--rs);border:1px solid var(--red);border-radius:8px;font-size:12px;color:var(--red)">&#9888; '+err.message+'</div>');
+        U.toast('&#9888; '+err.message, 5000);
+      }
+    };
+    reader.onerror = function() { U.toast('&#9888; Could not read file'); };
+    reader.readAsText(file, 'UTF-8');
+  },
+
+  // ── Drag & Drop ──
+  onDragOver: function(e) {
+    e.preventDefault(); e.stopPropagation();
+    U.$('dropZone').classList.add('drag');
+  },
+  onDragLeave: function(e) {
+    e.preventDefault();
+    U.$('dropZone').classList.remove('drag');
+  },
+  onDrop: function(e) {
+    e.preventDefault(); e.stopPropagation();
+    U.$('dropZone').classList.remove('drag');
+    var files = e.dataTransfer.files;
+    if (!files.length) return;
+    var file = files[0];
+    if (!file.name.match(/\.(csv|xlsx|xls)$/i)) { U.toast('&#9888; Please drop a .csv file'); return; }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        var count = processCSVText(ev.target.result, file.name);
+        R.all();
+        U.set('uploadStatus', '<div style="margin-top:10px;padding:10px 12px;background:var(--gs);border:1px solid var(--green);border-radius:8px;font-size:12px;color:var(--green)">&#10003; Successfully loaded <strong>'+count+' reviews</strong> from '+file.name+'</div>');
+        U.toast('&#10003; Loaded '+count+' reviews from '+file.name, 4000);
+      } catch(err) {
+        U.set('uploadStatus', '<div style="margin-top:10px;padding:10px 12px;background:var(--rs);border:1px solid var(--red);border-radius:8px;font-size:12px;color:var(--red)">&#9888; '+err.message+'</div>');
+        U.toast('&#9888; '+err.message, 5000);
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+  },
+
+  // ── Clear Data ──
+  clearData: function() {
+    if (!confirm('Clear all loaded data and return to sample mode?')) return;
+    LS.del(CACHE_KEY); LS.del(SOURCE_KEY);
+    State.reviews = SAMPLE.slice(); State.source = 'sample'; State.fileName = null; State.uploadedAt = null;
+    U.set('uploadStatus', '');
+    R.all();
+    U.toast('Data cleared — showing sample dataset');
+  },
+
+  exportCSV: exportCSV,
+
+  // ── Init ──
+  init: function() {
+    if (!Sett.dark) { document.documentElement.setAttribute('data-theme','light'); U.$('themeBtn').innerHTML='&#9790;'; }
+
+    // Load from cache or fall back to sample — always immediate, never blank
+    var cached = LS.get(CACHE_KEY, null);
+    if (cached && Array.isArray(cached.reviews) && cached.reviews.length) {
+      console.log('[Init] Restoring', cached.reviews.length, 'reviews from cache');
+      State.reviews    = cached.reviews;
+      State.source     = 'cached';
+      State.uploadedAt = cached.uploadedAt || null;
+      State.fileName   = cached.fileName || 'previous_upload.csv';
+    } else {
+      console.log('[Init] No cache found — loading sample data');
+      State.reviews = SAMPLE.slice();
+      State.source  = 'sample';
+    }
+
+    // Load Chart.js, then render
+    function loadLib(src, check, cb) {
+      if (window[check]) { cb(); return; }
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = cb;
+      s.onerror = function() { console.warn('[Init] Failed to load', check); cb(); };
+      document.head.appendChild(s);
+    }
+
+    loadLib('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js', 'Chart', function() {
+      console.log('[Init] Rendering dashboard with', State.reviews.length, 'reviews');
+      R.all();
+    });
+  }
+};
+
+App.init();
 })();
 </script>
 </body>
