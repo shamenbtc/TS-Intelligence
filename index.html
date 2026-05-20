@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hotel Operations Intelligence Dashboard</title>
+<title>TSH — Operation Intelligence</title>
 <style>
 :root{--bg0:#07080c;--bg1:#0d0f18;--bg2:#121520;--bg3:#181c2a;--bg4:#1e2335;--bg5:#252c40;--bd:#1e2436;--bd2:#252e45;--bd3:#303850;--t1:#eef0ff;--t2:#a8b0d2;--t3:#7079a0;--t4:#404868;--blue:#2c5fd6;--blue2:#1f4cb8;--blue-bright:#4f7ef0;--green:#2ab574;--red:#dc4458;--amber:#e8a318;--purple:#7d5cdb;--teal:#1faaaa;--pink:#cf4d8f;--bs:rgba(44,95,214,.18);--gs:rgba(42,181,116,.15);--rs:rgba(220,68,88,.15);--as:rgba(232,163,24,.15);--ps:rgba(125,92,219,.15);--r:8px;--rl:12px;--fn:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
 [data-theme="light"]{--bg0:#e5e8f0;--bg1:#edf0f8;--bg2:#f8f9ff;--bg3:#f2f4fc;--bg4:#e8ebf5;--bg5:#dde2ef;--bd:#dce1f0;--bd2:#d0d6e8;--bd3:#c4ccdc;--t1:#0d1020;--t2:#3a4268;--t3:#7078a0;--t4:#a0a8c0;--blue:#3564cc;--blue2:#264fa8;--blue-bright:#4f7ef0;--bs:rgba(50,100,210,.10);--gs:rgba(30,160,100,.10);--rs:rgba(200,50,70,.10);--as:rgba(200,130,0,.10);--ps:rgba(110,80,200,.10)}
@@ -205,9 +205,9 @@ tr:hover td{background:var(--bg3)}
 <div class="shell">
 <div class="topbar">
   <div class="brand">
-    <div class="bmark">HOI</div>
+    <div class="bmark">TSH</div>
     <div>
-      <div class="bname">Hotel Operations Intelligence</div>
+      <div class="bname">TSH — Operation Intelligence</div>
       <div class="bsub" id="dataSourceLabel">Sample Data Mode</div>
     </div>
   </div>
@@ -482,29 +482,29 @@ tr:hover td{background:var(--bg3)}
 
 // ── Sample Data ──
 var SAMPLE = [
-  {id:'r001',platform:'Google Reviews',date:'2026-01-15',rating:8,booking:'BK-10021',room:'101',roomType:'Deluxe Room',text:'Room was clean and staff were friendly. The air conditioning made a strange rattling noise throughout the night which kept us awake. Maintenance should check the unit. Overall decent stay but the noise was really disruptive.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'Ahmad',action:'Inspect FCU blower and clean air filter for Room 101',resolutionStatus:'Open',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'',isSample:true},
-  {id:'r002',platform:'Booking.com',date:'2026-01-18',rating:9,booking:'BK-10022',room:'205',roomType:'Superior Room',text:'Excellent service from the front desk team especially Sarah who helped us with early check-in. Room was spotless and the bed was very comfortable. The view from our window was amazing. Will definitely return.',sentiment:'Positive',category:'Staff',subcategory:'Front Desk',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'Sarah',action:'Commend staff performance; document for monthly recognition',resolutionStatus:'Resolved',resolvedDate:'2026-01-20',assignedDept:'Front Office',assignedStaff:'Sarah Lee',resolutionNotes:'Positive feedback shared with department head',isSample:true},
-  {id:'r003',platform:'Agoda',date:'2026-01-20',rating:4,booking:'BK-10023',room:'308',roomType:'Deluxe Room',text:'Very disappointing stay. There was mold smell coming from the bathroom. The tiles were dirty and had stains. Housekeeping clearly had not done a thorough clean. Also noticed dust under the bed and behind the nightstand. Complained to reception but nothing was done.',sentiment:'Negative',category:'Cleanliness',subcategory:'Bathroom',severity:5,maintFlag:false,cleanFlag:true,staffMentioned:'',action:'Conduct emergency deep clean Room 308: scrub tiles, treat mold, replace grout, vacuum under all furniture. Schedule manager inspection before re-letting.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Housekeeping',assignedStaff:'Maria Santos',resolutionNotes:'Deep clean scheduled for 22 Jan. Manager walkthrough required.',isSample:true},
-  {id:'r004',platform:'Tripadvisor',date:'2026-01-22',rating:6,booking:'BK-10024',room:'102',roomType:'Standard Room',text:'Water pressure in the shower was very weak. Had to stand under it for a long time to rinse off. Also the hot water took about 5 minutes to come through each morning. Room itself was fine and clean.',sentiment:'Neutral',category:'Facilities',subcategory:'Plumbing',severity:3,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Inspect water pressure regulator and hot water mixing valve for Room 102 corridor. Check boiler temperature settings.',resolutionStatus:'Open',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'',isSample:true},
-  {id:'r005',platform:'Expedia',date:'2026-02-03',rating:10,booking:'BK-10025',room:'501',roomType:'Executive Suite',text:'Outstanding in every way. The suite was immaculate and beautifully appointed. Chef David prepared a special breakfast for us as it was our anniversary. Butler James was absolutely wonderful and anticipated our every need. The spa was excellent too. Five star experience.',sentiment:'Positive',category:'Staff',subcategory:'F&B',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'David,James',action:'Log positive feedback for David and James. Escalate for staff excellence award consideration.',resolutionStatus:'Resolved',resolvedDate:'2026-02-04',assignedDept:'F&B',assignedStaff:'David Tan, James Lim',resolutionNotes:'Both staff nominated for February recognition',isSample:true},
-  {id:'r006',platform:'Google Reviews',date:'2026-02-05',rating:3,booking:'BK-10026',room:'408',roomType:'Deluxe Room',text:'The room smelled musty and damp when we arrived. Air conditioning was dripping water onto the floor creating a puddle. We reported it to housekeeping who came but only mopped the floor without fixing the actual unit. The damp smell persisted for our entire 3-night stay.',sentiment:'Negative',category:'Room Comfort & Quality',subcategory:'HVAC',severity:5,maintFlag:true,cleanFlag:true,staffMentioned:'',action:'Inspect FCU drain pan and condensate line for Room 408. Check for refrigerant leak. Inspect wall behind AC unit for moisture damage. Schedule deep deodorization.',resolutionStatus:'Escalated',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'Rajan Kumar',resolutionNotes:'Escalated to Chief Engineer. Possible drain pipe blockage. Parts ordered.',isSample:true},
-  {id:'r007',platform:'Booking.com',date:'2026-02-08',rating:7,booking:'BK-10027',room:'203',roomType:'Superior Room',text:'Generally a good stay. The room was comfortable and clean. One issue was that the TV remote did not work properly and we had to call the front desk twice. Response was slow at about 40 minutes each time. Breakfast was good with plenty of variety.',sentiment:'Neutral',category:'Facilities',subcategory:'In-room Technology',severity:2,maintFlag:false,cleanFlag:false,staffMentioned:'',action:'Replace TV remote and reprogram for Room 203. Review front desk response time protocol.',resolutionStatus:'Resolved',resolvedDate:'2026-02-09',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Remote replaced. Response time issue flagged to duty manager.',isSample:true},
-  {id:'r008',platform:'Trip.com',date:'2026-02-10',rating:2,booking:'BK-10028',room:'308',roomType:'Deluxe Room',text:'This is our second time having issues with Room 308. Last time it was dirty, this time the mold smell is back and worse than before. The bathroom drain is blocked causing standing water. This room should not be let out until properly fixed. Very unhappy.',sentiment:'Negative',category:'Cleanliness',subcategory:'Bathroom',severity:5,maintFlag:true,cleanFlag:true,staffMentioned:'',action:'URGENT: Take Room 308 offline immediately. Complete bathroom renovation required: replace drainage system, treat mold at source, retile if necessary. Root cause audit required.',resolutionStatus:'Escalated',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'Rajan Kumar',resolutionNotes:'Room 308 flagged as recurring complaint room. Taken offline pending full inspection.',isSample:true},
-  {id:'r009',platform:'Traveloka',date:'2026-02-14',rating:9,booking:'BK-10029',room:'304',roomType:'Deluxe Room',text:'Lovely Valentine\'s Day stay. The room was beautifully decorated when we arrived which was a wonderful surprise. Housekeeping team did an excellent job. Thomas at reception was very helpful sorting our restaurant booking.',sentiment:'Positive',category:'Staff',subcategory:'Housekeeping',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'Thomas',action:'Share positive feedback with housekeeping team and Thomas. Document for February staff recognition.',resolutionStatus:'Resolved',resolvedDate:'2026-02-15',assignedDept:'Front Office',assignedStaff:'Thomas Wong',resolutionNotes:'Feedback logged. Special occasion decoration programme noted as success.',isSample:true},
-  {id:'r010',platform:'Google Reviews',date:'2026-02-20',rating:5,booking:'BK-10030',room:'112',roomType:'Standard Room',text:'The mattress was very uncomfortable and sagged in the middle. I woke up with back pain both mornings. The pillows were flat and offered no support. For the price we paid I expected much better bedding quality. The room was clean but the furniture looked very worn.',sentiment:'Negative',category:'Room Comfort & Quality',subcategory:'Bedding',severity:4,maintFlag:false,cleanFlag:false,staffMentioned:'',action:'Replace mattress and bedding for Room 112. Conduct furniture condition audit and schedule replacement for worn items.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Housekeeping',assignedStaff:'',resolutionNotes:'New mattress on order. ETA 3 weeks.',isSample:true},
-  {id:'r011',platform:'Agoda',date:'2026-03-02',rating:7,booking:'BK-10031',room:'210',roomType:'Superior Room',text:'Good location and fair value. The gym equipment was outdated and one treadmill was broken with an out of order sign that looked like it had been there for weeks. Pool was clean though. Room was fine.',sentiment:'Neutral',category:'Facilities',subcategory:'Gym',severity:2,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Service or replace broken treadmill in gym. Conduct full gym equipment audit. Establish preventive maintenance schedule for fitness equipment.',resolutionStatus:'Open',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'',isSample:true},
-  {id:'r012',platform:'Booking.com',date:'2026-03-05',rating:4,booking:'BK-10032',room:'407',roomType:'Deluxe Room',text:'Dust everywhere. Under the bed was completely grey with dust. The curtain rails had visible dust build-up. The bathroom mirror had water marks and the kettle had limescale inside. Clearly only surface cleaning is being done. Not acceptable for 4-star hotel.',sentiment:'Negative',category:'Cleanliness',subcategory:'Deep Cleaning',severity:4,maintFlag:false,cleanFlag:true,staffMentioned:'',action:'Conduct deep clean Room 407: vacuum under all furniture, wipe all surfaces, replace kettle, descale bathroom fixtures, launder curtains.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Housekeeping',assignedStaff:'Maria Santos',resolutionNotes:'Deep clean completed 6 Mar. Supervisor inspection pending.',isSample:true},
-  {id:'r013',platform:'Tripadvisor',date:'2026-03-10',rating:8,booking:'BK-10033',room:'303',roomType:'Deluxe Room',text:'Solid mid-week stay for business. Clean room, good WiFi speed. The breakfast buffet was excellent especially the local options. Nadia at the breakfast station was very attentive. Minor issue: the bathroom fan was noisy.',sentiment:'Positive',category:'Facilities',subcategory:'F&B',severity:2,maintFlag:true,cleanFlag:false,staffMentioned:'Nadia',action:'Service bathroom extractor fan Room 303. Commend Nadia for F&B service.',resolutionStatus:'Open',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'',isSample:true},
-  {id:'r014',platform:'Expedia',date:'2026-03-15',rating:6,booking:'BK-10034',room:'101',roomType:'Deluxe Room',text:'AC rattling noise again in Room 101. Had the same issue reported previously. Seems like nothing was done. Also the light switch by the door was not working. Room was clean. Staff were polite.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'REPEAT COMPLAINT: Escalate Room 101 AC unit to Chief Engineer. Replace blower motor. Replace faulty light switch. Document as recurring maintenance issue.',resolutionStatus:'Escalated',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'Rajan Kumar',resolutionNotes:'Recurring AC complaint. Motor replacement authorised.',isSample:true},
-  {id:'r015',platform:'Google Reviews',date:'2026-03-18',rating:9,booking:'BK-10035',room:'502',roomType:'Executive Suite',text:'Exceptional stay. The room was immaculate and the butler service was phenomenal. Rachel went above and beyond to make our stay special. The in-room dining was superb. Will definitely be back.',sentiment:'Positive',category:'Staff',subcategory:'Butler Service',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'Rachel',action:'Commend Rachel for outstanding service. Log for March recognition programme.',resolutionStatus:'Resolved',resolvedDate:'2026-03-19',assignedDept:'Rooms',assignedStaff:'Rachel Tan',resolutionNotes:'Positive review shared company-wide.',isSample:true},
-  {id:'r016',platform:'Trip.com',date:'2026-04-02',rating:3,booking:'BK-10036',room:'115',roomType:'Standard Room',text:'Cockroach in the bathroom. Absolutely disgusting. We immediately asked to change rooms and were moved after an hour wait. The new room was fine but the damage was done. Will not return.',sentiment:'Negative',category:'Cleanliness',subcategory:'Pest Control',severity:5,maintFlag:false,cleanFlag:true,staffMentioned:'',action:'URGENT: Deploy pest control for Room 115 and adjacent rooms. Conduct full floor inspection. Identify entry points. Block all gaps. File pest incident report per SOP.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Housekeeping',assignedStaff:'',resolutionNotes:'Pest control contracted. Full floor 1 treatment 3 Apr.',isSample:true},
-  {id:'r017',platform:'Agoda',date:'2026-04-08',rating:8,booking:'BK-10037',room:'209',roomType:'Superior Room',text:'Good overall. Very comfortable bed and clean room. The pool on the 5th floor was lovely. Minor comment: the elevator was slow and one of the two was out of service for our entire stay.',sentiment:'Positive',category:'Facilities',subcategory:'Elevator',severity:2,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Escalate elevator repair to building maintenance contractor. Provide estimated timeline to guests. Inspect second elevator for preventive maintenance.',resolutionStatus:'Monitoring',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Elevator contractor on site. Repair ETA 2 weeks.',isSample:true},
-  {id:'r018',platform:'Booking.com',date:'2026-04-12',rating:5,booking:'BK-10038',room:'308',roomType:'Deluxe Room',text:'How is Room 308 still in use? Third time reading complaints about this room. Drain still blocked, smell still there. Hotel management needs to take this room offline and properly fix the underlying drainage issue.',sentiment:'Negative',category:'Cleanliness',subcategory:'Bathroom',severity:5,maintFlag:true,cleanFlag:true,staffMentioned:'',action:'CRITICAL RECURRING: Immediate management review of Room 308. Full plumbing replacement required. Remove from inventory until permanent fix completed. Compensation protocol for affected guests.',resolutionStatus:'Escalated',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'Rajan Kumar',resolutionNotes:'THIRD complaint Room 308. GM notified. Room permanently removed from inventory pending full plumbing overhaul.',isSample:true},
-  {id:'r019',platform:'Google Reviews',date:'2026-04-18',rating:10,booking:'BK-10039',room:'401',roomType:'Premium Room',text:'Absolutely perfect stay for our honeymoon. Everything was arranged beautifully. The staff including Alex and Mei went out of their way to make us feel special. Room was spotless and smelled wonderful. Cannot fault anything.',sentiment:'Positive',category:'Staff',subcategory:'Special Occasions',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'Alex,Mei',action:'Log excellent feedback. Share with Alex and Mei. Feature in internal newsletter.',resolutionStatus:'Resolved',resolvedDate:'2026-04-19',assignedDept:'Rooms',assignedStaff:'Alex Ng, Mei Lin',resolutionNotes:'Management personally thanked both staff members.',isSample:true},
-  {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:6,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
+  {id:'r001',platform:'Google Reviews',date:'2026-01-15',rating:4,booking:'BK-10021',room:'101',roomType:'Deluxe Room',text:'Room was clean and staff were friendly. The air conditioning made a strange rattling noise throughout the night which kept us awake. Maintenance should check the unit. Overall decent stay but the noise was really disruptive.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'Ahmad',action:'Inspect FCU blower and clean air filter for Room 101',resolutionStatus:'Open',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'',isSample:true},
+  {id:'r002',platform:'Booking.com',date:'2026-01-18',rating:4.5,booking:'BK-10022',room:'205',roomType:'Superior Room',text:'Excellent service from the front desk team especially Sarah who helped us with early check-in. Room was spotless and the bed was very comfortable. The view from our window was amazing. Will definitely return.',sentiment:'Positive',category:'Staff',subcategory:'Front Desk',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'Sarah',action:'Commend staff performance; document for monthly recognition',resolutionStatus:'Resolved',resolvedDate:'2026-01-20',assignedDept:'Front Office',assignedStaff:'Sarah Lee',resolutionNotes:'Positive feedback shared with department head',isSample:true},
+  {id:'r003',platform:'Agoda',date:'2026-01-20',rating:2,booking:'BK-10023',room:'308',roomType:'Deluxe Room',text:'Very disappointing stay. There was mold smell coming from the bathroom. The tiles were dirty and had stains. Housekeeping clearly had not done a thorough clean. Also noticed dust under the bed and behind the nightstand. Complained to reception but nothing was done.',sentiment:'Negative',category:'Cleanliness',subcategory:'Bathroom',severity:5,maintFlag:false,cleanFlag:true,staffMentioned:'',action:'Conduct emergency deep clean Room 308: scrub tiles, treat mold, replace grout, vacuum under all furniture. Schedule manager inspection before re-letting.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Housekeeping',assignedStaff:'Maria Santos',resolutionNotes:'Deep clean scheduled for 22 Jan. Manager walkthrough required.',isSample:true},
+  {id:'r004',platform:'Tripadvisor',date:'2026-01-22',rating:3,booking:'BK-10024',room:'102',roomType:'Standard Room',text:'Water pressure in the shower was very weak. Had to stand under it for a long time to rinse off. Also the hot water took about 5 minutes to come through each morning. Room itself was fine and clean.',sentiment:'Neutral',category:'Facilities',subcategory:'Plumbing',severity:3,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Inspect water pressure regulator and hot water mixing valve for Room 102 corridor. Check boiler temperature settings.',resolutionStatus:'Open',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'',isSample:true},
+  {id:'r005',platform:'Expedia',date:'2026-02-03',rating:5,booking:'BK-10025',room:'501',roomType:'Executive Suite',text:'Outstanding in every way. The suite was immaculate and beautifully appointed. Chef David prepared a special breakfast for us as it was our anniversary. Butler James was absolutely wonderful and anticipated our every need. The spa was excellent too. Five star experience.',sentiment:'Positive',category:'Staff',subcategory:'F&B',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'David,James',action:'Log positive feedback for David and James. Escalate for staff excellence award consideration.',resolutionStatus:'Resolved',resolvedDate:'2026-02-04',assignedDept:'F&B',assignedStaff:'David Tan, James Lim',resolutionNotes:'Both staff nominated for February recognition',isSample:true},
+  {id:'r006',platform:'Google Reviews',date:'2026-02-05',rating:1.5,booking:'BK-10026',room:'408',roomType:'Deluxe Room',text:'The room smelled musty and damp when we arrived. Air conditioning was dripping water onto the floor creating a puddle. We reported it to housekeeping who came but only mopped the floor without fixing the actual unit. The damp smell persisted for our entire 3-night stay.',sentiment:'Negative',category:'Room Comfort & Quality',subcategory:'HVAC',severity:5,maintFlag:true,cleanFlag:true,staffMentioned:'',action:'Inspect FCU drain pan and condensate line for Room 408. Check for refrigerant leak. Inspect wall behind AC unit for moisture damage. Schedule deep deodorization.',resolutionStatus:'Escalated',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'Rajan Kumar',resolutionNotes:'Escalated to Chief Engineer. Possible drain pipe blockage. Parts ordered.',isSample:true},
+  {id:'r007',platform:'Booking.com',date:'2026-02-08',rating:3.5,booking:'BK-10027',room:'203',roomType:'Superior Room',text:'Generally a good stay. The room was comfortable and clean. One issue was that the TV remote did not work properly and we had to call the front desk twice. Response was slow at about 40 minutes each time. Breakfast was good with plenty of variety.',sentiment:'Neutral',category:'Facilities',subcategory:'In-room Technology',severity:2,maintFlag:false,cleanFlag:false,staffMentioned:'',action:'Replace TV remote and reprogram for Room 203. Review front desk response time protocol.',resolutionStatus:'Resolved',resolvedDate:'2026-02-09',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Remote replaced. Response time issue flagged to duty manager.',isSample:true},
+  {id:'r008',platform:'Trip.com',date:'2026-02-10',rating:1,booking:'BK-10028',room:'308',roomType:'Deluxe Room',text:'This is our second time having issues with Room 308. Last time it was dirty, this time the mold smell is back and worse than before. The bathroom drain is blocked causing standing water. This room should not be let out until properly fixed. Very unhappy.',sentiment:'Negative',category:'Cleanliness',subcategory:'Bathroom',severity:5,maintFlag:true,cleanFlag:true,staffMentioned:'',action:'URGENT: Take Room 308 offline immediately. Complete bathroom renovation required: replace drainage system, treat mold at source, retile if necessary. Root cause audit required.',resolutionStatus:'Escalated',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'Rajan Kumar',resolutionNotes:'Room 308 flagged as recurring complaint room. Taken offline pending full inspection.',isSample:true},
+  {id:'r009',platform:'Traveloka',date:'2026-02-14',rating:4.5,booking:'BK-10029',room:'304',roomType:'Deluxe Room',text:'Lovely Valentine\'s Day stay. The room was beautifully decorated when we arrived which was a wonderful surprise. Housekeeping team did an excellent job. Thomas at reception was very helpful sorting our restaurant booking.',sentiment:'Positive',category:'Staff',subcategory:'Housekeeping',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'Thomas',action:'Share positive feedback with housekeeping team and Thomas. Document for February staff recognition.',resolutionStatus:'Resolved',resolvedDate:'2026-02-15',assignedDept:'Front Office',assignedStaff:'Thomas Wong',resolutionNotes:'Feedback logged. Special occasion decoration programme noted as success.',isSample:true},
+  {id:'r010',platform:'Google Reviews',date:'2026-02-20',rating:2.5,booking:'BK-10030',room:'112',roomType:'Standard Room',text:'The mattress was very uncomfortable and sagged in the middle. I woke up with back pain both mornings. The pillows were flat and offered no support. For the price we paid I expected much better bedding quality. The room was clean but the furniture looked very worn.',sentiment:'Negative',category:'Room Comfort & Quality',subcategory:'Bedding',severity:4,maintFlag:false,cleanFlag:false,staffMentioned:'',action:'Replace mattress and bedding for Room 112. Conduct furniture condition audit and schedule replacement for worn items.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Housekeeping',assignedStaff:'',resolutionNotes:'New mattress on order. ETA 3 weeks.',isSample:true},
+  {id:'r011',platform:'Agoda',date:'2026-03-02',rating:3.5,booking:'BK-10031',room:'210',roomType:'Superior Room',text:'Good location and fair value. The gym equipment was outdated and one treadmill was broken with an out of order sign that looked like it had been there for weeks. Pool was clean though. Room was fine.',sentiment:'Neutral',category:'Facilities',subcategory:'Gym',severity:2,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Service or replace broken treadmill in gym. Conduct full gym equipment audit. Establish preventive maintenance schedule for fitness equipment.',resolutionStatus:'Open',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'',isSample:true},
+  {id:'r012',platform:'Booking.com',date:'2026-03-05',rating:2,booking:'BK-10032',room:'407',roomType:'Deluxe Room',text:'Dust everywhere. Under the bed was completely grey with dust. The curtain rails had visible dust build-up. The bathroom mirror had water marks and the kettle had limescale inside. Clearly only surface cleaning is being done. Not acceptable for 4-star hotel.',sentiment:'Negative',category:'Cleanliness',subcategory:'Deep Cleaning',severity:4,maintFlag:false,cleanFlag:true,staffMentioned:'',action:'Conduct deep clean Room 407: vacuum under all furniture, wipe all surfaces, replace kettle, descale bathroom fixtures, launder curtains.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Housekeeping',assignedStaff:'Maria Santos',resolutionNotes:'Deep clean completed 6 Mar. Supervisor inspection pending.',isSample:true},
+  {id:'r013',platform:'Tripadvisor',date:'2026-03-10',rating:4,booking:'BK-10033',room:'303',roomType:'Deluxe Room',text:'Solid mid-week stay for business. Clean room, good WiFi speed. The breakfast buffet was excellent especially the local options. Nadia at the breakfast station was very attentive. Minor issue: the bathroom fan was noisy.',sentiment:'Positive',category:'Facilities',subcategory:'F&B',severity:2,maintFlag:true,cleanFlag:false,staffMentioned:'Nadia',action:'Service bathroom extractor fan Room 303. Commend Nadia for F&B service.',resolutionStatus:'Open',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'',isSample:true},
+  {id:'r014',platform:'Expedia',date:'2026-03-15',rating:3,booking:'BK-10034',room:'101',roomType:'Deluxe Room',text:'AC rattling noise again in Room 101. Had the same issue reported previously. Seems like nothing was done. Also the light switch by the door was not working. Room was clean. Staff were polite.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'REPEAT COMPLAINT: Escalate Room 101 AC unit to Chief Engineer. Replace blower motor. Replace faulty light switch. Document as recurring maintenance issue.',resolutionStatus:'Escalated',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'Rajan Kumar',resolutionNotes:'Recurring AC complaint. Motor replacement authorised.',isSample:true},
+  {id:'r015',platform:'Google Reviews',date:'2026-03-18',rating:4.5,booking:'BK-10035',room:'502',roomType:'Executive Suite',text:'Exceptional stay. The room was immaculate and the butler service was phenomenal. Rachel went above and beyond to make our stay special. The in-room dining was superb. Will definitely be back.',sentiment:'Positive',category:'Staff',subcategory:'Butler Service',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'Rachel',action:'Commend Rachel for outstanding service. Log for March recognition programme.',resolutionStatus:'Resolved',resolvedDate:'2026-03-19',assignedDept:'Rooms',assignedStaff:'Rachel Tan',resolutionNotes:'Positive review shared company-wide.',isSample:true},
+  {id:'r016',platform:'Trip.com',date:'2026-04-02',rating:1.5,booking:'BK-10036',room:'115',roomType:'Standard Room',text:'Cockroach in the bathroom. Absolutely disgusting. We immediately asked to change rooms and were moved after an hour wait. The new room was fine but the damage was done. Will not return.',sentiment:'Negative',category:'Cleanliness',subcategory:'Pest Control',severity:5,maintFlag:false,cleanFlag:true,staffMentioned:'',action:'URGENT: Deploy pest control for Room 115 and adjacent rooms. Conduct full floor inspection. Identify entry points. Block all gaps. File pest incident report per SOP.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Housekeeping',assignedStaff:'',resolutionNotes:'Pest control contracted. Full floor 1 treatment 3 Apr.',isSample:true},
+  {id:'r017',platform:'Agoda',date:'2026-04-08',rating:4,booking:'BK-10037',room:'209',roomType:'Superior Room',text:'Good overall. Very comfortable bed and clean room. The pool on the 5th floor was lovely. Minor comment: the elevator was slow and one of the two was out of service for our entire stay.',sentiment:'Positive',category:'Facilities',subcategory:'Elevator',severity:2,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Escalate elevator repair to building maintenance contractor. Provide estimated timeline to guests. Inspect second elevator for preventive maintenance.',resolutionStatus:'Monitoring',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Elevator contractor on site. Repair ETA 2 weeks.',isSample:true},
+  {id:'r018',platform:'Booking.com',date:'2026-04-12',rating:2.5,booking:'BK-10038',room:'308',roomType:'Deluxe Room',text:'How is Room 308 still in use? Third time reading complaints about this room. Drain still blocked, smell still there. Hotel management needs to take this room offline and properly fix the underlying drainage issue.',sentiment:'Negative',category:'Cleanliness',subcategory:'Bathroom',severity:5,maintFlag:true,cleanFlag:true,staffMentioned:'',action:'CRITICAL RECURRING: Immediate management review of Room 308. Full plumbing replacement required. Remove from inventory until permanent fix completed. Compensation protocol for affected guests.',resolutionStatus:'Escalated',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'Rajan Kumar',resolutionNotes:'THIRD complaint Room 308. GM notified. Room permanently removed from inventory pending full plumbing overhaul.',isSample:true},
+  {id:'r019',platform:'Google Reviews',date:'2026-04-18',rating:5,booking:'BK-10039',room:'401',roomType:'Premium Room',text:'Absolutely perfect stay for our honeymoon. Everything was arranged beautifully. The staff including Alex and Mei went out of their way to make us feel special. Room was spotless and smelled wonderful. Cannot fault anything.',sentiment:'Positive',category:'Staff',subcategory:'Special Occasions',severity:1,maintFlag:false,cleanFlag:false,staffMentioned:'Alex,Mei',action:'Log excellent feedback. Share with Alex and Mei. Feature in internal newsletter.',resolutionStatus:'Resolved',resolvedDate:'2026-04-19',assignedDept:'Rooms',assignedStaff:'Alex Ng, Mei Lin',resolutionNotes:'Management personally thanked both staff members.',isSample:true},
+  {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v4', SRC_KEY='hoi_source_v4';
+var CACHE_KEY='hoi_reviews_v5', SRC_KEY='hoi_source_v5';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -592,7 +592,7 @@ function makeChart(id,config){
 function getSentClass(s){return s==='Positive'?'badge-green':s==='Negative'?'badge-red':'badge-amber';}
 function getSevClass(n){return n>=5?'sev-5':n>=3?'sev-3':'sev-1';}
 function resClass(s){if(!s)return'status-open';var m={'Open':'status-open','In Progress':'status-inprogress','Monitoring':'status-monitoring','Resolved':'status-resolved','Escalated':'status-escalated'};return m[s]||'status-open';}
-function stars(r){var n=Math.round(r/2);var s='';for(var i=0;i<5;i++)s+=i<n?'★':'☆';return s;}
+function stars(r){var n=Math.round(parseFloat(r)||0);if(n<0)n=0;if(n>5)n=5;var s='';for(var i=0;i<5;i++)s+=i<n?'★':'☆';return s;}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // ── Aggregations ──
@@ -712,8 +712,8 @@ function renderOverview(){
   document.getElementById('kpiCards').innerHTML=
     kpi('Total Reviews',total,'Analysed entries','','✉',
         'Total number of reviews loaded. Higher volume = more reliable trend signals.')+
-    kpi('Avg Rating',avgR+'<span style="font-size:15px;color:var(--t3)">/10</span>','<span class="stars">'+stars(avgR)+'</span>','','★',
-        'Average guest rating across all platforms (out of 10). 8+ is good, 6-7 average, below 6 needs attention.')+
+    kpi('Avg Rating',avgR+'<span style="font-size:15px;color:var(--t3)">/5</span>','<span class="stars">'+stars(avgR)+'</span>','','★',
+        'Average guest rating across all platforms (normalised to /5 scale). 4+ is good, 3-4 average, below 3 needs attention.')+
     kpi('Positive Sentiment',posPct+'%',pos+' positive reviews','var(--green)','↑',
         'Percentage of reviews classified as positive. Higher is better. Above 60% indicates healthy guest experience.')+
     kpi('Negative Sentiment',negPct+'%',neg+' negative reviews','var(--red)','↓',
@@ -763,7 +763,7 @@ function renderOverview(){
   // ── PLATFORM CHART ──
   var pdata=Agg.byPlatform(rv);
   var plats=Object.keys(pdata);
-  makeChart('platformChart',{type:'bar',data:{labels:plats.map(function(p){return p.replace(' Reviews','').replace('.com','');}),datasets:[{label:'Avg Rating',data:plats.map(function(p){return pdata[p].total?Math.round(pdata[p].ratingSum/pdata[p].total*10)/10:0;}),backgroundColor:'rgba(44,95,214,.7)',borderColor:'#2c5fd6',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{label:function(ctx){return'Avg rating: '+ctx.parsed.y+'/10';}}}},scales:{x:{ticks:{color:'#7079a0',font:{size:14}},grid:{display:false}},y:{ticks:{color:'#7079a0',font:{size:14},stepSize:2},grid:{color:'rgba(255,255,255,.04)'},min:0,max:10}}}});
+  makeChart('platformChart',{type:'bar',data:{labels:plats.map(function(p){return p.replace(' Reviews','').replace('.com','');}),datasets:[{label:'Avg Rating',data:plats.map(function(p){return pdata[p].total?Math.round(pdata[p].ratingSum/pdata[p].total*10)/10:0;}),backgroundColor:'rgba(44,95,214,.7)',borderColor:'#2c5fd6',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{label:function(ctx){return'Avg rating: '+ctx.parsed.y+'/5';}}}},scales:{x:{ticks:{color:'#7079a0',font:{size:14}},grid:{display:false}},y:{ticks:{color:'#7079a0',font:{size:14},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},min:0,max:5}}}});
 
   // ── CATEGORY SENTIMENT TREND (NEW: dual green/red comparison) ──
   var catNames=['Room Comfort & Quality','Cleanliness','Staff','Facilities','Value for Money'];
@@ -803,10 +803,17 @@ function renderOverview(){
     return '<div class="bar-row"><div class="bar-label" title="'+esc(e[0])+'">'+esc(e[0])+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.round(e[1]/scMax*100)+'%;background:var(--red)"></div></div><div class="bar-val">'+e[1]+'</div></div>';
   }).join(''):'<div class="empty" style="padding:20px"><span>✓</span>No negative complaints recorded</div>';
 
-  // ── RATING DISTRIBUTION (clearer banding) ──
+  // ── RATING DISTRIBUTION (on /5 scale, half-star buckets) ──
+  // Buckets: 0–0.5, 0.5–1, 1–1.5, 1.5–2, 2–2.5, 2.5–3, 3–3.5, 3.5–4, 4–4.5, 4.5–5
   var dist=[0,0,0,0,0,0,0,0,0,0];
-  rv.forEach(function(r){var n=Math.round(parseFloat(r.rating)||0);if(n>=1&&n<=10)dist[n-1]++;});
-  makeChart('ratingDistChart',{type:'bar',data:{labels:['1','2','3','4','5','6','7','8','9','10'],datasets:[{label:'Reviews',data:dist,backgroundColor:dist.map(function(_,i){return i<4?'rgba(220,68,88,.75)':i<7?'rgba(232,163,24,.75)':'rgba(42,181,116,.75)';}),borderColor:dist.map(function(_,i){return i<4?'#e85566':i<7?'#f0b020':'#35c985';}),borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{title:function(ctx){return'Rating: '+ctx[0].label+'/10';},label:function(ctx){return ctx.parsed.y+' review'+(ctx.parsed.y===1?'':'s');}}}},scales:{x:{title:{display:true,text:'Rating (1 = lowest, 10 = highest)',color:'#7079a0',font:{size:14}},ticks:{color:'#7079a0',font:{size:14}},grid:{display:false}},y:{title:{display:true,text:'Number of reviews',color:'#7079a0',font:{size:14}},ticks:{color:'#7079a0',font:{size:14},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
+  rv.forEach(function(r){
+    var n=parseFloat(r.rating)||0;
+    if(n<=0)return;
+    var idx=Math.min(9,Math.floor(n*2));
+    dist[idx]++;
+  });
+  var distLabels=['0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'];
+  makeChart('ratingDistChart',{type:'bar',data:{labels:distLabels,datasets:[{label:'Reviews',data:dist,backgroundColor:dist.map(function(_,i){return i<4?'rgba(220,68,88,.75)':i<6?'rgba(232,163,24,.75)':'rgba(42,181,116,.75)';}),borderColor:dist.map(function(_,i){return i<4?'#dc4458':i<6?'#e8a318':'#2ab574';}),borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{title:function(ctx){return'Up to '+ctx[0].label+'/5';},label:function(ctx){return ctx.parsed.y+' review'+(ctx.parsed.y===1?'':'s');}}}},scales:{x:{title:{display:true,text:'Rating (1 = lowest, 5 = highest)',color:'#7079a0',font:{size:14}},ticks:{color:'#7079a0',font:{size:14}},grid:{display:false}},y:{title:{display:true,text:'Number of reviews',color:'#7079a0',font:{size:14}},ticks:{color:'#7079a0',font:{size:14},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
 
   // ── OPS HEALTH ──
   var resolved=rv.filter(function(r){return r.resolutionStatus==='Resolved';}).length;
@@ -868,7 +875,7 @@ var R={
           '</div>'+
           '<div style="text-align:right">'+
             '<div class="stars" style="font-size:12px">'+stars(r.rating)+'</div>'+
-            '<div style="font-size:12px;font-weight:600;color:var(--t1)">'+r.rating+'/10</div>'+
+            '<div style="font-size:12px;font-weight:600;color:var(--t1)">'+r.rating+'/5</div>'+
           '</div>'+
         '</div>'+
         '<div class="rev-meta">'+
@@ -1152,7 +1159,7 @@ function renderAnalytics(){
   makeChart('volRatingChart',{type:'bar',data:{labels:mlabels,datasets:[
     {type:'bar',label:'Review Volume',data:mkeys.map(function(k){return mdata.map[k].total;}),backgroundColor:'rgba(44,95,214,.5)',yAxisID:'y'},
     {type:'line',label:'Avg Rating',data:mkeys.map(function(k){var m=mdata.map[k];return m.total?Math.round(m.ratingSum/m.total*10)/10:null;}),borderColor:'#2ab574',pointRadius:4,tension:.4,yAxisID:'y2'}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7079a0',font:{size:14},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#7079a0',font:{size:14}},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true},y2:{position:'right',min:0,max:10,ticks:{color:'#2ab574',font:{size:14}},grid:{display:false}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7079a0',font:{size:14},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#7079a0',font:{size:14}},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true},y2:{position:'right',min:0,max:5,ticks:{color:'#2ab574',font:{size:14},stepSize:1},grid:{display:false}}}}});
 
   makeChart('severityTrendChart',{type:'line',data:{labels:mlabels,datasets:[
     {label:'Critical (5)',data:mkeys.map(function(k){return mdata.map[k].sev.filter(function(s){return s>=5;}).length;}),borderColor:'#dc4458',backgroundColor:'rgba(220,68,88,.08)',tension:.4,fill:true,pointRadius:3},
@@ -1178,7 +1185,7 @@ function renderAnalytics(){
     phHtml+='<tr>'+
       '<td style="color:var(--t1);font-weight:500">'+esc(p)+'</td>'+
       '<td>'+d.total+'</td>'+
-      '<td><span style="color:'+(avg>=7?'var(--green)':avg>=5?'var(--amber)':'var(--red)')+'">'+avg+'</span></td>'+
+      '<td><span style="color:'+(avg>=3.5?'var(--green)':avg>=2.5?'var(--amber)':'var(--red)')+'">'+avg+'<span style="color:var(--t3);font-size:11px">/5</span></span></td>'+
       '<td><span class="badge badge-green">'+posP+'%</span></td>'+
       '<td><span class="badge badge-amber">'+neuP+'%</span></td>'+
       '<td><span class="badge badge-red">'+negP+'%</span></td>'+
@@ -1257,6 +1264,41 @@ function renderImport(){
     '</div>';
 }
 
+// ── RATING NORMALIZER ──
+// All ratings stored internally on a 0-5 scale regardless of source format.
+// Handles: "5", "5/5", "8/10", "4.5/5", "9.7/10", "4.5", "9.5", plus platform hints.
+// Platforms known to use a /10 scale: Booking.com, Agoda, Hotels.com, Expedia, Trip.com.
+// Platforms known to use a /5 scale: Google Reviews, Tripadvisor, Trustpilot, Facebook, Yelp.
+var PLATFORMS_OUT_OF_10=['booking.com','booking','agoda','hotels.com','expedia','trip.com','traveloka','ctrip','priceline','orbitz','kayak'];
+var PLATFORMS_OUT_OF_5=['google reviews','google','tripadvisor','trip advisor','trustpilot','facebook','yelp','foursquare'];
+
+function normalizeRating(raw, platform){
+  if(raw===null||raw===undefined||raw==='')return 0;
+  var s=String(raw).trim();
+  if(!s)return 0;
+  // Explicit denominator like "8/10" or "4.5/5"
+  var m=s.match(/^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
+  if(m){
+    var num=parseFloat(m[1]),den=parseFloat(m[2]);
+    if(den>0)return Math.max(0,Math.min(5,(num/den)*5));
+    return 0;
+  }
+  // Bare number — infer scale
+  var n=parseFloat(s.replace(/[^0-9.]/g,''));
+  if(isNaN(n))return 0;
+  // Definitive: >5 means it's a /10 scale
+  if(n>5)return Math.max(0,Math.min(5,(n/10)*5));
+  // Definitive: <=5 and platform is known to use /5 → already /5
+  var p=(platform||'').toLowerCase().trim();
+  if(PLATFORMS_OUT_OF_5.some(function(x){return p.indexOf(x)>-1;}))return Math.max(0,Math.min(5,n));
+  if(PLATFORMS_OUT_OF_10.some(function(x){return p.indexOf(x)>-1;})){
+    // Value is <=5 but platform uses /10 — could mean low rating OR already converted. Assume /10.
+    return Math.max(0,Math.min(5,(n/10)*5));
+  }
+  // Unknown platform with bare value <=5: assume already /5
+  return Math.max(0,Math.min(5,n));
+}
+
 // ── CSV PARSING ──
 function parseCSV(text){
   var lines=text.split(/\r?\n/).filter(function(l){return l.trim();});
@@ -1302,7 +1344,9 @@ function parseCSV(text){
     function g(c,def){var idx=cols[c];return idx>-1&&row[idx]!==undefined?row[idx].trim():(def||'');}
     var text=g('text');
     if(!text)continue;
-    var rating=parseFloat(g('rating',0))||0;
+    var platform=g('platform','Unknown');
+    var ratingRaw=g('rating','');
+    var rating=normalizeRating(ratingRaw,platform);
     // Pipeline: sentiment first, then everything downstream uses it
     var sentiment=g('sentiment')||AI.sentiment(text,rating);
     var category=g('category')||AI.category(text,sentiment);
@@ -1315,9 +1359,10 @@ function parseCSV(text){
     var cleanFlag=cleanRaw?(cleanRaw.toLowerCase()==='yes'||cleanRaw.toLowerCase()==='true'||cleanRaw==='1'):AI.cleanFlag(text,sentiment);
     var r={
       id:'csv_'+(Date.now()+'_'+i),
-      platform:g('platform','Unknown'),
+      platform:platform,
       date:DateU.toISO(g('date',''))||g('date',''),
-      rating:rating,
+      rating:Math.round(rating*10)/10,
+      ratingRaw:ratingRaw,
       booking:g('booking'),
       room:g('room'),
       roomType:g('roomType'),
@@ -1408,20 +1453,20 @@ var AI={
     var totalScore=posScore+negScore+praiseHits*2+complaintHits*2;
     var posFinal=posScore+praiseHits*2;
     var negFinal=negScore+complaintHits*2;
-    // Rating-only override when rating is at extremes AND text supports it
+    // Rating-only override when rating is at extremes AND text supports it (0-5 scale)
     if(!isNaN(r)){
-      if(r>=9&&negFinal<=1)return'Positive';
-      if(r<=3&&posFinal<=1)return'Negative';
+      if(r>=4.5&&negFinal<=1)return'Positive';
+      if(r<=1.5&&posFinal<=1)return'Negative';
     }
     // Text-driven decision
     if(posFinal>=negFinal+2)return'Positive';
     if(negFinal>=posFinal+1)return'Negative';
     if(posFinal>0&&negFinal===0)return'Positive';
     if(negFinal>0&&posFinal===0)return'Negative';
-    // Rating as fallback tiebreaker
+    // Rating as fallback tiebreaker (0-5 scale)
     if(!isNaN(r)){
-      if(r>=8)return'Positive';
-      if(r<=5)return'Negative';
+      if(r>=4)return'Positive';
+      if(r<=2.5)return'Negative';
     }
     return'Neutral';
   },
@@ -1476,12 +1521,12 @@ var AI={
     if(!text)text='';
     var t=text.toLowerCase();
     var r=parseFloat(rating);
-    // Critical operational issues — only matter if sentiment is negative
+    // Critical operational issues — only matter if sentiment is negative (0-5 scale)
     if(sentiment==='Negative'){
       if(/\b(cockroach|roach|pest|bedbug|sewage|mold|mould)\b/i.test(t))return 5;
       if(/\b(blocked\s+drain|flooding|leaking\s+everywhere|recurring|third time|3rd time|second time)\b/i.test(t))return 5;
-      if(!isNaN(r)&&r<=3)return 5;
-      if(!isNaN(r)&&r<=5)return 4;
+      if(!isNaN(r)&&r<=1.5)return 5;
+      if(!isNaN(r)&&r<=2.5)return 4;
       return 3;
     }
     // Neutral with operational mention
@@ -1655,6 +1700,8 @@ var App={
     if(cached&&cached.reviews&&cached.reviews.length){
       cached.reviews.forEach(function(r){
         if(r.date){var iso=DateU.toISO(r.date);if(iso)r.date=iso;}
+        // Defensive: if rating in cache looks like /10 (>5), re-normalize
+        if(r.rating&&parseFloat(r.rating)>5){r.rating=Math.round(normalizeRating(r.rating,r.platform)*10)/10;}
       });
       State.reviews=cached.reviews;State.source=cached.fileName==='Google Sheets'?'live':'csv';
       State.fileName=cached.fileName||null;State.uploadedAt=cached.uploadedAt||null;
