@@ -5,26 +5,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hotel Operations Intelligence Dashboard</title>
 <style>
-:root{--bg0:#07080c;--bg1:#0d0f18;--bg2:#121520;--bg3:#181c2a;--bg4:#1e2335;--bg5:#252c40;--bd:#1e2436;--bd2:#252e45;--bd3:#303850;--t1:#eef0ff;--t2:#9ba3c8;--t3:#5d6488;--t4:#363d58;--blue:#4f7ef0;--blue2:#3564cc;--green:#35c985;--red:#e85566;--amber:#f0b020;--purple:#8e6de8;--teal:#25bfbf;--pink:#d4579a;--bs:rgba(79,126,240,.12);--gs:rgba(53,201,133,.12);--rs:rgba(232,85,102,.12);--as:rgba(240,176,32,.12);--ps:rgba(142,109,232,.12);--r:8px;--rl:12px;--fn:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
-[data-theme="light"]{--bg0:#e5e8f0;--bg1:#edf0f8;--bg2:#f8f9ff;--bg3:#f2f4fc;--bg4:#e8ebf5;--bg5:#dde2ef;--bd:#dce1f0;--bd2:#d0d6e8;--bd3:#c4ccdc;--t1:#0d1020;--t2:#3a4268;--t3:#7078a0;--t4:#a0a8c0;--bs:rgba(50,100,210,.08);--gs:rgba(30,160,100,.08);--rs:rgba(200,50,70,.08);--as:rgba(200,130,0,.08)}
+:root{--bg0:#07080c;--bg1:#0d0f18;--bg2:#121520;--bg3:#181c2a;--bg4:#1e2335;--bg5:#252c40;--bd:#1e2436;--bd2:#252e45;--bd3:#303850;--t1:#eef0ff;--t2:#a8b0d2;--t3:#7079a0;--t4:#404868;--blue:#2c5fd6;--blue2:#1f4cb8;--blue-bright:#4f7ef0;--green:#2ab574;--red:#dc4458;--amber:#e8a318;--purple:#7d5cdb;--teal:#1faaaa;--pink:#cf4d8f;--bs:rgba(44,95,214,.18);--gs:rgba(42,181,116,.15);--rs:rgba(220,68,88,.15);--as:rgba(232,163,24,.15);--ps:rgba(125,92,219,.15);--r:8px;--rl:12px;--fn:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+[data-theme="light"]{--bg0:#e5e8f0;--bg1:#edf0f8;--bg2:#f8f9ff;--bg3:#f2f4fc;--bg4:#e8ebf5;--bg5:#dde2ef;--bd:#dce1f0;--bd2:#d0d6e8;--bd3:#c4ccdc;--t1:#0d1020;--t2:#3a4268;--t3:#7078a0;--t4:#a0a8c0;--blue:#3564cc;--blue2:#264fa8;--blue-bright:#4f7ef0;--bs:rgba(50,100,210,.10);--gs:rgba(30,160,100,.10);--rs:rgba(200,50,70,.10);--as:rgba(200,130,0,.10);--ps:rgba(110,80,200,.10)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
-html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1);font-size:13px;line-height:1.5;overflow:hidden}
+html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1);font-size:15px;line-height:1.55;overflow:hidden}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd3);border-radius:10px}
 .shell{display:flex;flex-direction:column;height:100vh}
 /* Topbar */
 .topbar{display:flex;align-items:center;padding:0 16px;height:50px;background:var(--bg1);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0;z-index:100}
 .brand{display:flex;align-items:center;gap:9px;flex-shrink:0}
-.bmark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;letter-spacing:-.5px}
-.bname{font-size:13px;font-weight:700;color:var(--t1)}
-.bsub{font-size:11px;color:var(--t3)}
+.bmark{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.bname{font-size:14px;font-weight:700;color:var(--t1)}
+.bsub{font-size:12px;color:var(--t3)}
 .bdiv{width:1px;height:18px;background:var(--bd2);flex-shrink:0}
 .tr{margin-left:auto;display:flex;align-items:center;gap:6px}
-.tbtn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg3);color:var(--t2);font-size:11px;cursor:pointer;transition:all .15s}
+.tbtn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg3);color:var(--t2);font-size:12px;cursor:pointer;transition:all .15s}
 .tbtn:hover{background:var(--bg4);color:var(--t1);border-color:var(--bd3)}
 /* Nav */
 .nav{display:flex;align-items:center;padding:0 16px;height:40px;background:var(--bg1);border-bottom:1px solid var(--bd);gap:2px;flex-shrink:0;overflow-x:auto}
 .nav::-webkit-scrollbar{height:0}
-.ntab{padding:6px 12px;border-radius:6px;border:none;background:transparent;color:var(--t3);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--fn)}
+.ntab{padding:6px 12px;border-radius:6px;border:none;background:transparent;color:var(--t3);font-size:13px;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--fn)}
 .ntab:hover{color:var(--t1);background:var(--bg3)}
 .ntab.active{color:var(--blue);background:var(--bs);font-weight:600}
 /* Main */
@@ -34,35 +34,35 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 /* Cards */
 .card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px}
 .card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
-.card-title{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
+.card-title{font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.6px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 /* Stat cards */
 .stat{background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;position:relative;overflow:hidden}
-.stat-label{font-size:11px;color:var(--t3);margin-bottom:4px;font-weight:500}
-.stat-val{font-size:24px;font-weight:700;color:var(--t1);line-height:1}
-.stat-sub{font-size:11px;color:var(--t3);margin-top:4px}
-.stat-accent{position:absolute;right:12px;top:12px;font-size:18px;opacity:.4}
+.stat-label{font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500}
+.stat-val{font-size:26px;font-weight:700;color:var(--t1);line-height:1}
+.stat-sub{font-size:12px;color:var(--t3);margin-top:4px}
+.stat-accent{position:absolute;right:12px;top:12px;font-size:20px;opacity:.4}
 /* Tooltip system */
-.info{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--bg4);color:var(--t3);font-size:9px;font-weight:700;cursor:help;margin-left:5px;border:1px solid var(--bd2);font-family:Georgia,serif;font-style:italic;position:relative;vertical-align:middle;flex-shrink:0;transition:all .15s}
+.info{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--bg4);color:var(--t3);font-size:11px;font-weight:700;cursor:help;margin-left:5px;border:1px solid var(--bd2);font-family:Georgia,serif;font-style:italic;position:relative;vertical-align:middle;flex-shrink:0;transition:all .15s}
 .info:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
-.info[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg5);color:var(--t1);font-size:11px;font-family:var(--fn);font-style:normal;font-weight:400;padding:8px 10px;border-radius:6px;border:1px solid var(--bd3);width:220px;white-space:normal;text-align:left;line-height:1.5;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,.3);pointer-events:none}
+.info[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg5);color:var(--t1);font-size:12px;font-family:var(--fn);font-style:normal;font-weight:400;padding:8px 10px;border-radius:6px;border:1px solid var(--bd3);width:220px;white-space:normal;text-align:left;line-height:1.5;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,.3);pointer-events:none}
 .info[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg5);z-index:1000;pointer-events:none}
-.card-subtitle{font-size:11px;color:var(--t3);font-weight:400;margin-top:-6px;margin-bottom:10px;letter-spacing:0;text-transform:none}
-.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--t2)}
+.card-subtitle{font-size:12px;color:var(--t3);font-weight:400;margin-top:-6px;margin-bottom:10px;letter-spacing:0;text-transform:none}
+.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:12px;color:var(--t2)}
 .chart-legend-item{display:inline-flex;align-items:center;gap:5px}
 .chart-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .chart-legend-line{width:14px;height:2px;flex-shrink:0;border-radius:1px}
 /* Tables */
 .tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--bd)}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;background:var(--bg3);border-bottom:1px solid var(--bd);white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:8px 10px;text-align:left;font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;background:var(--bg3);border-bottom:1px solid var(--bd);white-space:nowrap}
 td{padding:8px 10px;border-bottom:1px solid var(--bd);color:var(--t2);vertical-align:top}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg3)}
 /* Badges */
-.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
 .badge-green{background:var(--gs);color:var(--green)}
 .badge-red{background:var(--rs);color:var(--red)}
 .badge-amber{background:var(--as);color:var(--amber)}
@@ -72,15 +72,15 @@ tr:hover td{background:var(--bg3)}
 /* Upload area */
 .upload-zone{border:2px dashed var(--bd2);border-radius:var(--rl);padding:30px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3)}
 .upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--bs)}
-.upload-zone h3{font-size:14px;color:var(--t1);margin-bottom:6px}
-.upload-zone p{font-size:12px;color:var(--t3)}
+.upload-zone h3{font-size:15px;color:var(--t1);margin-bottom:6px}
+.upload-zone p{font-size:13px;color:var(--t3)}
 /* Search / Filter bar */
 .filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.finput{flex:1;min-width:160px;padding:7px 10px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg3);color:var(--t1);font-size:12px;font-family:var(--fn)}
+.finput{flex:1;min-width:160px;padding:7px 10px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg3);color:var(--t1);font-size:13px;font-family:var(--fn)}
 .finput:focus{outline:none;border-color:var(--blue)}
-.fselect{padding:7px 10px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg3);color:var(--t1);font-size:12px;font-family:var(--fn);cursor:pointer}
+.fselect{padding:7px 10px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg3);color:var(--t1);font-size:13px;font-family:var(--fn);cursor:pointer}
 .fselect:focus{outline:none;border-color:var(--blue)}
-.fbtn{padding:7px 12px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg4);color:var(--t2);font-size:11px;cursor:pointer;font-family:var(--fn);white-space:nowrap}
+.fbtn{padding:7px 12px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg4);color:var(--t2);font-size:12px;cursor:pointer;font-family:var(--fn);white-space:nowrap}
 .fbtn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
 /* Alert cards */
 .alert-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;border-left:3px solid var(--red);margin-bottom:10px}
@@ -88,26 +88,26 @@ tr:hover td{background:var(--bg3)}
 .alert-card.low{border-left-color:var(--blue)}
 .alert-card.resolved{border-left-color:var(--green);opacity:.7}
 .alert-hd{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
-.alert-icon{width:32px;height:32px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.alert-icon{width:32px;height:32px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .alert-icon.maint{background:var(--rs);color:var(--red)}
 .alert-icon.house{background:var(--as);color:var(--amber)}
 .alert-icon.resolved{background:var(--gs);color:var(--green)}
 .alert-meta{flex:1}
-.alert-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
-.alert-room{font-size:11px;color:var(--t3)}
+.alert-title{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.alert-room{font-size:12px;color:var(--t3)}
 .alert-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px}
 .alert-field{background:var(--bg3);border-radius:var(--r);padding:8px 10px}
-.alert-field-label{font-size:10px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
-.alert-field-val{font-size:12px;color:var(--t1)}
+.alert-field-label{font-size:12px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.alert-field-val{font-size:13px;color:var(--t1)}
 .alert-actions{display:flex;align-items:center;gap:8px;margin-top:10px}
-.abtn{padding:5px 10px;border-radius:var(--r);border:1px solid var(--bd2);background:transparent;color:var(--t2);font-size:11px;cursor:pointer;font-family:var(--fn)}
+.abtn{padding:5px 10px;border-radius:var(--r);border:1px solid var(--bd2);background:transparent;color:var(--t2);font-size:12px;cursor:pointer;font-family:var(--fn)}
 .abtn:hover{background:var(--bg4);color:var(--t1)}
 .abtn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
 .abtn-primary:hover{background:var(--blue2)}
 .abtn-green{background:var(--gs);color:var(--green);border-color:transparent}
 .abtn-green:hover{background:var(--green);color:#fff}
 /* Status */
-.status{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600}
+.status{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:12px;font-weight:600}
 .status-open{background:var(--rs);color:var(--red)}
 .status-inprogress{background:var(--as);color:var(--amber)}
 .status-monitoring{background:var(--bs);color:var(--blue)}
@@ -121,41 +121,61 @@ tr:hover td{background:var(--bg3)}
 .rev-card:hover{border-color:var(--bd2)}
 .rev-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
 .rev-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
-.rev-text{font-size:12px;color:var(--t2);line-height:1.6}
+.rev-text{font-size:13px;color:var(--t2);line-height:1.6}
 .rev-text.collapsed{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.expand-btn{font-size:11px;color:var(--blue);cursor:pointer;margin-top:4px;display:inline-block}
+.expand-btn{font-size:12px;color:var(--blue);cursor:pointer;margin-top:4px;display:inline-block}
 .expand-btn:hover{color:var(--t1)}
 /* Stars */
-.stars{color:var(--amber);font-size:12px;letter-spacing:1px}
+.stars{color:var(--amber);font-size:13px;letter-spacing:1px}
 /* Heatmap */
-.heatmap{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
-.hc{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600}
-.hc:hover{opacity:.8;transform:scale(1.1)}
+.heatmap{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.hc{aspect-ratio:1;border-radius:5px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;position:relative;color:var(--t1);border:1px solid transparent}
+.hc:hover{transform:scale(1.15);z-index:10;border-color:var(--t1);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.hc-pop{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg5);border:1px solid var(--bd3);border-radius:8px;padding:10px 12px;width:280px;font-size:12px;color:var(--t1);font-weight:400;text-align:left;line-height:1.5;z-index:1000;box-shadow:0 6px 24px rgba(0,0,0,.5);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .15s;cursor:default}
+.hc:hover .hc-pop{opacity:1;visibility:visible}
+.hc-pop::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--bg5)}
+.hc-pop-hd{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd2);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hc-pop-stats{display:flex;gap:10px;margin-bottom:8px;font-size:12px;color:var(--t2)}
+.hc-pop-stat{display:flex;align-items:center;gap:4px}
+.hc-pop-issue{padding:6px 8px;border-radius:5px;background:var(--bg3);margin-bottom:5px;border-left:3px solid var(--red);font-size:12px}
+.hc-pop-issue:last-child{margin-bottom:0}
+.hc-pop-issue-hd{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-bottom:3px;font-weight:600}
+.hc-pop-issue-cat{color:var(--amber);font-weight:600}
+.hc-pop-issue-text{font-size:12px;color:var(--t2);line-height:1.45}
+.hc-pop-clean{padding:8px;background:var(--gs);border-radius:5px;color:var(--green);font-size:12px;text-align:center}
+/* Adjust heatmap popup for cells near right/left edges */
+.hc:nth-child(10n) .hc-pop,.hc:nth-child(10n-1) .hc-pop{left:auto;right:0;transform:none}
+.hc:nth-child(10n) .hc-pop::after,.hc:nth-child(10n-1) .hc-pop::after{left:auto;right:20px;transform:none}
+.hc:nth-child(10n+1) .hc-pop,.hc:nth-child(10n+2) .hc-pop{left:0;right:auto;transform:none}
+.hc:nth-child(10n+1) .hc-pop::after,.hc:nth-child(10n+2) .hc-pop::after{left:20px;right:auto;transform:none}
+/* First row of heatmap: position popup BELOW instead of above to avoid clipping */
+.hc:nth-child(-n+10) .hc-pop{bottom:auto;top:calc(100% + 8px)}
+.hc:nth-child(-n+10) .hc-pop::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--bg5)}
 /* Toast */
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--bd2);border-radius:var(--r);padding:8px 14px;font-size:12px;color:var(--t1);z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--bd2);border-radius:var(--r);padding:8px 14px;font-size:13px;color:var(--t1);z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
 #toast.show{opacity:1}
 /* Trend indicators */
-.trend-up{color:var(--green);font-size:11px}
-.trend-down{color:var(--red);font-size:11px}
+.trend-up{color:var(--green);font-size:12px}
+.trend-down{color:var(--red);font-size:12px}
 /* Tabs within cards */
 .ctabs{display:flex;gap:4px;background:var(--bg3);border-radius:var(--r);padding:3px;margin-bottom:12px}
-.ctab{flex:1;padding:5px 8px;border-radius:5px;border:none;background:transparent;color:var(--t3);font-size:11px;cursor:pointer;font-family:var(--fn);text-align:center;transition:all .15s}
+.ctab{flex:1;padding:5px 8px;border-radius:5px;border:none;background:transparent;color:var(--t3);font-size:12px;cursor:pointer;font-family:var(--fn);text-align:center;transition:all .15s}
 .ctab.active{background:var(--bg4);color:var(--t1);font-weight:600}
 /* Summary bars */
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.bar-label{font-size:11px;color:var(--t2);width:100px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-label{font-size:12px;color:var(--t2);width:100px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar-track{flex:1;height:6px;background:var(--bg4);border-radius:10px;overflow:hidden}
 .bar-fill{height:100%;border-radius:10px;transition:width .4s}
-.bar-val{font-size:11px;color:var(--t3);width:30px;text-align:right;flex-shrink:0}
+.bar-val{font-size:12px;color:var(--t3);width:30px;text-align:right;flex-shrink:0}
 /* Staff mention */
 .staff-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
 .staff-row:last-child{border-bottom:none}
-.staff-avatar{width:28px;height:28px;border-radius:50%;background:var(--bs);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
-.staff-name{flex:1;font-size:12px;color:var(--t1)}
+.staff-avatar{width:28px;height:28px;border-radius:50%;background:var(--bs);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.staff-name{flex:1;font-size:13px;color:var(--t1)}
 /* Import panel */
 .import-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 /* Severity dot */
-.sev{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:700;flex-shrink:0}
+.sev{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:12px;font-weight:700;flex-shrink:0}
 .sev-1,.sev-2{background:var(--gs);color:var(--green)}
 .sev-3,.sev-4{background:var(--as);color:var(--amber)}
 .sev-5{background:var(--rs);color:var(--red)}
@@ -164,15 +184,15 @@ tr:hover td{background:var(--bg3)}
 .modal-backdrop.open{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--rl);padding:20px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto}
 .modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.modal-title{font-size:14px;font-weight:600;color:var(--t1)}
-.modal-close{width:26px;height:26px;border-radius:6px;border:1px solid var(--bd2);background:var(--bg3);color:var(--t2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.modal-title{font-size:15px;font-weight:600;color:var(--t1)}
+.modal-close{width:26px;height:26px;border-radius:6px;border:1px solid var(--bd2);background:var(--bg3);color:var(--t2);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
 .modal-close:hover{background:var(--bg4)}
 /* Empty state */
-.empty{padding:40px;text-align:center;color:var(--t3);font-size:13px}
-.empty span{display:block;font-size:28px;margin-bottom:8px}
+.empty{padding:40px;text-align:center;color:var(--t3);font-size:14px}
+.empty span{display:block;font-size:30px;margin-bottom:8px}
 /* Chip filters */
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.chip{padding:3px 9px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg3);color:var(--t3);font-size:11px;cursor:pointer;transition:all .15s}
+.chip{padding:3px 9px;border-radius:20px;border:1px solid var(--bd2);background:var(--bg3);color:var(--t3);font-size:12px;cursor:pointer;transition:all .15s}
 .chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
 /* Resolution tracker */
 .res-track{display:flex;align-items:center;gap:4px;margin-top:8px}
@@ -225,7 +245,7 @@ tr:hover td{background:var(--bg3)}
         <span class="chart-legend-item"><span class="chart-legend-line" style="background:#e85566"></span>Negative</span>
         <span class="chart-legend-item"><span class="chart-legend-line" style="background:#f0b020"></span>Neutral</span>
       </div>
-      <div class="chart-wrap" style="height:220px"><canvas id="sentTrendChart" role="img" aria-label="Sentiment trend by month">Monthly sentiment trend.</canvas></div>
+      <div class="chart-wrap" id="sentTrendWrap" style="height:240px"><canvas id="sentTrendChart" role="img" aria-label="Sentiment trend by month">Monthly sentiment trend.</canvas></div>
     </div>
     <div class="card">
       <div class="card-hd"><div><span class="card-title">Platform Performance</span><span class="info" data-tip="Average guest rating per OTA platform. Higher bars = better experience reported on that channel. Use this to identify where to focus reputation management.">i</span></div></div>
@@ -472,7 +492,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:6,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v3', SRC_KEY='hoi_source_v3';
+var CACHE_KEY='hoi_reviews_v4', SRC_KEY='hoi_source_v4';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -586,14 +606,25 @@ var Agg={
     var map={};
     reviews.forEach(function(r){
       if(!r.room)return;
-      if(!map[r.room])map[r.room]={room:r.room,type:r.roomType||'',total:0,neg:0,pos:0,maint:0,clean:0,ratingSum:0,lastDate:'',complaints:[]};
+      if(!map[r.room])map[r.room]={room:r.room,type:r.roomType||'',total:0,neg:0,pos:0,maint:0,clean:0,ratingSum:0,lastDate:'',issues:[]};
       var rm=map[r.room];
       rm.total++;rm.ratingSum+=parseFloat(r.rating)||0;
       if(r.sentiment==='Positive')rm.pos++;
-      if(r.sentiment==='Negative'){rm.neg++;rm.complaints.push(r.text);}
+      if(r.sentiment==='Negative')rm.neg++;
       if(r.maintFlag===true||r.maintFlag==='Yes'||r.maintFlag==='true')rm.maint++;
       if(r.cleanFlag===true||r.cleanFlag==='Yes'||r.cleanFlag==='true')rm.clean++;
       if(!rm.lastDate||r.date>rm.lastDate)rm.lastDate=r.date;
+      // Capture all non-positive reviews as issues for tooltip display
+      if(r.sentiment!=='Positive'){
+        rm.issues.push({
+          date:r.date,
+          category:r.category,
+          subcategory:r.subcategory||'',
+          severity:parseInt(r.severity)||0,
+          summary:(r.text||'').slice(0,120)+((r.text||'').length>120?'…':''),
+          sentiment:r.sentiment
+        });
+      }
     });
     return map;
   },
@@ -669,7 +700,7 @@ function renderOverview(){
   document.getElementById('kpiCards').innerHTML=
     kpi('Total Reviews',total,'Analysed entries','','✉',
         'Total number of reviews loaded. Higher volume = more reliable trend signals.')+
-    kpi('Avg Rating',avgR+'<span style="font-size:14px;color:var(--t3)">/10</span>','<span class="stars">'+stars(avgR)+'</span>','','★',
+    kpi('Avg Rating',avgR+'<span style="font-size:15px;color:var(--t3)">/10</span>','<span class="stars">'+stars(avgR)+'</span>','','★',
         'Average guest rating across all platforms (out of 10). 8+ is good, 6-7 average, below 6 needs attention.')+
     kpi('Positive Sentiment',posPct+'%',pos+' positive reviews','var(--green)','↑',
         'Percentage of reviews classified as positive. Higher is better. Above 60% indicates healthy guest experience.')+
@@ -693,33 +724,34 @@ function renderOverview(){
   var sentLabel=document.getElementById('sentTrendLabel');
   if(sentLabel)sentLabel.textContent=mlabels.length+' month'+(mlabels.length===1?'':'s');
 
+  // ALWAYS restore canvas first — defends against prior empty-state replacement
+  var trendWrap=document.getElementById('sentTrendWrap');
+  if(trendWrap){
+    if(!document.getElementById('sentTrendChart')){
+      trendWrap.innerHTML='<canvas id="sentTrendChart" role="img" aria-label="Sentiment trend by month">Monthly sentiment trend.</canvas>';
+    }
+  }
+  // Destroy any prior chart instance
+  if(Charts['sentTrendChart']){try{Charts['sentTrendChart'].destroy();}catch(e){}delete Charts['sentTrendChart'];}
+
   if(mkeys.length===0){
-    // Defensive empty state — render placeholder instead of broken chart
-    if(Charts['sentTrendChart']){Charts['sentTrendChart'].destroy();delete Charts['sentTrendChart'];}
-    var wrap=document.getElementById('sentTrendChart');
-    if(wrap&&wrap.parentNode){
-      wrap.parentNode.innerHTML='<div class="empty" style="height:200px;display:flex;flex-direction:column;justify-content:center"><span>📅</span>No dated reviews to plot.<br><span style="font-size:11px;margin-top:4px">Check that the CSV Date column uses DD/MM/YYYY or YYYY-MM-DD.</span></div>';
-    }
+    if(trendWrap)trendWrap.innerHTML='<div class="empty" style="height:100%;display:flex;flex-direction:column;justify-content:center"><span>📅</span>No dated reviews to plot.<br><span style="font-size:13px;margin-top:6px">Check that the CSV Date column uses DD/MM/YYYY or YYYY-MM-DD.</span></div>';
   }else{
-    // Ensure canvas exists (re-create if previously replaced)
-    var canvasParent=document.querySelector('#page-overview .chart-wrap');
-    if(canvasParent&&!document.getElementById('sentTrendChart')){
-      canvasParent.innerHTML='<canvas id="sentTrendChart" role="img" aria-label="Sentiment trend by month">Monthly sentiment trend.</canvas>';
-    }
     var posData=mkeys.map(function(k){return mdata.map[k].pos||0;});
     var negData=mkeys.map(function(k){return mdata.map[k].neg||0;});
     var neuData=mkeys.map(function(k){return mdata.map[k].neu||0;});
+    var maxVal=Math.max.apply(null,[].concat(posData,negData,neuData,[3]));
     makeChart('sentTrendChart',{type:'line',data:{labels:mlabels,datasets:[
-      {label:'Positive',data:posData,borderColor:'#35c985',backgroundColor:'rgba(53,201,133,.10)',tension:.35,fill:true,pointRadius:4,pointBackgroundColor:'#35c985',borderWidth:2.5},
-      {label:'Negative',data:negData,borderColor:'#e85566',backgroundColor:'rgba(232,85,102,.10)',tension:.35,fill:true,pointRadius:4,pointBackgroundColor:'#e85566',borderWidth:2.5},
-      {label:'Neutral',data:neuData,borderColor:'#f0b020',backgroundColor:'rgba(240,176,32,.06)',tension:.35,fill:true,pointRadius:3,pointBackgroundColor:'#f0b020',borderWidth:2,borderDash:[4,3]}
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',titleFont:{size:12},bodyFont:{size:11}}},scales:{x:{ticks:{color:'#5d6488',font:{size:11},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#5d6488',font:{size:10},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true,suggestedMax:Math.max.apply(null,[].concat(posData,negData,neuData,[3]))}}}});
+      {label:'Positive',data:posData,borderColor:'#2ab574',backgroundColor:'rgba(42,181,116,.12)',tension:.35,fill:true,pointRadius:5,pointHoverRadius:7,pointBackgroundColor:'#2ab574',borderWidth:3},
+      {label:'Negative',data:negData,borderColor:'#dc4458',backgroundColor:'rgba(220,68,88,.12)',tension:.35,fill:true,pointRadius:5,pointHoverRadius:7,pointBackgroundColor:'#dc4458',borderWidth:3},
+      {label:'Neutral',data:neuData,borderColor:'#e8a318',backgroundColor:'rgba(232,163,24,.06)',tension:.35,fill:true,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#e8a318',borderWidth:2.5,borderDash:[5,4]}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',titleFont:{size:13},bodyFont:{size:12},padding:10,boxPadding:5}},scales:{x:{ticks:{color:'#a8b0d2',font:{size:14,weight:'500'},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#a8b0d2',font:{size:14},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true,suggestedMax:maxVal+1}}}});
   }
 
   // ── PLATFORM CHART ──
   var pdata=Agg.byPlatform(rv);
   var plats=Object.keys(pdata);
-  makeChart('platformChart',{type:'bar',data:{labels:plats.map(function(p){return p.replace(' Reviews','').replace('.com','');}),datasets:[{label:'Avg Rating',data:plats.map(function(p){return pdata[p].total?Math.round(pdata[p].ratingSum/pdata[p].total*10)/10:0;}),backgroundColor:'rgba(79,126,240,.7)',borderColor:'#4f7ef0',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{label:function(ctx){return'Avg rating: '+ctx.parsed.y+'/10';}}}},scales:{x:{ticks:{color:'#5d6488',font:{size:11}},grid:{display:false}},y:{ticks:{color:'#5d6488',font:{size:10},stepSize:2},grid:{color:'rgba(255,255,255,.04)'},min:0,max:10}}}});
+  makeChart('platformChart',{type:'bar',data:{labels:plats.map(function(p){return p.replace(' Reviews','').replace('.com','');}),datasets:[{label:'Avg Rating',data:plats.map(function(p){return pdata[p].total?Math.round(pdata[p].ratingSum/pdata[p].total*10)/10:0;}),backgroundColor:'rgba(44,95,214,.7)',borderColor:'#2c5fd6',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{label:function(ctx){return'Avg rating: '+ctx.parsed.y+'/10';}}}},scales:{x:{ticks:{color:'#7079a0',font:{size:14}},grid:{display:false}},y:{ticks:{color:'#7079a0',font:{size:14},stepSize:2},grid:{color:'rgba(255,255,255,.04)'},min:0,max:10}}}});
 
   // ── CATEGORY SENTIMENT TREND (NEW: dual green/red comparison) ──
   var catNames=['Room Comfort & Quality','Cleanliness','Staff','Facilities','Value for Money'];
@@ -732,17 +764,17 @@ function renderOverview(){
     else if(r.sentiment==='Negative')catSent[c].neg++;
   });
   makeChart('catSentChart',{type:'bar',data:{labels:catNames.map(function(c){return c.length>18?c.replace(' & ','/').slice(0,18)+'…':c;}),datasets:[
-    {label:'Positive',data:catNames.map(function(c){return catSent[c].pos;}),backgroundColor:'rgba(53,201,133,.75)',borderColor:'#35c985',borderWidth:1,borderRadius:4,barPercentage:.7},
-    {label:'Negative',data:catNames.map(function(c){return catSent[c].neg;}),backgroundColor:'rgba(232,85,102,.75)',borderColor:'#e85566',borderWidth:1,borderRadius:4,barPercentage:.7}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.parsed.y+' mentions';}}}},scales:{x:{ticks:{color:'#5d6488',font:{size:11}},grid:{display:false}},y:{ticks:{color:'#5d6488',font:{size:10},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
+    {label:'Positive',data:catNames.map(function(c){return catSent[c].pos;}),backgroundColor:'rgba(42,181,116,.75)',borderColor:'#2ab574',borderWidth:1,borderRadius:4,barPercentage:.7},
+    {label:'Negative',data:catNames.map(function(c){return catSent[c].neg;}),backgroundColor:'rgba(220,68,88,.75)',borderColor:'#dc4458',borderWidth:1,borderRadius:4,barPercentage:.7}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.parsed.y+' mentions';}}}},scales:{x:{ticks:{color:'#7079a0',font:{size:14}},grid:{display:false}},y:{ticks:{color:'#7079a0',font:{size:14},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
 
   // ── ALERT SUMMARY ──
   var criticals=rv.filter(function(r){return parseInt(r.severity)>=4&&r.sentiment!=='Positive'&&(!r.resolutionStatus||r.resolutionStatus==='Open'||r.resolutionStatus==='Escalated');});
   document.getElementById('alertSummary').innerHTML=criticals.length?criticals.slice(0,4).map(function(r){
     return '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd)">'+
       '<span class="sev '+getSevClass(parseInt(r.severity)||3)+'">'+(r.severity||'!')+'</span>'+
-      '<div style="flex:1;min-width:0"><div style="font-size:12px;color:var(--t1);margin-bottom:2px">Room '+esc(r.room||'?')+' — '+esc(r.category)+'</div>'+
-      '<div style="font-size:11px;color:var(--t3)">'+esc(r.platform)+' • '+esc(r.date)+'</div></div>'+
+      '<div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--t1);margin-bottom:2px">Room '+esc(r.room||'?')+' — '+esc(r.category)+'</div>'+
+      '<div style="font-size:12px;color:var(--t3)">'+esc(r.platform)+' • '+esc(r.date)+'</div></div>'+
       '<div class="status '+resClass(r.resolutionStatus)+'" style="flex-shrink:0">'+esc(r.resolutionStatus||'Open')+'</div></div>';
   }).join('')+'<div style="text-align:center;margin-top:8px"><button class="fbtn" onclick="showPage(\'alerts\')">View All Alerts →</button></div>':
   '<div class="empty" style="padding:20px"><span>✓</span>No critical open alerts</div>';
@@ -762,7 +794,7 @@ function renderOverview(){
   // ── RATING DISTRIBUTION (clearer banding) ──
   var dist=[0,0,0,0,0,0,0,0,0,0];
   rv.forEach(function(r){var n=Math.round(parseFloat(r.rating)||0);if(n>=1&&n<=10)dist[n-1]++;});
-  makeChart('ratingDistChart',{type:'bar',data:{labels:['1','2','3','4','5','6','7','8','9','10'],datasets:[{label:'Reviews',data:dist,backgroundColor:dist.map(function(_,i){return i<4?'rgba(232,85,102,.75)':i<7?'rgba(240,176,32,.75)':'rgba(53,201,133,.75)';}),borderColor:dist.map(function(_,i){return i<4?'#e85566':i<7?'#f0b020':'#35c985';}),borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{title:function(ctx){return'Rating: '+ctx[0].label+'/10';},label:function(ctx){return ctx.parsed.y+' review'+(ctx.parsed.y===1?'':'s');}}}},scales:{x:{title:{display:true,text:'Rating (1 = lowest, 10 = highest)',color:'#5d6488',font:{size:10}},ticks:{color:'#5d6488',font:{size:10}},grid:{display:false}},y:{title:{display:true,text:'Number of reviews',color:'#5d6488',font:{size:10}},ticks:{color:'#5d6488',font:{size:10},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
+  makeChart('ratingDistChart',{type:'bar',data:{labels:['1','2','3','4','5','6','7','8','9','10'],datasets:[{label:'Reviews',data:dist,backgroundColor:dist.map(function(_,i){return i<4?'rgba(220,68,88,.75)':i<7?'rgba(232,163,24,.75)':'rgba(42,181,116,.75)';}),borderColor:dist.map(function(_,i){return i<4?'#e85566':i<7?'#f0b020':'#35c985';}),borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{title:function(ctx){return'Rating: '+ctx[0].label+'/10';},label:function(ctx){return ctx.parsed.y+' review'+(ctx.parsed.y===1?'':'s');}}}},scales:{x:{title:{display:true,text:'Rating (1 = lowest, 10 = highest)',color:'#7079a0',font:{size:14}},ticks:{color:'#7079a0',font:{size:14}},grid:{display:false}},y:{title:{display:true,text:'Number of reviews',color:'#7079a0',font:{size:14}},ticks:{color:'#7079a0',font:{size:14},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
 
   // ── OPS HEALTH ──
   var resolved=rv.filter(function(r){return r.resolutionStatus==='Resolved';}).length;
@@ -818,13 +850,13 @@ var R={
           '<div style="display:flex;align-items:center;gap:8px">'+
             '<span class="sev '+sevC+'">'+(r.severity||'—')+'</span>'+
             '<div>'+
-              '<div style="font-size:13px;font-weight:600;color:var(--t1)">Room '+esc(r.room||'?')+' &nbsp;<span style="font-size:11px;font-weight:400;color:var(--t3)">'+esc(r.roomType||'')+'</span></div>'+
-              '<div style="font-size:11px;color:var(--t3);margin-top:1px">'+esc(r.booking||'—')+' • '+r.date+'</div>'+
+              '<div style="font-size:14px;font-weight:600;color:var(--t1)">Room '+esc(r.room||'?')+' &nbsp;<span style="font-size:12px;font-weight:400;color:var(--t3)">'+esc(r.roomType||'')+'</span></div>'+
+              '<div style="font-size:12px;color:var(--t3);margin-top:1px">'+esc(r.booking||'—')+' • '+r.date+'</div>'+
             '</div>'+
           '</div>'+
           '<div style="text-align:right">'+
-            '<div class="stars" style="font-size:11px">'+stars(r.rating)+'</div>'+
-            '<div style="font-size:11px;font-weight:600;color:var(--t1)">'+r.rating+'/10</div>'+
+            '<div class="stars" style="font-size:12px">'+stars(r.rating)+'</div>'+
+            '<div style="font-size:12px;font-weight:600;color:var(--t1)">'+r.rating+'/10</div>'+
           '</div>'+
         '</div>'+
         '<div class="rev-meta">'+
@@ -839,8 +871,8 @@ var R={
         '</div>'+
         '<div class="rev-text collapsed" id="rt-'+r.id+'">'+esc(r.text)+'</div>'+
         '<span class="expand-btn" onclick="R.toggleText(\''+r.id+'\',this)">Show more ▾</span>'+
-        (r.action?'<div style="margin-top:6px;font-size:11px;color:var(--teal);background:rgba(37,191,191,.08);border-radius:5px;padding:5px 8px">💡 '+esc(r.action)+'</div>':'')+
-        (r.resolutionNotes?'<div style="margin-top:4px;font-size:11px;color:var(--t3);padding:4px 8px;background:var(--bg4);border-radius:5px">📋 '+esc(r.resolutionNotes)+'</div>':'')+
+        (r.action?'<div style="margin-top:6px;font-size:12px;color:var(--teal);background:rgba(37,191,191,.08);border-radius:5px;padding:5px 8px">💡 '+esc(r.action)+'</div>':'')+
+        (r.resolutionNotes?'<div style="margin-top:4px;font-size:12px;color:var(--t3);padding:4px 8px;background:var(--bg4);border-radius:5px">📋 '+esc(r.resolutionNotes)+'</div>':'')+
       '</div>';
     });
     document.getElementById('revList').innerHTML=html||'<div class="empty"><span>🔍</span>No reviews match your filters</div>';
@@ -893,7 +925,7 @@ function renderRooms(){
       '<td><span style="color:var(--red);font-weight:600">'+r.neg+'</span></td>'+
       '<td>'+(r.maint?'<span class="badge badge-red">'+r.maint+'</span>':'<span style="color:var(--t4)">—</span>')+'</td>'+
       '<td>'+(r.clean?'<span class="badge badge-amber">'+r.clean+'</span>':'<span style="color:var(--t4)">—</span>')+'</td>'+
-      '<td><span class="stars" style="font-size:10px">'+stars(avgR)+'</span> '+avgR+'</td>'+
+      '<td><span class="stars" style="font-size:12px">'+stars(avgR)+'</span> '+avgR+'</td>'+
       '<td style="color:var(--t3)">'+r.lastDate+'</td></tr>';
   }).join('');
 
@@ -906,15 +938,57 @@ function renderRooms(){
       '<td><span class="badge badge-green">'+posP+'%</span></td></tr>';
   }).join('');
 
-  // Heatmap
+  // Heatmap with rich hover-card showing actual complaints
   var allRooms=Object.keys(rmap).sort();
   var maxNeg=Math.max.apply(null,Object.values(rmap).map(function(r){return r.neg+r.maint;}));
+  if(!allRooms.length){
+    document.getElementById('heatmapWrap').innerHTML='<div class="empty"><span>▦</span>No room data available</div>';
+    return;
+  }
   document.getElementById('heatmapWrap').innerHTML='<div class="heatmap">'+allRooms.map(function(rm){
-    var r=rmap[rm];var score=(r.neg*2+r.maint)/(maxNeg||1);
-    var alpha=0.15+score*0.75;
-    var color=r.neg>0?('rgba(232,85,102,'+alpha+')'):(r.maint>0?'rgba(240,176,32,'+alpha+')':'rgba(53,201,133,0.25)');
-    return '<div class="hc" style="background:'+color+'" title="Room '+rm+': '+r.neg+' neg, '+r.maint+' maint">'+rm+'</div>';
-  }).join('')+'</div><div style="display:flex;gap:12px;margin-top:8px;font-size:10px;color:var(--t3)"><span>🟢 Good</span><span>🟡 Maint Issue</span><span>🔴 Complaints</span></div>';
+    var r=rmap[rm];
+    var score=(r.neg*2+r.maint)/(maxNeg||1);
+    var alpha=0.25+score*0.6;
+    var bg,borderColor;
+    if(r.neg>0){bg='rgba(220,68,88,'+alpha+')';borderColor='var(--red)';}
+    else if(r.maint>0){bg='rgba(232,163,24,'+alpha+')';borderColor='var(--amber)';}
+    else{bg='rgba(42,181,116,0.30)';borderColor='var(--green)';}
+    var avgR=r.total?(r.ratingSum/r.total).toFixed(1):'—';
+    var pop='';
+    if(r.issues&&r.issues.length){
+      var topIssues=r.issues.slice().sort(function(a,b){return b.severity-a.severity;}).slice(0,3);
+      pop='<div class="hc-pop"><div class="hc-pop-hd"><span>Room '+esc(rm)+'</span><span style="font-size:12px;color:var(--t3);font-weight:500">'+esc(r.type)+'</span></div>'+
+          '<div class="hc-pop-stats">'+
+            '<div class="hc-pop-stat" style="color:var(--red)">⚠ '+r.neg+' complaint'+(r.neg===1?'':'s')+'</div>'+
+            (r.maint?'<div class="hc-pop-stat" style="color:var(--amber)">🔧 '+r.maint+' maint</div>':'')+
+            (r.clean?'<div class="hc-pop-stat" style="color:var(--teal)">🧹 '+r.clean+' clean</div>':'')+
+            '<div class="hc-pop-stat" style="color:var(--t3)">★ '+avgR+'</div>'+
+          '</div>'+
+          topIssues.map(function(iss){
+            var sevColor=iss.severity>=4?'var(--red)':iss.severity>=3?'var(--amber)':'var(--blue)';
+            return '<div class="hc-pop-issue" style="border-left-color:'+sevColor+'">'+
+              '<div class="hc-pop-issue-hd"><span class="hc-pop-issue-cat">'+esc(iss.category)+(iss.subcategory?' · '+esc(iss.subcategory):'')+'</span><span>Sev '+iss.severity+' · '+esc(iss.date)+'</span></div>'+
+              '<div class="hc-pop-issue-text">'+esc(iss.summary)+'</div>'+
+            '</div>';
+          }).join('')+
+          (r.issues.length>3?'<div style="font-size:11px;color:var(--t3);margin-top:6px;text-align:center">+ '+(r.issues.length-3)+' more issue'+(r.issues.length-3===1?'':'s')+'</div>':'')+
+          '</div>';
+    }else{
+      pop='<div class="hc-pop"><div class="hc-pop-hd"><span>Room '+esc(rm)+'</span><span style="font-size:12px;color:var(--t3);font-weight:500">'+esc(r.type)+'</span></div>'+
+          '<div class="hc-pop-stats">'+
+            '<div class="hc-pop-stat" style="color:var(--green)">✓ '+r.pos+' positive</div>'+
+            '<div class="hc-pop-stat" style="color:var(--t3)">★ '+avgR+'</div>'+
+          '</div>'+
+          '<div class="hc-pop-clean">✓ No complaints recorded for this room</div></div>';
+    }
+    return '<div class="hc" style="background:'+bg+';color:var(--t1)">'+esc(rm)+pop+'</div>';
+  }).join('')+'</div>'+
+  '<div style="display:flex;gap:14px;margin-top:12px;font-size:12px;color:var(--t2);justify-content:center;flex-wrap:wrap">'+
+    '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:rgba(42,181,116,.5);display:inline-block"></span>No complaints</span>'+
+    '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:rgba(232,163,24,.6);display:inline-block"></span>Maintenance issue</span>'+
+    '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:rgba(220,68,88,.7);display:inline-block"></span>Active complaints</span>'+
+    '<span style="color:var(--t3);font-style:italic">· Hover any room for details</span>'+
+  '</div>';
 }
 
 // ── ALERTS ──
@@ -1029,7 +1103,7 @@ var A={
           '<div class="alert-icon '+iconType+'">'+(isMaint?'🔧':'🧹')+'</div>'+
           '<div class="alert-meta">'+
             '<div class="alert-title">Room '+esc(r.room||'?')+' — '+esc(r.category)+(parseInt(r.severity)>=5?' 🚨':'')+
-              (r.id&&State.reviews.filter(function(x){return x.room===r.room&&x.category===r.category;}).length>1?' <span style="font-size:10px;color:var(--red);font-weight:600">⟳ RECURRING</span>':'')+
+              (r.id&&State.reviews.filter(function(x){return x.room===r.room&&x.category===r.category;}).length>1?' <span style="font-size:12px;color:var(--red);font-weight:600">⟳ RECURRING</span>':'')+
             '</div>'+
             '<div class="alert-room">'+esc(r.platform)+' · Booking: '+esc(r.booking||'—')+' · '+r.date+(r.assignedDept?' · '+esc(r.assignedDept):'')+(r.assignedStaff?' → '+esc(r.assignedStaff):'')+'</div>'+
           '</div>'+
@@ -1043,13 +1117,13 @@ var A={
           (r.resolutionNotes?'<div class="alert-field" style="grid-column:span 2"><div class="alert-field-label">Resolution Notes</div><div class="alert-field-val" style="color:var(--t3)">'+esc(r.resolutionNotes)+'</div></div>':'')+
         '</div>'+
         '<div style="margin-top:10px">'+
-          '<div style="font-size:10px;color:var(--t3);margin-bottom:4px">ORIGINAL REVIEW</div>'+
-          '<div style="font-size:11px;color:var(--t2);line-height:1.5;background:var(--bg3);padding:8px;border-radius:var(--r)">'+esc(r.text)+'</div>'+
+          '<div style="font-size:12px;color:var(--t3);margin-bottom:4px">ORIGINAL REVIEW</div>'+
+          '<div style="font-size:12px;color:var(--t2);line-height:1.5;background:var(--bg3);padding:8px;border-radius:var(--r)">'+esc(r.text)+'</div>'+
         '</div>'+
         '<div style="margin-top:8px">'+
-          '<div style="font-size:10px;color:var(--t3);margin-bottom:4px">RESOLUTION LIFECYCLE</div>'+
+          '<div style="font-size:12px;color:var(--t3);margin-bottom:4px">RESOLUTION LIFECYCLE</div>'+
           '<div class="res-track">'+resSteps.map(function(s,i){return'<div class="res-step'+(i<resIdx?' done':i===resIdx?' current':'')+'" title="'+s+'"></div>';}).join('<div style="width:4px"></div>')+'</div>'+
-          '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--t4);margin-top:3px">'+resSteps.map(function(s){return'<span>'+s+'</span>';}).join('')+'</div>'+
+          '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t4);margin-top:3px">'+resSteps.map(function(s){return'<span>'+s+'</span>';}).join('')+'</div>'+
         '</div>'+
       '</div>';
     }).join('');
@@ -1064,25 +1138,25 @@ function renderAnalytics(){
   var mlabels=mkeys.map(DateU.toLabel.bind(DateU));
 
   makeChart('volRatingChart',{type:'bar',data:{labels:mlabels,datasets:[
-    {type:'bar',label:'Review Volume',data:mkeys.map(function(k){return mdata.map[k].total;}),backgroundColor:'rgba(79,126,240,.5)',yAxisID:'y'},
-    {type:'line',label:'Avg Rating',data:mkeys.map(function(k){var m=mdata.map[k];return m.total?Math.round(m.ratingSum/m.total*10)/10:null;}),borderColor:'#35c985',pointRadius:4,tension:.4,yAxisID:'y2'}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5d6488',font:{size:10},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#5d6488',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true},y2:{position:'right',min:0,max:10,ticks:{color:'#35c985',font:{size:10}},grid:{display:false}}}}});
+    {type:'bar',label:'Review Volume',data:mkeys.map(function(k){return mdata.map[k].total;}),backgroundColor:'rgba(44,95,214,.5)',yAxisID:'y'},
+    {type:'line',label:'Avg Rating',data:mkeys.map(function(k){var m=mdata.map[k];return m.total?Math.round(m.ratingSum/m.total*10)/10:null;}),borderColor:'#2ab574',pointRadius:4,tension:.4,yAxisID:'y2'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7079a0',font:{size:14},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#7079a0',font:{size:14}},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true},y2:{position:'right',min:0,max:10,ticks:{color:'#2ab574',font:{size:14}},grid:{display:false}}}}});
 
   makeChart('severityTrendChart',{type:'line',data:{labels:mlabels,datasets:[
-    {label:'Critical (5)',data:mkeys.map(function(k){return mdata.map[k].sev.filter(function(s){return s>=5;}).length;}),borderColor:'#e85566',backgroundColor:'rgba(232,85,102,.08)',tension:.4,fill:true,pointRadius:3},
-    {label:'High (4)',data:mkeys.map(function(k){return mdata.map[k].sev.filter(function(s){return s===4;}).length;}),borderColor:'#f0b020',backgroundColor:'rgba(240,176,32,.08)',tension:.4,fill:true,pointRadius:3},
-    {label:'Medium (3)',data:mkeys.map(function(k){return mdata.map[k].sev.filter(function(s){return s===3;}).length;}),borderColor:'#4f7ef0',backgroundColor:'rgba(79,126,240,.08)',tension:.4,fill:true,pointRadius:3}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5d6488',font:{size:10},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#5d6488',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
+    {label:'Critical (5)',data:mkeys.map(function(k){return mdata.map[k].sev.filter(function(s){return s>=5;}).length;}),borderColor:'#dc4458',backgroundColor:'rgba(220,68,88,.08)',tension:.4,fill:true,pointRadius:3},
+    {label:'High (4)',data:mkeys.map(function(k){return mdata.map[k].sev.filter(function(s){return s===4;}).length;}),borderColor:'#e8a318',backgroundColor:'rgba(232,163,24,.08)',tension:.4,fill:true,pointRadius:3},
+    {label:'Medium (3)',data:mkeys.map(function(k){return mdata.map[k].sev.filter(function(s){return s===3;}).length;}),borderColor:'#2c5fd6',backgroundColor:'rgba(44,95,214,.08)',tension:.4,fill:true,pointRadius:3}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7079a0',font:{size:14},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#7079a0',font:{size:14}},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
 
   makeChart('posNegChart',{type:'bar',data:{labels:mlabels,datasets:[
-    {label:'Positive',data:mkeys.map(function(k){return mdata.map[k].pos;}),backgroundColor:'rgba(53,201,133,.7)'},
-    {label:'Negative',data:mkeys.map(function(k){return -mdata.map[k].neg;}),backgroundColor:'rgba(232,85,102,.7)'}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5d6488',font:{size:10},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#5d6488',font:{size:10},callback:function(v){return Math.abs(v);}},grid:{color:'rgba(255,255,255,.04)'},stacked:false}}}});
+    {label:'Positive',data:mkeys.map(function(k){return mdata.map[k].pos;}),backgroundColor:'rgba(42,181,116,.7)'},
+    {label:'Negative',data:mkeys.map(function(k){return -mdata.map[k].neg;}),backgroundColor:'rgba(220,68,88,.7)'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7079a0',font:{size:14},maxRotation:45,autoSkip:false},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#7079a0',font:{size:14},callback:function(v){return Math.abs(v);}},grid:{color:'rgba(255,255,255,.04)'},stacked:false}}}});
 
   // Platform sentiment heatmap
   var pdata=Agg.byPlatform(rv);
   var platforms=Object.keys(pdata);
-  var phHtml='<div style="overflow-x:auto"><table style="width:100%;font-size:11px"><thead><tr><th>Platform</th><th>Reviews</th><th>Avg Rating</th><th>Positive</th><th>Neutral</th><th>Negative</th><th>Sentiment Score</th></tr></thead><tbody>';
+  var phHtml='<div style="overflow-x:auto"><table style="width:100%;font-size:12px"><thead><tr><th>Platform</th><th>Reviews</th><th>Avg Rating</th><th>Positive</th><th>Neutral</th><th>Negative</th><th>Sentiment Score</th></tr></thead><tbody>';
   platforms.forEach(function(p){
     var d=pdata[p];
     var avg=d.total?Math.round(d.ratingSum/d.total*10)/10:0;
@@ -1130,11 +1204,11 @@ function renderStaff(){
   document.getElementById('staffLeader').innerHTML=staff.length?staff.slice(0,8).map(function(s,i){
     var posP=Math.round(s.pos/s.total*100);
     return '<div class="staff-row">'+
-      '<div style="font-size:11px;color:var(--t3);width:16px">'+(i+1)+'</div>'+
+      '<div style="font-size:12px;color:var(--t3);width:16px">'+(i+1)+'</div>'+
       '<div class="staff-avatar">'+s.name.charAt(0).toUpperCase()+'</div>'+
       '<div class="staff-name">'+esc(s.name)+'</div>'+
       '<span class="badge '+(posP>=70?'badge-green':posP>=50?'badge-amber':'badge-red')+'">'+posP+'% pos</span>'+
-      '<span style="font-size:11px;color:var(--t3)">'+s.total+' mentions</span>'+
+      '<span style="font-size:12px;color:var(--t3)">'+s.total+' mentions</span>'+
     '</div>';
   }).join(''):
   '<div class="empty"><span>👤</span>No staff mentions found</div>';
@@ -1143,18 +1217,18 @@ function renderStaff(){
     makeChart('staffChart',{type:'bar',data:{
       labels:staff.slice(0,8).map(function(s){return s.name;}),
       datasets:[
-        {label:'Positive',data:staff.slice(0,8).map(function(s){return s.pos;}),backgroundColor:'rgba(53,201,133,.7)'},
-        {label:'Neutral',data:staff.slice(0,8).map(function(s){return s.neu;}),backgroundColor:'rgba(240,176,32,.7)'},
-        {label:'Negative',data:staff.slice(0,8).map(function(s){return s.neg;}),backgroundColor:'rgba(232,85,102,.7)'}
+        {label:'Positive',data:staff.slice(0,8).map(function(s){return s.pos;}),backgroundColor:'rgba(42,181,116,.7)'},
+        {label:'Neutral',data:staff.slice(0,8).map(function(s){return s.neu;}),backgroundColor:'rgba(232,163,24,.7)'},
+        {label:'Negative',data:staff.slice(0,8).map(function(s){return s.neg;}),backgroundColor:'rgba(220,68,88,.7)'}
       ]
-    },options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5d6488',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},stacked:true},y:{ticks:{color:'#5d6488',font:{size:10}},grid:{display:false},stacked:true}}}});
+    },options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7079a0',font:{size:14}},grid:{color:'rgba(255,255,255,.04)'},stacked:true},y:{ticks:{color:'#7079a0',font:{size:14}},grid:{display:false},stacked:true}}}});
   }
 
   var srevs=State.reviews.filter(function(r){return r.staffMentioned;}).slice(0,8);
   document.getElementById('staffReviews').innerHTML=srevs.map(function(r){
     return '<div class="rev-card">'+
       '<div class="rev-hd"><div style="display:flex;gap:6px;align-items:center"><span class="badge badge-purple">👤 '+esc(r.staffMentioned)+'</span><span class="badge '+getSentClass(r.sentiment)+'">'+esc(r.sentiment)+'</span></div>'+
-      '<div style="font-size:11px;color:var(--t3)">Room '+esc(r.room)+' • '+r.date+'</div></div>'+
+      '<div style="font-size:12px;color:var(--t3)">Room '+esc(r.room)+' • '+r.date+'</div></div>'+
       '<div class="rev-text">'+esc(r.text)+'</div></div>';
   }).join('');
 }
@@ -1166,8 +1240,8 @@ function renderImport(){
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:8px">'+
     '<div class="stat"><div class="stat-label">Source</div><div class="stat-val" style="font-size:16px">'+esc(State.source)+'</div></div>'+
     '<div class="stat"><div class="stat-label">Records</div><div class="stat-val">'+rv.length+'</div></div>'+
-    '<div class="stat"><div class="stat-label">File</div><div class="stat-val" style="font-size:14px">'+esc(State.fileName||'sample_data')+'</div></div>'+
-    '<div class="stat"><div class="stat-label">Loaded</div><div class="stat-val" style="font-size:14px">'+esc(State.uploadedAt||'—')+'</div></div>'+
+    '<div class="stat"><div class="stat-label">File</div><div class="stat-val" style="font-size:15px">'+esc(State.fileName||'sample_data')+'</div></div>'+
+    '<div class="stat"><div class="stat-label">Loaded</div><div class="stat-val" style="font-size:15px">'+esc(State.uploadedAt||'—')+'</div></div>'+
     '</div>';
 }
 
@@ -1480,6 +1554,12 @@ var App={
     var isDark=html.getAttribute('data-theme')==='dark';
     html.setAttribute('data-theme',isDark?'light':'dark');
     LS.set('hoi_theme',isDark?'light':'dark');
+    // Re-render the currently visible page so charts pick up new theme
+    var active=document.querySelector('.page.active');
+    if(active){
+      var id=active.id.replace('page-','');
+      try{showPage(id);}catch(e){}
+    }
   },
   handleDrop:function(e){
     e.preventDefault();document.getElementById('uploadZone').classList.remove('drag');
@@ -1497,13 +1577,13 @@ var App={
         var reviews=parseCSV(e.target.result);
         State.reviews=reviews;State.source='csv';State.fileName=file.name;State.uploadedAt=new Date().toLocaleString();
         LS.set(CACHE_KEY,{reviews:reviews,fileName:file.name,uploadedAt:State.uploadedAt});
-        document.getElementById('uploadStatus').innerHTML='<div style="padding:10px;background:var(--gs);border:1px solid var(--green);border-radius:var(--r);font-size:12px;color:var(--green)">✓ Loaded <strong>'+reviews.length+' reviews</strong> from '+esc(file.name)+' · Switching to Overview...</div>';
+        document.getElementById('uploadStatus').innerHTML='<div style="padding:10px;background:var(--gs);border:1px solid var(--green);border-radius:var(--r);font-size:13px;color:var(--green)">✓ Loaded <strong>'+reviews.length+' reviews</strong> from '+esc(file.name)+' · Switching to Overview...</div>';
         document.getElementById('dataSourceLabel').textContent='CSV: '+file.name;
         toast('✓ Loaded '+reviews.length+' reviews');
         // Jump to Overview so the user immediately sees the new sentiment trend
         setTimeout(function(){showPage('overview');},800);
       }catch(err){
-        document.getElementById('uploadStatus').innerHTML='<div style="padding:10px;background:var(--rs);border:1px solid var(--red);border-radius:var(--r);font-size:12px;color:var(--red)">⚠ '+esc(err.message)+'</div>';
+        document.getElementById('uploadStatus').innerHTML='<div style="padding:10px;background:var(--rs);border:1px solid var(--red);border-radius:var(--r);font-size:13px;color:var(--red)">⚠ '+esc(err.message)+'</div>';
         toast('⚠ '+err.message);
       }
     };
@@ -1544,9 +1624,6 @@ var App={
     tryRender();
   }
 };
-
-// Re-render the current page on theme toggle
-document.documentElement.addEventListener('click',function(){},true);
 
 App.init();
 
