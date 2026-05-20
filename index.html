@@ -422,7 +422,9 @@ tr:hover td{background:var(--bg3)}
         <div style="font-size:13px;color:var(--t2)">This dashboard is connected to a live Google Sheet. Data refreshes automatically when the page loads, and you can re-sync any time with the <strong>↻ Refresh Live</strong> button in the top bar.</div>
       </div>
       <button class="fbtn" style="background:var(--blue);color:#fff;border-color:var(--blue)" onclick="App.refreshLiveData()">↻ Sync Now</button>
+      <button class="fbtn" onclick="App.showDiagnostic()">🔍 Diagnostic</button>
     </div>
+    <div id="liveDiagnostic" style="margin-top:12px;display:none"></div>
   </div>
   <div class="grid-2">
     <div class="card">
@@ -510,7 +512,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v6', SRC_KEY='hoi_source_v6';
+var CACHE_KEY='hoi_reviews_v7', SRC_KEY='hoi_source_v7';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -587,11 +589,21 @@ function toast(msg,dur){
 // ── Chart registry ──
 var Charts={};
 function makeChart(id,config){
-  if(Charts[id])Charts[id].destroy();
+  if(typeof Chart==='undefined'){
+    // Chart.js not loaded yet — retry shortly
+    setTimeout(function(){makeChart(id,config);},300);
+    return null;
+  }
+  if(Charts[id]){try{Charts[id].destroy();}catch(e){}}
   var el=document.getElementById(id);
-  if(!el)return;
-  Charts[id]=new Chart(el,config);
-  return Charts[id];
+  if(!el)return null;
+  try{
+    Charts[id]=new Chart(el,config);
+    return Charts[id];
+  }catch(e){
+    console.error('Chart error for '+id+':',e);
+    return null;
+  }
 }
 
 // ── Helpers ──
@@ -864,15 +876,34 @@ function renderOverview(){
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(20,23,35,.95)',callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.parsed.y+' mentions';}}}},scales:{x:{ticks:{color:'#7079a0',font:{size:14}},grid:{display:false}},y:{ticks:{color:'#7079a0',font:{size:14},stepSize:1},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}}}});
 
   // ── ALERT SUMMARY ──
-  var criticals=rv.filter(function(r){return parseInt(r.severity)>=4&&r.sentiment!=='Positive'&&(!r.resolutionStatus||r.resolutionStatus==='Open'||r.resolutionStatus==='Escalated');});
-  document.getElementById('alertSummary').innerHTML=criticals.length?criticals.slice(0,4).map(function(r){
-    return '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd)">'+
-      '<span class="sev '+getSevClass(parseInt(r.severity)||3)+'">'+(r.severity||'!')+'</span>'+
-      '<div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--t1);margin-bottom:2px">Room '+esc(r.room||'?')+' — '+esc(r.category)+'</div>'+
-      '<div style="font-size:12px;color:var(--t3)">'+esc(r.platform)+' • '+esc(r.checkInDate||r.date||'')+'</div></div>'+
-      '<div class="status '+resClass(r.resolutionStatus)+'" style="flex-shrink:0">'+esc(r.resolutionStatus||'Open')+'</div></div>';
-  }).join('')+'<div style="text-align:center;margin-top:8px"><button class="fbtn" onclick="showPage(\'alerts\')">View All Alerts →</button></div>':
-  '<div class="empty" style="padding:20px"><span>✓</span>No critical open alerts</div>';
+  // First try severity >=4 (high/critical). If none, fall back to severity >=3 (medium+).
+  // Excludes positive reviews and resolved items.
+  var isOpenAlert=function(r,minSev){
+    return parseInt(r.severity)>=minSev&&r.sentiment!=='Positive'&&(!r.resolutionStatus||r.resolutionStatus==='Open'||r.resolutionStatus==='In Progress'||r.resolutionStatus==='Escalated');
+  };
+  var criticals=rv.filter(function(r){return isOpenAlert(r,4);});
+  var alertLabel='Critical issues';
+  if(!criticals.length){
+    criticals=rv.filter(function(r){return isOpenAlert(r,3);});
+    alertLabel='Open alerts (medium+)';
+  }
+  // Sort by severity DESC, then by date DESC
+  criticals.sort(function(a,b){
+    var sd=(parseInt(b.severity)||0)-(parseInt(a.severity)||0);
+    if(sd!==0)return sd;
+    return (b.checkInDate||b.date||'')>(a.checkInDate||a.date||'')?1:-1;
+  });
+  document.getElementById('alertSummary').innerHTML=criticals.length?
+    '<div style="font-size:11px;color:var(--t3);margin-bottom:6px">'+alertLabel+' · showing '+Math.min(4,criticals.length)+' of '+criticals.length+'</div>'+
+    criticals.slice(0,4).map(function(r){
+      return '<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd)">'+
+        '<span class="sev '+getSevClass(parseInt(r.severity)||3)+'">'+(r.severity||'!')+'</span>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--t1);margin-bottom:2px">Room '+esc(r.room||'?')+' — '+esc(r.category)+'</div>'+
+        '<div style="font-size:12px;color:var(--t3)">'+esc(r.platform)+' • '+esc(r.checkInDate||r.date||'')+'</div></div>'+
+        '<div class="status '+resClass(r.resolutionStatus)+'" style="flex-shrink:0">'+esc(r.resolutionStatus||'Open')+'</div></div>';
+    }).join('')+
+    '<div style="text-align:center;margin-top:8px"><button class="fbtn" onclick="showPage(\'alerts\')">View All Alerts →</button></div>':
+  '<div class="empty" style="padding:20px"><span>✓</span>No open alerts</div>';
 
   // ── COMPLAINT TYPES ──
   var subcats={};
@@ -1235,10 +1266,40 @@ var A={
 
 // ── ANALYTICS ──
 function renderAnalytics(){
-  var rv=State.reviews;
+  var rv=State.reviews||[];
   var mdata=Agg.byMonth(rv);
-  var mkeys=mdata.keys;
+  var mkeys=mdata.keys||[];
   var mlabels=mkeys.map(DateU.toLabel.bind(DateU));
+
+  // Defensive: if no data, destroy existing charts and show empty state
+  if(!rv.length||!mkeys.length){
+    ['volRatingChart','severityTrendChart','posNegChart'].forEach(function(id){
+      if(Charts[id]){try{Charts[id].destroy();}catch(e){}delete Charts[id];}
+      var c=document.getElementById(id);
+      if(c&&c.parentNode){
+        c.parentNode.innerHTML='<div class="empty" style="height:100%;display:flex;flex-direction:column;justify-content:center"><span>📊</span>'+(rv.length?'No dated reviews to plot':'No data loaded')+'</div>';
+      }
+    });
+    var phh=document.getElementById('platformSentHeatmap');
+    if(phh)phh.innerHTML='<div class="empty"><span>📊</span>No platform data</div>';
+    var ri=document.getElementById('recurringIssues');
+    if(ri)ri.innerHTML='<div class="empty"><span>📊</span>No data</div>';
+    return;
+  }
+
+  // Ensure canvases exist (re-create if previously replaced with empty state)
+  ['volRatingChart','severityTrendChart','posNegChart'].forEach(function(id){
+    var c=document.getElementById(id);
+    if(!c){
+      // Find the parent .chart-wrap and restore
+      var wraps=document.querySelectorAll('#page-analytics .chart-wrap');
+      // The order in HTML: volRatingChart, severityTrendChart, posNegChart
+      var idx={'volRatingChart':0,'severityTrendChart':1,'posNegChart':2}[id];
+      if(wraps[idx]){
+        wraps[idx].innerHTML='<canvas id="'+id+'" role="img">'+id+'</canvas>';
+      }
+    }
+  });
 
   makeChart('volRatingChart',{type:'bar',data:{labels:mlabels,datasets:[
     {type:'bar',label:'Review Volume',data:mkeys.map(function(k){return mdata.map[k].total;}),backgroundColor:'rgba(44,95,214,.5)',yAxisID:'y'},
@@ -1385,75 +1446,97 @@ function normalizeRating(raw, platform){
 
 // ── CSV PARSING ──
 function parseCSV(text){
+  // Strip BOM if present (Google Sheets CSV often has one)
+  if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
   var lines=text.split(/\r?\n/).filter(function(l){return l.trim();});
-  if(lines.length<2)throw new Error('CSV must have header + at least 1 data row');
-  var headers=parseCSVRow(lines[0]).map(function(h){return h.trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');});
-  
-  // Map headers flexibly
+  if(lines.length<2)throw new Error('CSV must have header + at least 1 data row (got '+lines.length+' lines)');
+
+  // Normalize headers: lowercase, replace any non-alphanumeric run with single underscore
+  var rawHeaders=parseCSVRow(lines[0]).map(function(h){return h.trim();});
+  var headers=rawHeaders.map(function(h){
+    return h.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  });
+
+  // Map headers flexibly with comprehensive aliases
   function col(keys){
     for(var i=0;i<keys.length;i++){
       var idx=headers.indexOf(keys[i]);
       if(idx>-1)return idx;
     }
-    return-1;
+    return -1;
   }
-  
+
   var cols={
-    platform:col(['platform','source','ota']),
+    platform:col(['platform','source','ota','channel','review_platform']),
     // Stay month is computed from check-in date — that's the primary date for all analytics
-    checkInDate:col(['check_in_date','checkin_date','check_in','checkindate','stay_date','arrival_date','date_of_stay']),
-    date:col(['date','review_date','created_date','created_at']),
-    reviewedMonth:col(['reviewed_month','review_month','review_period']),
-    rating:col(['rating','score','guest_rating','overall_rating']),
-    booking:col(['booking','booking_number','booking_id','booking_no','reservation']),
-    room:col(['room','room_number','room_no','room_id']),
-    roomType:col(['room_type','roomtype','type']),
-    text:col(['review_text','review','text','comment','feedback','body']),
-    sentiment:col(['sentiment']),
-    category:col(['category','main_category']),
-    subcategory:col(['subcategory','sub_category']),
-    severity:col(['severity','severity_score']),
-    maintFlag:col(['maintenance','maintenance_flag','maint_flag','maint']),
-    cleanFlag:col(['cleaning','cleaning_flag','clean_flag','clean','housekeeping']),
-    staffMentioned:col(['mentioned_staff','staff_mentioned','staff','staff_mention']),
-    action:col(['suggested_action','action','suggested_operational_action','recommendation']),
-    resolutionStatus:col(['resolution_status','status','resolve_status']),
-    resolvedDate:col(['resolved_date','resolution_date','resolved_at']),
-    assignedDept:col(['assigned_department','department','dept']),
-    assignedStaff:col(['assigned_staff','assigned_to']),
-    resolutionNotes:col(['resolution_notes','notes','resolution_note'])
+    checkInDate:col(['check_in_date','checkin_date','check_in','checkindate','stay_date','arrival_date','date_of_stay','check_in_dt','check_in_on','checked_in']),
+    date:col(['date','review_date','created_date','created_at','posted_date','submitted_date']),
+    reviewedMonth:col(['reviewed_month','review_month','review_period','month_reviewed','posted_month']),
+    rating:col(['rating','score','guest_rating','overall_rating','stars','star_rating','rating_value']),
+    booking:col(['booking','booking_number','booking_id','booking_no','reservation','reservation_no','reservation_number','booking_ref']),
+    room:col(['room','room_number','room_no','room_id','room_num']),
+    roomType:col(['room_type','roomtype','type','category_room','room_category']),
+    text:col(['review_text','review','text','comment','feedback','body','review_body','comments']),
+    sentiment:col(['sentiment','sentiment_label']),
+    category:col(['category','main_category','primary_category']),
+    subcategory:col(['subcategory','sub_category','secondary_category']),
+    severity:col(['severity','severity_score','severity_level']),
+    maintFlag:col(['maintenance','maintenance_flag','maint_flag','maint','requires_maintenance']),
+    cleanFlag:col(['cleaning','cleaning_flag','clean_flag','clean','housekeeping','requires_cleaning']),
+    staffMentioned:col(['mentioned_staff','staff_mentioned','staff','staff_mention','staff_name','named_staff']),
+    action:col(['suggested_action','action','suggested_operational_action','recommendation','recommended_action','ai_action']),
+    resolutionStatus:col(['resolution_status','status','resolve_status','resolution']),
+    resolvedDate:col(['resolved_date','resolution_date','resolved_at','date_resolved']),
+    assignedDept:col(['assigned_department','department','dept','assigned_dept']),
+    assignedStaff:col(['assigned_staff','assigned_to','owner']),
+    resolutionNotes:col(['resolution_notes','notes','resolution_note','remarks'])
+  };
+
+  // Diagnostic: check if any critical column is missing
+  var missing=[];
+  if(cols.text===-1)missing.push('Review Text');
+  if(cols.checkInDate===-1&&cols.date===-1)missing.push('Check-in Date or Date');
+  if(cols.platform===-1)missing.push('Platform');
+  if(missing.length){
+    throw new Error('Missing required column(s): '+missing.join(', ')+'. Found headers: '+rawHeaders.join(', '));
+  }
+
+  // Store the parse diagnostic so the UI can show it
+  parseCSV.lastDiagnostic={
+    rawHeaders:rawHeaders,
+    normalizedHeaders:headers,
+    columnMap:cols,
+    rowCount:lines.length-1,
+    firstDataRow:lines[1]||''
   };
 
   var reviews=[];
+  var skipped=0;
   for(var i=1;i<lines.length;i++){
     var row=parseCSVRow(lines[i]);
-    if(row.every(function(c){return!c.trim();}))continue;
-    function g(c,def){var idx=cols[c];return idx>-1&&row[idx]!==undefined?row[idx].trim():(def||'');}
+    if(row.every(function(c){return!c.trim();})){skipped++;continue;}
+    function g(c,def){var idx=cols[c];return idx>-1&&row[idx]!==undefined?String(row[idx]).trim():(def||'');}
     var text=g('text');
-    if(!text)continue;
+    if(!text){skipped++;continue;}
     var platform=g('platform','Unknown');
     var ratingRaw=g('rating','');
     var rating=normalizeRating(ratingRaw,platform);
-    // Pipeline: sentiment first, then everything downstream uses it
     var sentiment=g('sentiment')||AI.sentiment(text,rating);
     var category=g('category')||AI.category(text,sentiment);
     var subcategory=g('subcategory')||AI.subcategory(text,category,sentiment);
     var severity=parseInt(g('severity',0))||AI.severity(text,rating,sentiment);
-    // Explicit CSV value beats AI inference for flags
     var maintRaw=g('maintFlag');
     var cleanRaw=g('cleanFlag');
     var maintFlag=maintRaw?(maintRaw.toLowerCase()==='yes'||maintRaw.toLowerCase()==='true'||maintRaw==='1'):AI.maintFlag(text,sentiment);
     var cleanFlag=cleanRaw?(cleanRaw.toLowerCase()==='yes'||cleanRaw.toLowerCase()==='true'||cleanRaw==='1'):AI.cleanFlag(text,sentiment);
+    var checkInRaw=g('checkInDate','')||g('date','');
+    var checkInISO=DateU.toISO(checkInRaw)||checkInRaw;
     var r={
       id:'csv_'+(Date.now()+'_'+i),
       platform:platform,
-      // PRIMARY DATE = Check-in date (when guest stayed). All sentiment trends, analytics,
-      // and category charts group by this. If absent, fall back to legacy "Date" column.
-      checkInDate:DateU.toISO(g('checkInDate',''))||DateU.toISO(g('date',''))||g('checkInDate','')||g('date',''),
-      // Reviewed month: metadata for review-card display only. Read as free text.
+      checkInDate:checkInISO,
       reviewedMonth:g('reviewedMonth',''),
-      // Legacy "date" field kept for backward-compat in code that hasn't migrated yet
-      date:DateU.toISO(g('checkInDate',''))||DateU.toISO(g('date',''))||g('checkInDate','')||g('date',''),
+      date:checkInISO,
       rating:Math.round(rating*10)/10,
       ratingRaw:ratingRaw,
       booking:g('booking'),
@@ -1477,7 +1560,12 @@ function parseCSV(text){
     };
     reviews.push(r);
   }
-  if(!reviews.length)throw new Error('No valid review rows found. Check that the "Review Text" column has content.');
+  parseCSV.lastDiagnostic.parsedCount=reviews.length;
+  parseCSV.lastDiagnostic.skipped=skipped;
+  if(!reviews.length){
+    var info='Found headers: ['+rawHeaders.join(', ')+']. Mapped: '+JSON.stringify(Object.keys(cols).filter(function(k){return cols[k]>-1;}))+'. Total rows scanned: '+(lines.length-1)+'. Skipped (empty/no text): '+skipped+'.';
+    throw new Error('No valid review rows parsed. '+info);
+  }
   return reviews;
 }
 
@@ -1752,15 +1840,34 @@ var App={
   exportCSV:exportCSV,
   // Live Google Sheets URL - published CSV from your hotel operations sheet
   LIVE_SHEET_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqCAoucSr2sR8pdyLobUytm71UaX2Goibvna-a55Kv2Yj5PAGmRqoMcRnrPaWA6Co4-Y6KAZwbcz17/pub?gid=175197959&single=true&output=csv',
+  lastFetchDiagnostic:null,
   refreshLiveData:function(silent){
     var self=this;
     var statusEl=document.getElementById('dataSourceLabel');
     if(!silent&&statusEl)statusEl.textContent='Loading live data...';
+    var startTime=Date.now();
     return fetch(this.LIVE_SHEET_URL,{cache:'no-store'})
-      .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text();})
+      .then(function(r){
+        if(!r.ok)throw new Error('HTTP '+r.status+' '+r.statusText);
+        return r.text();
+      })
       .then(function(csv){
+        var elapsed=Date.now()-startTime;
+        self.lastFetchDiagnostic={
+          time:new Date().toLocaleString(),
+          status:'success',
+          elapsedMs:elapsed,
+          csvBytes:csv.length,
+          csvPreview:csv.slice(0,500),
+          error:null
+        };
+        if(!csv||csv.length<10)throw new Error('Sheet returned empty response ('+csv.length+' bytes). Make sure the sheet is published to web.');
         var reviews=parseCSV(csv);
-        if(!reviews.length)throw new Error('Sheet returned no rows');
+        if(!reviews.length)throw new Error('Parsed 0 reviews from sheet');
+        // Add diagnostic from parseCSV
+        if(parseCSV.lastDiagnostic){
+          self.lastFetchDiagnostic.parseDiagnostic=parseCSV.lastDiagnostic;
+        }
         State.reviews=reviews;State.source='live';State.fileName='Google Sheets';State.uploadedAt=new Date().toLocaleString();
         LS.set(CACHE_KEY,{reviews:reviews,fileName:'Google Sheets',uploadedAt:State.uploadedAt});
         if(statusEl)statusEl.textContent='Live · '+reviews.length+' reviews · '+new Date().toLocaleTimeString();
@@ -1772,10 +1879,53 @@ var App={
         return reviews;
       })
       .catch(function(err){
-        if(statusEl)statusEl.textContent='Live data unavailable — using cached/sample';
-        if(!silent)toast('⚠ Could not load live sheet: '+err.message);
+        self.lastFetchDiagnostic={
+          time:new Date().toLocaleString(),
+          status:'failed',
+          elapsedMs:Date.now()-startTime,
+          error:err.message,
+          csvBytes:0,
+          csvPreview:''
+        };
+        if(statusEl)statusEl.textContent='⚠ Live fetch failed — '+err.message.slice(0,60);
+        if(!silent)toast('⚠ '+err.message);
         throw err;
       });
+  },
+  showDiagnostic:function(){
+    var d=this.lastFetchDiagnostic;
+    var el=document.getElementById('liveDiagnostic');
+    if(!el)return;
+    el.style.display='block';
+    if(!d){
+      el.innerHTML='<div style="padding:12px;background:var(--bg3);border-radius:6px;font-size:13px;color:var(--t3)">No fetch attempted yet. Click "↻ Sync Now" first.</div>';
+      return;
+    }
+    var statusColor=d.status==='success'?'var(--green)':'var(--red)';
+    var statusIcon=d.status==='success'?'✓':'✗';
+    var html='<div style="background:var(--bg3);border-radius:8px;padding:14px;font-size:13px;line-height:1.6">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bd2)">'+
+        '<span style="font-weight:600;color:'+statusColor+';font-size:14px">'+statusIcon+' Last fetch: '+d.status.toUpperCase()+'</span>'+
+        '<span style="color:var(--t3);font-size:12px">'+esc(d.time)+' · '+d.elapsedMs+'ms · '+d.csvBytes+' bytes</span>'+
+      '</div>';
+    if(d.status==='failed'){
+      html+='<div style="background:var(--rs);color:var(--red);padding:10px;border-radius:6px;margin-bottom:10px"><strong>Error:</strong> '+esc(d.error||'Unknown')+'</div>';
+      html+='<div style="font-size:12px;color:var(--t2)"><strong>Likely causes:</strong><ul style="margin:6px 0 0 18px;padding:0"><li>Google Sheet not published (File → Share → Publish to web)</li><li>Sheet URL is private or removed</li><li>Browser blocked CORS — try a different network</li><li>Sheet has been renamed or moved</li></ul></div>';
+    }else{
+      var pd=d.parseDiagnostic||{};
+      html+='<div style="margin-bottom:10px"><strong style="color:var(--t1)">Detected headers:</strong> <code style="background:var(--bg4);padding:2px 6px;border-radius:4px;font-size:12px;color:var(--blue)">'+esc((pd.rawHeaders||[]).join(' | '))+'</code></div>';
+      var mapped=Object.keys(pd.columnMap||{}).filter(function(k){return pd.columnMap[k]>-1;});
+      var missing=Object.keys(pd.columnMap||{}).filter(function(k){return pd.columnMap[k]===-1;});
+      html+='<div style="margin-bottom:10px"><strong style="color:var(--green)">Mapped columns ('+mapped.length+'):</strong> '+mapped.map(function(k){return '<span class="badge badge-green">'+k+'</span>';}).join(' ')+'</div>';
+      if(missing.length){
+        html+='<div style="margin-bottom:10px"><strong style="color:var(--t3)">Unmapped (optional or missing):</strong> '+missing.map(function(k){return '<span class="badge badge-gray">'+k+'</span>';}).join(' ')+'</div>';
+      }
+      html+='<div style="margin-bottom:10px"><strong>Parsed:</strong> '+(pd.parsedCount||0)+' rows · <strong>Skipped:</strong> '+(pd.skipped||0)+' empty rows · <strong>Total scanned:</strong> '+(pd.rowCount||0)+'</div>';
+      html+='<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--bd2)"><div style="font-size:12px;color:var(--t3);margin-bottom:4px">First row of data:</div><pre style="background:var(--bg4);padding:8px;border-radius:5px;font-size:11px;color:var(--t2);overflow-x:auto;white-space:pre-wrap">'+esc((pd.firstDataRow||'').slice(0,400))+'</pre></div>';
+    }
+    html+='<details style="margin-top:10px"><summary style="cursor:pointer;font-size:12px;color:var(--t3)">Show raw CSV preview (first 500 chars)</summary><pre style="background:var(--bg4);padding:8px;border-radius:5px;font-size:11px;color:var(--t2);overflow-x:auto;margin-top:6px;white-space:pre-wrap">'+esc(d.csvPreview||'(empty)')+'</pre></details>';
+    html+='</div>';
+    el.innerHTML=html;
   },
   init:function(){
     var savedTheme=LS.get('hoi_theme',null);
