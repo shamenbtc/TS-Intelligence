@@ -724,7 +724,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v17', SRC_KEY='hoi_source_v17';
+var CACHE_KEY='hoi_reviews_v18', SRC_KEY='hoi_source_v18';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1767,7 +1767,10 @@ function normalizeRating(raw, platform){
 function parseCSV(text){
   // Strip BOM if present (Google Sheets CSV often has one)
   if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
-  var lines=text.split(/\r?\n/).filter(function(l){return l.trim();});
+  // Quote-aware line splitter: CSV cells can contain newlines inside double-quoted strings.
+  // A naive text.split('\n') would break review text mid-paragraph and shift all subsequent
+  // columns. We track quote state to only split on newlines that are OUTSIDE quotes.
+  var lines=splitCSVLines(text).filter(function(l){return l.trim();});
   if(lines.length<2)throw new Error('CSV must have header + at least 1 data row (got '+lines.length+' lines)');
 
   // AUTO-DETECT HEADER ROW.
@@ -1978,6 +1981,29 @@ function parseCSVRow(line){
   }
   result.push(cur);
   return result;
+}
+
+// Quote-aware line splitter. A CSV record can span multiple physical lines when
+// a cell contains a newline inside double quotes (RFC 4180). We track quote
+// state and only break on a newline that is OUTSIDE of quotes.
+function splitCSVLines(text){
+  var lines=[],cur='',inQ=false;
+  for(var i=0;i<text.length;i++){
+    var c=text.charAt(i);
+    if(c==='"'){
+      // Handle escaped "" inside a quoted field — both chars stay in cur, quote state unchanged
+      if(inQ&&text.charAt(i+1)==='"'){cur+='""';i++;continue;}
+      inQ=!inQ;cur+=c;continue;
+    }
+    if(!inQ&&(c==='\n'||c==='\r')){
+      // Outside quotes: end of record. Consume \r\n as a single line break.
+      if(c==='\r'&&text.charAt(i+1)==='\n')i++;
+      lines.push(cur);cur='';continue;
+    }
+    cur+=c;
+  }
+  if(cur)lines.push(cur);
+  return lines;
 }
 
 // ── AI Auto-Analysis ──
