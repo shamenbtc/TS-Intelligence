@@ -2535,7 +2535,7 @@ var App={
   },
   exportCSV:exportCSV,
   // Live Google Sheets URL - published CSV from your hotel operations sheet
-  LIVE_SHEET_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqCAoucSr2sR8pdyLobUytm71UaX2Goibvna-a55Kv2Yj5PAGmRqoMcRnrPaWA6Co4-Y6KAZwbcz17/pub?gid=1245614730&single=true&output=csv',
+  LIVE_SHEET_URL:'/api/sheets?sheet=main&format=csv',
   lastFetchDiagnostic:null,
   // Resilient fetch: tries multiple URL variations because Google Sheets sometimes returns
   // different responses depending on whether output param is first/last, whether single=true
