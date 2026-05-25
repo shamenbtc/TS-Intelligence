@@ -1,43 +1,58 @@
 // ============================================================
 // api/sheets.js — Vercel Edge Function
 // Caching + error-handling proxy for Google Sheets CSV
-//
-// HOW IT WORKS:
-//   Your dashboard calls /api/sheets?sheet=main
-//   This function fetches from Google, caches for 90 seconds,
-//   and returns last-good data if Google ever fails.
-//
-// DEPLOY: Drop this file into your Vercel project's /api folder.
-// No other config needed — Vercel auto-detects it.
+// Built for Hotel Review Intelligence Database
+// (3-row header structure, 26 columns A–Z)
 // ============================================================
 
 export const config = {
   runtime: "edge",
 };
 
-// ── Your sheet URLs ──────────────────────────────────────────
-// Add more sheets here as your platform grows.
-// Key = the ?sheet= param your dashboard uses.
-// Value = the full published CSV URL from Google Sheets.
 const SHEETS = {
   main: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqCAoucSr2sR8pdyLobUytm71UaX2Goibvna-a55Kv2Yj5PAGmRqoMcRnrPaWA6Co4-Y6KAZwbcz17/pub?gid=1245614730&single=true&output=csv",
-
-  // Add more sheets like this:
-  // reviews: "https://docs.google.com/spreadsheets/d/e/YOUR_URL/pub?gid=OTHER_GID&output=csv",
-  // analytics: "https://docs.google.com/spreadsheets/d/e/YOUR_URL/pub?gid=ANOTHER_GID&output=csv",
 };
 
-// ── Cache settings ───────────────────────────────────────────
-const CACHE_SECONDS = 90; // How long to serve cached data before re-fetching
-const TIMEOUT_MS    = 8000; // Give Google 8 seconds to respond before giving up
+const CACHE_SECONDS = 90;
+const TIMEOUT_MS    = 8000;
 
-// ── Main handler ─────────────────────────────────────────────
+// ── Column map ───────────────────────────────────────────────
+// Row 2 of your Sheet contains the actual column names (A–Z).
+// We map them to clean camelCase keys for the dashboard.
+const COLUMN_MAP = {
+  "Check-in Date ★":       "checkInDate",
+  "Check-out Date":        "checkOutDate",
+  "Night(s) Stayed":       "nightsStayed",
+  "Review Month ★":        "reviewMonth",
+  "Platform ★":            "platform",
+  "Booking Number ★":      "bookingNumber",
+  "Room Number ★":         "roomNumber",
+  "Room Type ★":           "roomType",
+  "Guest Nationality":     "guestNationality",
+  "Rating ★":              "rating",
+  "Review Text ★":         "reviewText",
+  "Mentioned Staff":       "mentionedStaff",
+  "Verified Stay":         "verifiedStay",
+  "Sentiment ★":           "sentiment",
+  "Category ★":            "category",
+  "Category ★":            "category",
+  "Subcategory ★":         "subcategory",
+  "Complaint Summary":     "complaintSummary",
+  "Severity ★":            "severity",
+  "Maintenance Flag ★":    "maintenanceFlag",
+  "HSKP Flag ★":           "hskpFlag",
+  "Suggested Action":      "suggestedAction",
+  "Resolution Status ★":   "resolutionStatus",
+  "Resolved Date":         "resolvedDate",
+  "Assigned Department":   "assignedDepartment",
+  "Assigned Staff":        "assignedStaff",
+  "Resolution Notes":      "resolutionNotes",
+};
+
 export default async function handler(req) {
   const url    = new URL(req.url);
   const sheet  = url.searchParams.get("sheet") || "main";
-  const format = url.searchParams.get("format") || "csv"; // csv or json
 
-  // Validate the requested sheet exists
   if (!SHEETS[sheet]) {
     return respond(
       { error: `Unknown sheet: "${sheet}". Available: ${Object.keys(SHEETS).join(", ")}` },
@@ -45,10 +60,9 @@ export default async function handler(req) {
     );
   }
 
-  // ── Fetch from Google with timeout ───────────────────────
-  let csvText = null;
+  // ── Fetch from Google ────────────────────────────────────
+  let csvText   = null;
   let fetchError = null;
-  let source = "live";
 
   try {
     const controller = new AbortController();
@@ -61,79 +75,159 @@ export default async function handler(req) {
 
     clearTimeout(timeout);
 
-    if (!res.ok) {
-      throw new Error(`Google returned HTTP ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Google returned HTTP ${res.status}`);
 
     csvText = await res.text();
 
-    // Basic sanity check — if Google returns an HTML error page, catch it
     if (csvText.trim().startsWith("<!DOCTYPE") || csvText.trim().startsWith("<html")) {
-      throw new Error("Google returned an HTML error page instead of CSV");
+      throw new Error("Google returned an HTML page instead of CSV — check the Sheet is still published");
     }
   } catch (err) {
     fetchError = err.message;
-    source     = "error";
   }
 
-  // ── Build response payload ───────────────────────────────
-  const now      = new Date();
-  const fetchedAt = now.toISOString();
+  const fetchedAt = new Date().toISOString();
 
   if (fetchError) {
-    // Google failed — tell the dashboard clearly
     return respond(
-      {
-        ok:        false,
-        source:    "error",
-        error:     fetchError,
-        fetchedAt,
-        message:   "Could not reach Google Sheets. Check that your Sheet is still published.",
-        data:      null,
-        rows:      null,
-      },
-      {
-        status: 503,
-        headers: corsHeaders(),
-      }
+      { ok: false, error: fetchError, fetchedAt, reviews: null, summary: null },
+      { status: 503, headers: corsHeaders() }
     );
   }
 
-  // ── Parse CSV → JSON if requested ───────────────────────
-  let rows = null;
-  if (format === "json") {
-    rows = parseCSV(csvText);
+  // ── Parse the 3-row header structure ────────────────────
+  // Row 1: Section labels (STAY INFO, BOOKING, REVIEW, OPERATIONAL, RESOLUTION)
+  // Row 2: Column names  ← this is the real header row
+  // Row 3: Instructions/examples (skip)
+  // Row 4+: Actual review data
+  const { reviews, summary } = parseReviewSheet(csvText);
+
+  return respond(
+    { ok: true, source: "live", fetchedAt, reviewCount: reviews.length, reviews, summary },
+    {
+      status: 200,
+      headers: {
+        ...corsHeaders(),
+        "Cache-Control": `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=30`,
+      },
+    }
+  );
+}
+
+// ── Sheet parser ─────────────────────────────────────────────
+function parseReviewSheet(csv) {
+  const allLines = csv.trim().split("\n");
+  if (allLines.length < 4) return { reviews: [], summary: emptySummary() };
+
+  // Row 2 (index 1) = real column headers
+  const headers = splitCSVLine(allLines[1]);
+
+  // Rows 4+ (index 3+) = data
+  const reviews = [];
+
+  for (let i = 3; i < allLines.length; i++) {
+    const values = splitCSVLine(allLines[i]);
+
+    // Skip blank rows
+    if (values.every(v => v.trim() === "")) continue;
+
+    // Skip rows that look like embedded notes (no date in column A)
+    const rawDate = (values[0] || "").trim();
+    if (!rawDate.match(/^\d{1,2}-[A-Za-z]{3}-\d{4}$/)) continue;
+
+    // Build the row object using the column map
+    const row = {};
+    headers.forEach((h, idx) => {
+      const key = COLUMN_MAP[h.trim()];
+      if (key) row[key] = (values[idx] || "").trim();
+    });
+
+    // Normalise rating to a /5 scale
+    row.ratingNormalised = normaliseRating(row.rating);
+
+    reviews.push(row);
   }
 
-  // ── Return successful response ───────────────────────────
-  const payload = {
-    ok:        true,
-    source,
-    fetchedAt,
-    rowCount:  csvText.split("\n").filter(Boolean).length - 1, // exclude header
-    data:      format === "csv" ? csvText : null,
-    rows:      format === "json" ? rows    : null,
-  };
+  // Build summary stats for the dashboard
+  const summary = buildSummary(reviews);
 
-  return respond(payload, {
-    status: 200,
-    headers: {
-      ...corsHeaders(),
-      // Tell Vercel Edge + browsers to cache for CACHE_SECONDS seconds
-      "Cache-Control": `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=30`,
-    },
+  return { reviews, summary };
+}
+
+// ── Normalise ratings to /5 ──────────────────────────────────
+function normaliseRating(raw) {
+  if (!raw) return null;
+  const match = raw.match(/([\d.]+)\s*\/\s*(\d+)/);
+  if (!match) return null;
+  const score = parseFloat(match[1]);
+  const scale = parseFloat(match[2]);
+  return Math.round((score / scale) * 5 * 10) / 10; // 1 decimal place
+}
+
+// ── Summary stats ────────────────────────────────────────────
+function buildSummary(reviews) {
+  if (!reviews.length) return emptySummary();
+
+  const rated   = reviews.filter(r => r.ratingNormalised !== null);
+  const avgRating = rated.length
+    ? Math.round(rated.reduce((s, r) => s + r.ratingNormalised, 0) / rated.length * 10) / 10
+    : null;
+
+  // Platform breakdown
+  const byPlatform = {};
+  reviews.forEach(r => {
+    if (!r.platform) return;
+    byPlatform[r.platform] = (byPlatform[r.platform] || 0) + 1;
   });
+
+  // Resolution breakdown
+  const byResolution = {};
+  reviews.forEach(r => {
+    const status = r.resolutionStatus || "Not set";
+    byResolution[status] = (byResolution[status] || 0) + 1;
+  });
+
+  // Sentiment breakdown
+  const bySentiment = {};
+  reviews.forEach(r => {
+    const s = r.sentiment || "Not set";
+    bySentiment[s] = (bySentiment[s] || 0) + 1;
+  });
+
+  // Open / escalated issues
+  const openIssues      = reviews.filter(r => r.resolutionStatus === "Open").length;
+  const escalatedIssues = reviews.filter(r => r.resolutionStatus === "Escalated").length;
+  const resolvedIssues  = reviews.filter(r => r.resolutionStatus === "Resolved").length;
+
+  // Low ratings (below 3/5)
+  const lowRatings = rated.filter(r => r.ratingNormalised < 3).length;
+
+  return {
+    totalReviews:    reviews.length,
+    avgRating,
+    openIssues,
+    escalatedIssues,
+    resolvedIssues,
+    lowRatings,
+    byPlatform,
+    byResolution,
+    bySentiment,
+  };
+}
+
+function emptySummary() {
+  return {
+    totalReviews: 0, avgRating: null,
+    openIssues: 0, escalatedIssues: 0, resolvedIssues: 0, lowRatings: 0,
+    byPlatform: {}, byResolution: {}, bySentiment: {},
+  };
 }
 
 // ── Helpers ──────────────────────────────────────────────────
-
 function respond(body, { status = 200, headers = {} } = {}) {
   return new Response(JSON.stringify(body, null, 2), {
     status,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
+    headers: { "Content-Type": "application/json", ...headers },
   });
 }
 
@@ -145,28 +239,6 @@ function corsHeaders() {
   };
 }
 
-// Minimal CSV parser — handles quoted fields, commas inside quotes, newlines
-function parseCSV(text) {
-  const lines = text.trim().split("\n");
-  if (lines.length < 2) return [];
-
-  const headers = splitCSVLine(lines[0]);
-  const rows    = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const values = splitCSVLine(lines[i]);
-    if (values.every((v) => v === "")) continue; // skip blank rows
-
-    const row = {};
-    headers.forEach((h, idx) => {
-      row[h.trim()] = (values[idx] || "").trim();
-    });
-    rows.push(row);
-  }
-
-  return rows;
-}
-
 function splitCSVLine(line) {
   const result = [];
   let current  = "";
@@ -175,20 +247,14 @@ function splitCSVLine(line) {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
+      if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+      else inQuotes = !inQuotes;
     } else if (ch === "," && !inQuotes) {
-      result.push(current);
-      current = "";
+      result.push(current); current = "";
     } else {
       current += ch;
     }
   }
-
   result.push(current);
   return result;
 }
