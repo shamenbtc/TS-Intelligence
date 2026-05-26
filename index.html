@@ -351,6 +351,22 @@ tr:hover td{background:var(--bg3)}
 .age-overdue{background:var(--rs);color:var(--red)}
 .age-critical{background:var(--red);color:#fff;animation:agePulse 2s ease-in-out infinite}
 @keyframes agePulse{0%,100%{opacity:1}50%{opacity:.7}}
+/* Inline status update panel */
+.update-panel{background:var(--bg3);border-radius:var(--r);padding:12px 14px;margin-top:10px;border:1px solid var(--bd);display:none}
+.update-panel.open{display:block}
+.update-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.update-field label{font-size:9px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:4px}
+.update-field input,.update-field select,.update-field textarea{width:100%;padding:6px 9px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg2);color:var(--t1);font-size:12px;font-family:var(--fn);outline:none;transition:border-color 150ms}
+.update-field input:focus,.update-field select:focus,.update-field textarea:focus{border-color:var(--gold)}
+.update-field textarea{min-height:54px;resize:vertical;line-height:1.5}
+.update-btn-row{display:flex;gap:8px;align-items:center}
+.ubtn{padding:6px 14px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--bg4);color:var(--t2);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--fn);transition:all 150ms;display:inline-flex;align-items:center;gap:6px}
+.ubtn:hover{background:var(--bg5);color:var(--t1)}
+.ubtn:active{transform:scale(0.97)}
+.ubtn-save{background:var(--gold);color:var(--bg1);border-color:var(--gold)}
+.ubtn-save:hover{background:var(--gold2)}
+.ubtn-save:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.update-msg{font-size:11px;margin-left:auto}
 
 /* ── REDUCE MOTION ───────────────────────────────────────────────────────── */
 @media(prefers-reduced-motion:reduce){
@@ -606,8 +622,10 @@ tr:hover td{background:var(--bg3)}
       <input type="date" class="fselect" id="revDateFrom" onchange="R.onFilterChange()" title="Check-in date from">
       <input type="date" class="fselect" id="revDateTo" onchange="R.onFilterChange()" title="Check-in date to">
       <select class="fselect" id="revSort" onchange="R.onFilterChange()" title="Sort order">
-        <option value="date-asc">↑ Oldest first</option>
-        <option value="date-desc">↓ Newest first</option>
+        <option value="date-asc">↑ Check-in: oldest first</option>
+        <option value="date-desc">↓ Check-in: newest first</option>
+        <option value="checkout-asc">↑ Check-out: oldest first</option>
+        <option value="checkout-desc">↓ Check-out: newest first</option>
         <option value="rating-desc">↓ Highest rating</option>
         <option value="rating-asc">↑ Lowest rating</option>
         <option value="sev-desc">↓ Severity</option>
@@ -832,7 +850,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v23', SRC_KEY='hoi_source_v23';
+var CACHE_KEY='hoi_reviews_v24', SRC_KEY='hoi_source_v24';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1414,6 +1432,16 @@ var R={
       var db=b.checkInDate||b.date||'';
       if(sortBy==='date-asc')  return da<db?-1:da>db?1:0;
       if(sortBy==='date-desc') return da>db?-1:da<db?1:0;
+      if(sortBy==='checkout-asc'){
+        var ca=a.checkOutDate||a.checkInDate||a.date||'';
+        var cb=b.checkOutDate||b.checkInDate||b.date||'';
+        return ca<cb?-1:ca>cb?1:0;
+      }
+      if(sortBy==='checkout-desc'){
+        var ca2=a.checkOutDate||a.checkInDate||a.date||'';
+        var cb2=b.checkOutDate||b.checkInDate||b.date||'';
+        return ca2>cb2?-1:ca2<cb2?1:0;
+      }
       if(sortBy==='rating-asc')  return (parseFloat(a.rating)||0)-(parseFloat(b.rating)||0);
       if(sortBy==='rating-desc') return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0);
       if(sortBy==='sev-desc')  return (parseInt(b.severity)||0)-(parseInt(a.severity)||0);
@@ -1742,8 +1770,112 @@ var A={
           '<div class="res-track">'+resSteps.map(function(s,i){return'<div class="res-step'+(i<resIdx?' done':i===resIdx?' current':'')+'" title="'+s+'"></div>';}).join('<div style="width:4px"></div>')+'</div>'+
           '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t4);margin-top:3px">'+resSteps.map(function(s){return'<span>'+s+'</span>';}).join('')+'</div>'+
         '</div>'+
+        // Update Status panel — inline, no page navigation needed
+        '<div style="margin-top:10px">'+
+          '<button class="ubtn" onclick="A.toggleUpdate(\''+esc(r.booking||r.id)+'\',this)" id="updbtn_'+esc(r.booking||r.id)+'">'+
+            '✎ Update Status'+
+          '</button>'+
+        '</div>'+
+        '<div class="update-panel" id="updpanel_'+esc(r.booking||r.id)+'">'+
+          '<div style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Update Resolution — Room '+esc(r.room||'?')+'</div>'+
+          '<div class="update-grid">'+
+            '<div class="update-field"><label>Resolution Status</label>'+
+              '<select id="upd_status_'+esc(r.booking||r.id)+'">'+
+                ['Open','In Progress','Monitoring','Resolved','Escalated'].map(function(s){
+                  return'<option value="'+s+'"'+(s===(r.resolutionStatus||'Open')?' selected':'')+'>'+s+'</option>';
+                }).join('')+
+              '</select>'+
+            '</div>'+
+            '<div class="update-field"><label>Resolved Date</label>'+
+              '<input type="date" id="upd_date_'+esc(r.booking||r.id)+'" value="'+esc(r.resolvedDate||'')+'">'+
+            '</div>'+
+            '<div class="update-field"><label>Assigned Department</label>'+
+              '<select id="upd_dept_'+esc(r.booking||r.id)+'">'+
+                ['','Engineering','Housekeeping','Front Office','F&B','Management','Security','Concierge'].map(function(d){
+                  return'<option value="'+d+'"'+(d===(r.assignedDept||'')?' selected':'')+'>'+( d||'Not assigned')+'</option>';
+                }).join('')+
+              '</select>'+
+            '</div>'+
+            '<div class="update-field"><label>Assigned Staff</label>'+
+              '<input type="text" id="upd_staff_'+esc(r.booking||r.id)+'" value="'+esc(r.assignedStaff||'')+'" placeholder="Name of staff handling this">'+
+            '</div>'+
+          '</div>'+
+          '<div class="update-field" style="margin-bottom:10px"><label>Resolution Notes</label>'+
+            '<textarea id="upd_notes_'+esc(r.booking||r.id)+'">'+esc(r.resolutionNotes||'')+'</textarea>'+
+          '</div>'+
+          '<div class="update-btn-row">'+
+            '<button class="ubtn ubtn-save" id="updsave_'+esc(r.booking||r.id)+'" onclick="A.saveUpdate(\''+esc(r.booking||r.id)+'\',\''+esc(r.room||'')+'\')">'+
+              '↑ Save to Sheet'+
+            '</button>'+
+            '<button class="ubtn" onclick="A.toggleUpdate(\''+esc(r.booking||r.id)+'\',null)">Cancel</button>'+
+            '<span class="update-msg" id="updmsg_'+esc(r.booking||r.id)+'"></span>'+
+          '</div>'+
+        '</div>'+
       '</div>';
     }).join('');
+  },
+  // ── STATUS UPDATE ──────────────────────────────────────────────────────────
+  toggleUpdate:function(bookingId,btn){
+    var panel=document.getElementById('updpanel_'+bookingId);
+    if(!panel)return;
+    var isOpen=panel.classList.contains('open');
+    document.querySelectorAll('.update-panel.open').forEach(function(p){p.classList.remove('open');});
+    document.querySelectorAll('[id^="updbtn_"]').forEach(function(b){b.textContent='✎ Update Status';});
+    if(!isOpen){
+      panel.classList.add('open');
+      if(btn){btn.textContent='✕ Cancel';}
+      // Auto-fill today when status changes to Resolved
+      var sid='upd_status_'+bookingId, did='upd_date_'+bookingId;
+      var sel=document.getElementById(sid), dat=document.getElementById(did);
+      if(sel&&dat){
+        sel.onchange=function(){
+          if(sel.value==='Resolved'&&!dat.value){
+            var n=new Date();
+            dat.value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+          }
+        };
+      }
+      panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+  },
+  saveUpdate:function(bookingId,room){
+    var btn=document.getElementById('updsave_'+bookingId);
+    var msg=document.getElementById('updmsg_'+bookingId);
+    var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
+    var status=g('upd_status_'+bookingId);
+    var date=g('upd_date_'+bookingId);
+    var dept=g('upd_dept_'+bookingId);
+    var staff=g('upd_staff_'+bookingId);
+    var notes=g('upd_notes_'+bookingId);
+    if(!status){if(msg){msg.style.color='var(--red)';msg.textContent='Status required';}return;}
+    var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function fmtD(iso){if(!iso)return'';var d=new Date(iso+'T00:00:00');return String(d.getDate()).padStart(2,'0')+'-'+MONTHS[d.getMonth()]+'-'+d.getFullYear();}
+    if(btn)btn.disabled=true;
+    if(msg){msg.style.color='var(--t3)';msg.textContent='Saving…';}
+    fetch('/api/update-status',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({bookingNumber:bookingId,resolutionStatus:status,resolvedDate:fmtD(date),assignedDept:dept,assignedStaff:staff,resolutionNotes:notes})
+    }).then(function(r){return r.json();}).then(function(data){
+      if(data.success){
+        if(msg){msg.style.color='var(--green)';msg.textContent='✓ Saved to Google Sheet';}
+        // Update in-memory state so dashboard reflects change immediately — no sync needed
+        State.reviews.forEach(function(r){
+          if((r.booking||r.id)===bookingId){
+            r.resolutionStatus=status;r.resolvedDate=fmtD(date);
+            r.assignedDept=dept;r.assignedStaff=staff;r.resolutionNotes=notes;
+          }
+        });
+        try{LS.set(CACHE_KEY,{reviews:State.reviews,fileName:'Google Sheets',uploadedAt:State.uploadedAt});}catch(e){}
+        setTimeout(function(){A.render();renderOverview();},1200);
+        toast('✓ Room '+room+' → '+status);
+      }else{
+        if(msg){msg.style.color='var(--red)';msg.textContent='Error: '+(data.error||'Failed');}
+        if(btn)btn.disabled=false;
+      }
+    }).catch(function(err){
+      if(msg){msg.style.color='var(--red)';msg.textContent='Error: '+err.message;}
+      if(btn)btn.disabled=false;
+    });
   }
 };
 
