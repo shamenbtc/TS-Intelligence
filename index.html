@@ -344,6 +344,13 @@ tr:hover td{background:var(--bg3)}
 .res-step{flex:1;height:2px;border-radius:2px;background:var(--bg4)}
 .res-step.done{background:var(--green)}
 .res-step.current{background:var(--gold)}
+/* Alert age badge */
+.age-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:3px;font-size:var(--ts-xs);font-weight:600;font-family:var(--fn-mono);flex-shrink:0}
+.age-ok{background:var(--gs);color:var(--green)}
+.age-warn{background:var(--as);color:var(--amber)}
+.age-overdue{background:var(--rs);color:var(--red)}
+.age-critical{background:var(--red);color:#fff;animation:agePulse 2s ease-in-out infinite}
+@keyframes agePulse{0%,100%{opacity:1}50%{opacity:.7}}
 
 /* ── REDUCE MOTION ───────────────────────────────────────────────────────── */
 @media(prefers-reduced-motion:reduce){
@@ -598,6 +605,13 @@ tr:hover td{background:var(--bg3)}
       </select>
       <input type="date" class="fselect" id="revDateFrom" onchange="R.onFilterChange()" title="Check-in date from">
       <input type="date" class="fselect" id="revDateTo" onchange="R.onFilterChange()" title="Check-in date to">
+      <select class="fselect" id="revSort" onchange="R.onFilterChange()" title="Sort order">
+        <option value="date-asc">↑ Oldest first</option>
+        <option value="date-desc">↓ Newest first</option>
+        <option value="rating-desc">↓ Highest rating</option>
+        <option value="rating-asc">↑ Lowest rating</option>
+        <option value="sev-desc">↓ Severity</option>
+      </select>
       <button class="fbtn" onclick="R.clearFilters()">✕ Clear</button>
     </div>
     <div style="font-size:11px;color:var(--t3)" id="revCount">Showing all reviews</div>
@@ -818,7 +832,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v21', SRC_KEY='hoi_source_v21';
+var CACHE_KEY='hoi_reviews_v23', SRC_KEY='hoi_source_v23';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -973,6 +987,41 @@ function getSevClass(n){return n>=5?'sev-5':n>=3?'sev-3':'sev-1';}
 function resClass(s){if(!s)return'status-open';var m={'Open':'status-open','In Progress':'status-inprogress','Monitoring':'status-monitoring','Resolved':'status-resolved','Escalated':'status-escalated'};return m[s]||'status-open';}
 function stars(r){var n=Math.round(parseFloat(r)||0);if(n<0)n=0;if(n>5)n=5;var s='';for(var i=0;i<5;i++)s+=i<n?'★':'☆';return s;}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── ALERT AGE ─────────────────────────────────────────────────────────────────
+// Calculates days since check-in date (when the guest experienced the issue).
+// For Resolved alerts, calculates days from check-in to resolved date (time to close).
+// Returns null when no parseable date is available.
+function daysOpen(r){
+  var startStr=r.checkInDate||r.date||'';
+  if(!startStr)return null;
+  var start=DateU.parse(startStr);
+  if(!start||isNaN(start.getTime()))return null;
+  var end=new Date();
+  if(r.resolutionStatus==='Resolved'&&r.resolvedDate){
+    var rd=DateU.parse(r.resolvedDate);
+    if(rd&&!isNaN(rd.getTime()))end=rd;
+  }
+  return Math.max(0,Math.floor((end.getTime()-start.getTime())/(1000*60*60*24)));
+}
+
+// Returns the age badge HTML.
+// Open alert thresholds: ≤2d = green, 3-6d = amber, 7-13d = red, 14d+ = pulsing red OVERDUE.
+// Resolved alerts show "Closed in Nd" in green — useful for tracking resolution speed.
+function alertAgeBadge(r){
+  var days=daysOpen(r);
+  if(days===null)return'';
+  var label,cls;
+  if(r.resolutionStatus==='Resolved'){
+    label='Closed in '+days+'d'; cls='age-ok';
+  }else{
+    if(days<=2){label=days+'d open';cls='age-ok';}
+    else if(days<=6){label=days+'d open';cls='age-warn';}
+    else if(days<=13){label=days+'d — overdue';cls='age-overdue';}
+    else{label=days+'d — OVERDUE';cls='age-critical';}
+  }
+  return'<span class="age-badge '+cls+'">⏱ '+label+'</span>';
+}
 
 // ── Aggregations ──
 var Agg={
@@ -1283,7 +1332,10 @@ function renderOverview(){
             '<span style="color:var(--blue)">Room '+esc(r.room||'?')+'</span>'+
             ' &nbsp;<span style="color:var(--t2);font-weight:500">'+esc(complaintText)+'</span>'+
           '</div>'+
-          '<div style="font-size:11px;color:var(--t3)">'+esc(r.platform)+' • Check-in '+esc(r.checkInDate||r.date||'')+(r.sentiment==='Positive'?' • <span style="color:var(--amber);font-weight:600">mixed sentiment</span>':'')+'</div>'+
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--t3)">'+
+            '<span>'+esc(r.platform)+' • Check-in '+esc(r.checkInDate||r.date||'')+(r.sentiment==='Positive'?' • <span style="color:var(--amber);font-weight:600">mixed sentiment</span>':'')+'</span>'+
+            alertAgeBadge(r)+
+          '</div>'+
         '</div>'+
         '<div class="status '+resClass(r.resolutionStatus)+'" style="flex-shrink:0">'+esc(r.resolutionStatus||'Open')+'</div>'+
       '</div>';
@@ -1338,7 +1390,8 @@ var R={
     var plat=document.getElementById('revPlatform').value;
     var dFrom=document.getElementById('revDateFrom').value;
     var dTo=document.getElementById('revDateTo').value;
-    return State.reviews.filter(function(r){
+    var sortBy=document.getElementById('revSort')?document.getElementById('revSort').value:'date-asc';
+    var result=State.reviews.filter(function(r){
       if(sent&&r.sentiment!==sent)return false;
       if(sev){
         if(sev==='1'&&parseInt(r.severity)>2)return false;
@@ -1355,6 +1408,18 @@ var R={
       }
       return true;
     });
+    // Sort — default oldest→newest by check-in date
+    result.sort(function(a,b){
+      var da=a.checkInDate||a.date||'';
+      var db=b.checkInDate||b.date||'';
+      if(sortBy==='date-asc')  return da<db?-1:da>db?1:0;
+      if(sortBy==='date-desc') return da>db?-1:da<db?1:0;
+      if(sortBy==='rating-asc')  return (parseFloat(a.rating)||0)-(parseFloat(b.rating)||0);
+      if(sortBy==='rating-desc') return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0);
+      if(sortBy==='sev-desc')  return (parseInt(b.severity)||0)-(parseInt(a.severity)||0);
+      return da<db?-1:da>db?1:0; // default
+    });
+    return result;
   },
   // CRITICAL: this is called by every filter input. Must reset to page 0 BEFORE rendering
   // because filtered result count changes — the previous page index may be out of bounds.
@@ -1434,6 +1499,8 @@ var R={
   clearFilters:function(){
     ['revSearch','revDateFrom','revDateTo'].forEach(function(id){document.getElementById(id).value='';});
     ['revSentiment','revSeverity','revCategory','revPlatform'].forEach(function(id){document.getElementById(id).value='';});
+    var sortEl=document.getElementById('revSort');
+    if(sortEl)sortEl.value='date-asc';
     RevPage.current=0;
     this.renderReviews();
   }
@@ -1609,11 +1676,17 @@ var A={
     var esc2=rv.filter(function(r){return r.resolutionStatus==='Escalated';}).length;
     var inprog=rv.filter(function(r){return r.resolutionStatus==='In Progress';}).length;
     var resolved=State.reviews.filter(function(r){return r.resolutionStatus==='Resolved';}).length;
+    // Count overdue: open/in-progress/escalated alerts open for 7+ days
+    var overdue=rv.filter(function(r){
+      if(r.resolutionStatus==='Resolved')return false;
+      var d=daysOpen(r);
+      return d!==null&&d>=7;
+    }).length;
     document.getElementById('alertKpis').innerHTML=
       '<div class="stat"><div class="stat-label">Total Alerts</div><div class="stat-val">'+rv.length+'</div></div>'+
       '<div class="stat"><div class="stat-label">Open</div><div class="stat-val" style="color:var(--red)">'+open+'</div></div>'+
       '<div class="stat"><div class="stat-label">In Progress</div><div class="stat-val" style="color:var(--amber)">'+inprog+'</div></div>'+
-      '<div class="stat"><div class="stat-label">Escalated</div><div class="stat-val" style="color:var(--purple)">'+esc2+'</div></div>';
+      '<div class="stat s-red"><div class="stat-label">Overdue (7d+)</div><div class="stat-val v-red">'+overdue+'</div></div>';
 
     if(!rv.length){document.getElementById('alertList').innerHTML='<div class="empty"><span>✓</span>No alerts match current filters</div>';return;}
 
@@ -1648,7 +1721,10 @@ var A={
             '</div>'+
             '<div class="alert-room">'+esc(r.platform)+' · Booking: '+esc(r.booking||'—')+' · Check-in '+esc(r.checkInDate||r.date||'')+(r.assignedDept?' · '+esc(r.assignedDept):'')+(r.assignedStaff?' → '+esc(r.assignedStaff):'')+'</div>'+
           '</div>'+
-          '<div class="status '+resClass(r.resolutionStatus||'Open')+'" style="flex-shrink:0">'+esc(r.resolutionStatus||'Open')+'</div>'+
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">'+
+            '<div class="status '+resClass(r.resolutionStatus||'Open')+'">'+esc(r.resolutionStatus||'Open')+'</div>'+
+            alertAgeBadge(r)+
+          '</div>'+
         '</div>'+
         '<div class="alert-grid">'+
           '<div class="alert-field"><div class="alert-field-label">Complaint</div><div class="alert-field-val">'+esc(complaint)+'</div></div>'+
@@ -2535,7 +2611,7 @@ var App={
   },
   exportCSV:exportCSV,
   // Live Google Sheets URL - published CSV from your hotel operations sheet
-  LIVE_SHEET_URL:'/api/sheets?sheet=main&format=csv',
+  LIVE_SHEET_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqCAoucSr2sR8pdyLobUytm71UaX2Goibvna-a55Kv2Yj5PAGmRqoMcRnrPaWA6Co4-Y6KAZwbcz17/pub?gid=1245614730&single=true&output=csv',
   lastFetchDiagnostic:null,
   // Resilient fetch: tries multiple URL variations because Google Sheets sometimes returns
   // different responses depending on whether output param is first/last, whether single=true
