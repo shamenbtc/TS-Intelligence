@@ -698,6 +698,7 @@ tr:hover td{background:var(--bg3)}
     </div>
     <div class="card">
       <div class="card-hd"><span class="card-title">Recurring Issue Tracker</span></div>
+      <div class="card-subtitle" style="margin:-4px 0 10px;font-size:11px;color:var(--t3)">Rooms with the same issue 2+ times, reaching severity 4–5</div>
       <div id="recurringIssues"></div>
     </div>
   </div>
@@ -817,7 +818,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v28', SRC_KEY='hoi_source_v28';
+var CACHE_KEY='hoi_reviews_v29', SRC_KEY='hoi_source_v29';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1581,7 +1582,7 @@ function renderRooms(){
       '<td>'+(r.maint?'<span class="badge badge-red">'+r.maint+'</span>':'<span style="color:var(--t4)">—</span>')+'</td>'+
       '<td>'+(r.clean?'<span class="badge badge-amber">'+r.clean+'</span>':'<span style="color:var(--t4)">—</span>')+'</td>'+
       '<td><span class="stars" style="font-size:12px">'+stars(avgR)+'</span> '+avgR+'</td>'+
-      '<td style="color:var(--t3)">'+r.lastDate+'</td></tr>';
+      '<td style="color:var(--t3)">'+esc(DateU.fmt(r.lastDate))+'</td></tr>';
   }).join('');
 
   var topRooms=rooms.filter(function(r){return r.pos>0;}).sort(function(a,b){return(b.ratingSum/b.total)-(a.ratingSum/a.total);}).slice(0,8);
@@ -1622,7 +1623,7 @@ function renderRooms(){
           topIssues.map(function(iss){
             var sevColor=iss.severity>=4?'var(--red)':iss.severity>=3?'var(--amber)':'var(--blue)';
             return '<div class="hc-pop-issue" style="border-left-color:'+sevColor+'">'+
-              '<div class="hc-pop-issue-hd"><span class="hc-pop-issue-cat">'+esc(iss.category)+(iss.subcategory?' · '+esc(iss.subcategory):'')+'</span><span>Sev '+iss.severity+' · '+esc(iss.date)+'</span></div>'+
+              '<div class="hc-pop-issue-hd"><span class="hc-pop-issue-cat">'+esc(iss.category)+(iss.subcategory?' · '+esc(iss.subcategory):'')+'</span><span>Sev '+iss.severity+' · '+esc(DateU.fmt(iss.date))+'</span></div>'+
               '<div class="hc-pop-issue-text">'+esc(iss.summary)+'</div>'+
             '</div>';
           }).join('')+
@@ -1996,7 +1997,19 @@ function renderAnalytics(){
     roomCats[k].count++;
     if(r.severity)roomCats[k].severity.push(parseInt(r.severity));
   });
-  var recurring=Object.values(roomCats).filter(function(x){return x.count>1;}).sort(function(a,b){return b.count-a.count;});
+  // Recurring issues — only flag rooms where the issue recurs (2+ times) AND
+  // reaches high severity (4 or 5). Low-severity repeats are noise, not priorities.
+  var recurring=Object.values(roomCats).filter(function(x){
+    if(x.count<=1)return false;
+    var maxSev=Math.max.apply(null,x.severity.length?x.severity:[1]);
+    return maxSev>=4;
+  }).sort(function(a,b){
+    // Sort by max severity first, then by occurrence count
+    var ma=Math.max.apply(null,a.severity.length?a.severity:[1]);
+    var mb=Math.max.apply(null,b.severity.length?b.severity:[1]);
+    if(mb!==ma)return mb-ma;
+    return b.count-a.count;
+  });
   document.getElementById('recurringIssues').innerHTML=recurring.length?
     '<div class="tbl-wrap"><table><thead><tr><th>Room</th><th>Issue</th><th>Occurrences</th><th>Max Severity</th></tr></thead><tbody>'+
     recurring.slice(0,8).map(function(x){
@@ -2005,7 +2018,7 @@ function renderAnalytics(){
         '<td><span style="color:var(--red);font-weight:600">'+x.count+'x</span></td>'+
         '<td><span class="sev '+getSevClass(maxSev)+'" style="width:auto;padding:2px 8px;border-radius:4px">'+maxSev+'</span></td></tr>';
     }).join('')+'</tbody></table></div>':
-    '<div class="empty"><span>✓</span>No recurring issues detected</div>';
+    '<div class="empty"><span>✓</span>No recurring high-severity issues (severity 4–5)</div>';
 }
 
 // ── STAFF ──
