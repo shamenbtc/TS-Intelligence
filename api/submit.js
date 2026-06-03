@@ -22,12 +22,19 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing row data' });
   }
 
+  // Stamp the "Last Updated" timestamp into column AA (position 27).
+  // Pad the row to 26 columns first so the timestamp always lands in AA,
+  // even if the client sent fewer cells.
+  const stampedRow = row.slice(0, 26);
+  while (stampedRow.length < 26) stampedRow.push('');
+  stampedRow.push(sgTimestamp()); // column AA
+
   try {
     // Build JWT for Google OAuth
     const token = await getGoogleAccessToken(saEmail, saKey);
 
-    // Append row to sheet
-    const range = encodeURIComponent(sheetTab + '!A:Z');
+    // Append row to sheet — range now extends to AA to include Last Updated
+    const range = encodeURIComponent(sheetTab + '!A:AA');
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
 
     const response = await fetch(url, {
@@ -36,7 +43,7 @@ export default async function handler(req, res) {
         'Authorization': 'Bearer ' + token,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ values: [row] })
+      body: JSON.stringify({ values: [stampedRow] })
     });
 
     const data = await response.json();
@@ -49,6 +56,22 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ error: err.message || 'Submission failed' });
   }
+}
+
+// ── SINGAPORE TIMESTAMP ────────────────────────────────────────────────────────
+// Vercel runs in UTC. Singapore is UTC+8 with no DST, so we add 8 hours and read
+// the UTC components to get Singapore local time. Format: "03-Jun-2026 2:30pm".
+function sgTimestamp() {
+  const sg = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dd = String(sg.getUTCDate()).padStart(2, '0');
+  const mon = months[sg.getUTCMonth()];
+  const yyyy = sg.getUTCFullYear();
+  let h = sg.getUTCHours();
+  const m = String(sg.getUTCMinutes()).padStart(2, '0');
+  const ampm = h >= 12 ? 'pm' : 'am';
+  h = h % 12; if (h === 0) h = 12;
+  return `${dd}-${mon}-${yyyy} ${h}:${m}${ampm}`;
 }
 
 // ── JWT SIGNING ──────────────────────────────────────────────────────────────
