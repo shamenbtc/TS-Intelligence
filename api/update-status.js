@@ -39,13 +39,14 @@ export default async function handler(req, res) {
     }
 
     // Step 2: Write resolution fields to that row
-    // V = Resolution Status, W = Resolved Date, X = Assigned Dept, Y = Assigned Staff, Z = Notes
+    // V = Resolution Status, W = Resolved Date, X = Assigned Dept, Y = Assigned Staff, Z = Notes, AA = Last Updated
     const updates = [
       { range: `${SHEET_TAB}!V${rowNum}`, values: [[resolutionStatus]] },
       { range: `${SHEET_TAB}!W${rowNum}`, values: [[resolvedDate || '']] },
       { range: `${SHEET_TAB}!X${rowNum}`, values: [[assignedDept || '']] },
       { range: `${SHEET_TAB}!Y${rowNum}`, values: [[assignedStaff || '']] },
       { range: `${SHEET_TAB}!Z${rowNum}`, values: [[resolutionNotes || '']] },
+      { range: `${SHEET_TAB}!AA${rowNum}`, values: [[sgTimestamp()]] },
     ];
 
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values:batchUpdate`;
@@ -93,6 +94,21 @@ async function findRowByBookingNumber(bookingNumber, token, spreadsheetId, sheet
     }
   }
   return null;
+}
+
+// ── SINGAPORE TIMESTAMP ────────────────────────────────────────────────────────
+// Vercel runs in UTC. Singapore is UTC+8 (no DST). Format: "03-Jun-2026 2:30pm".
+function sgTimestamp() {
+  const sg = new Date(Date.now() + 8 * 60 * 60 * 1000);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dd = String(sg.getUTCDate()).padStart(2, '0');
+  const mon = months[sg.getUTCMonth()];
+  const yyyy = sg.getUTCFullYear();
+  let h = sg.getUTCHours();
+  const m = String(sg.getUTCMinutes()).padStart(2, '0');
+  const ampm = h >= 12 ? 'pm' : 'am';
+  h = h % 12; if (h === 0) h = 12;
+  return `${dd}-${mon}-${yyyy} ${h}:${m}${ampm}`;
 }
 
 // ── GOOGLE JWT AUTH ───────────────────────────────────────────────────────────
