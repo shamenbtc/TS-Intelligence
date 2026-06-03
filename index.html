@@ -351,6 +351,7 @@ tr:hover td{background:var(--bg3)}
 .age-overdue{background:var(--rs);color:var(--red)}
 .age-critical{background:var(--red);color:#fff;animation:agePulse 2s ease-in-out infinite}
 @keyframes agePulse{0%,100%{opacity:1}50%{opacity:.7}}
+.upd-tag{display:inline-flex;align-items:center;gap:3px;font-size:var(--ts-xs);font-weight:500;color:var(--t3);font-family:var(--fn-mono);padding:2px 7px;border-radius:3px;background:var(--bg3);border:1px solid var(--bd);flex-shrink:0}
 /* Inline status update panel */
 .update-panel{background:var(--bg3);border-radius:var(--r);padding:12px 14px;margin-top:10px;border:1px solid var(--bd);display:none}
 .update-panel.open{display:block}
@@ -622,6 +623,8 @@ tr:hover td{background:var(--bg3)}
       <input type="date" class="fselect" id="revDateFrom" onchange="R.onFilterChange()" title="Check-in date from">
       <input type="date" class="fselect" id="revDateTo" onchange="R.onFilterChange()" title="Check-in date to">
       <select class="fselect" id="revSort" onchange="R.onFilterChange()" title="Sort order">
+        <option value="updated-desc">↻ Recently updated</option>
+        <option value="updated-asc">↻ Oldest update first</option>
         <option value="date-asc">↑ Check-in: oldest first</option>
         <option value="date-desc">↓ Check-in: newest first</option>
         <option value="checkout-asc">↑ Check-out: oldest first</option>
@@ -814,7 +817,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v27', SRC_KEY='hoi_source_v27';
+var CACHE_KEY='hoi_reviews_v28', SRC_KEY='hoi_source_v28';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -913,6 +916,50 @@ var DateU={
     var p=key.split('-');
     var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
     return months[parseInt(p[1])-1]+' '+p[0];
+  },
+  // Display formatter — turns any parseable date into "03-Jun-2026".
+  // Returns '' for empty input, and returns the original string unchanged if
+  // it can't be parsed (so we never blank out real data we don't recognise).
+  fmt:function(s){
+    if(s===null||s===undefined||s==='')return'';
+    var d=this.parse(s);
+    if(!d)return String(s);
+    var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return String(d.getDate()).padStart(2,'0')+'-'+months[d.getMonth()]+'-'+d.getFullYear();
+  },
+  // Parses the "Last Updated" timestamp format: "03-Jun-2026 2:30pm".
+  // Falls back to plain date parse for anything else.
+  parseDateTime:function(s){
+    if(!s)return null;
+    s=String(s).trim();
+    var m=s.match(/^(\d{1,2})-([A-Za-z]+)-(\d{4})\s+(\d{1,2}):(\d{2})\s*([ap]m)/i);
+    if(m){
+      var day=parseInt(m[1]),mon=this.MONTH_MAP[m[2].toLowerCase()],yr=parseInt(m[3]);
+      var h=parseInt(m[4]),min=parseInt(m[5]),ap=m[6].toLowerCase();
+      if(ap==='pm'&&h<12)h+=12;
+      if(ap==='am'&&h===12)h=0;
+      if(!mon)return null;
+      var d=new Date(yr,mon-1,day,h,min);
+      return isNaN(d.getTime())?null:d;
+    }
+    return this.parse(s);
+  },
+  // Relative label for "Last Updated": "just now", "5m ago", "3h ago",
+  // "yesterday", "4 days ago", or the formatted date if older than a week.
+  relative:function(s){
+    var d=this.parseDateTime(s);
+    if(!d)return'';
+    var diff=Math.floor((Date.now()-d.getTime())/1000);
+    if(diff<0)diff=0;
+    if(diff<60)return'just now';
+    var mins=Math.floor(diff/60);
+    if(mins<60)return mins+'m ago';
+    var hrs=Math.floor(mins/60);
+    if(hrs<24)return hrs+'h ago';
+    var days=Math.floor(hrs/24);
+    if(days===1)return'yesterday';
+    if(days<7)return days+' days ago';
+    return this.fmt(s);
   }
 };
 
@@ -1315,7 +1362,7 @@ function renderOverview(){
             ' &nbsp;<span style="color:var(--t2);font-weight:500">'+esc(complaintText)+'</span>'+
           '</div>'+
           '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--t3)">'+
-            '<span>'+esc(r.platform)+' • Check-in '+esc(r.checkInDate||r.date||'')+(r.sentiment==='Positive'?' • <span style="color:var(--amber);font-weight:600">mixed sentiment</span>':'')+'</span>'+
+            '<span>'+esc(r.platform)+' • Check-in '+esc(DateU.fmt(r.checkInDate||r.date))+(r.sentiment==='Positive'?' • <span style="color:var(--amber);font-weight:600">mixed sentiment</span>':'')+'</span>'+
             alertAgeBadge(r)+
           '</div>'+
         '</div>'+
@@ -1372,7 +1419,7 @@ var R={
     var plat=document.getElementById('revPlatform').value;
     var dFrom=document.getElementById('revDateFrom').value;
     var dTo=document.getElementById('revDateTo').value;
-    var sortBy=document.getElementById('revSort')?document.getElementById('revSort').value:'date-asc';
+    var sortBy=document.getElementById('revSort')?document.getElementById('revSort').value:'updated-desc';
     var result=State.reviews.filter(function(r){
       if(sent&&r.sentiment!==sent)return false;
       if(sev){
@@ -1390,10 +1437,19 @@ var R={
       }
       return true;
     });
-    // Sort — default oldest→newest by check-in date
+    // Sort — default: most recently updated first
     result.sort(function(a,b){
       var da=a.checkInDate||a.date||'';
       var db=b.checkInDate||b.date||'';
+      if(sortBy==='updated-desc'||sortBy==='updated-asc'){
+        // Parse the Last Updated timestamp. Rows without one always sort to the bottom.
+        var ua=DateU.parseDateTime(a.lastUpdated), ub=DateU.parseDateTime(b.lastUpdated);
+        var ta=ua?ua.getTime():null, tb=ub?ub.getTime():null;
+        if(ta===null&&tb===null)return db<da?-1:db>da?1:0; // both blank → newest check-in first
+        if(ta===null)return 1;   // a has no timestamp → after b
+        if(tb===null)return -1;  // b has no timestamp → after a
+        return sortBy==='updated-desc'?(tb-ta):(ta-tb);
+      }
       if(sortBy==='date-asc')  return da<db?-1:da>db?1:0;
       if(sortBy==='date-desc') return da>db?-1:da<db?1:0;
       if(sortBy==='checkout-asc'){
@@ -1409,7 +1465,12 @@ var R={
       if(sortBy==='rating-asc')  return (parseFloat(a.rating)||0)-(parseFloat(b.rating)||0);
       if(sortBy==='rating-desc') return (parseFloat(b.rating)||0)-(parseFloat(a.rating)||0);
       if(sortBy==='sev-desc')  return (parseInt(b.severity)||0)-(parseInt(a.severity)||0);
-      return da<db?-1:da>db?1:0; // default
+      // Fallback default — recently updated, then newest check-in
+      var fua=DateU.parseDateTime(a.lastUpdated), fub=DateU.parseDateTime(b.lastUpdated);
+      if(fua&&fub)return fub.getTime()-fua.getTime();
+      if(fua)return -1;
+      if(fub)return 1;
+      return db<da?-1:db>da?1:0;
     });
     return result;
   },
@@ -1438,7 +1499,7 @@ var R={
             '<span class="sev '+sevC+'">'+(r.severity||'—')+'</span>'+
             '<div>'+
               '<div style="font-size:14px;font-weight:600;color:var(--t1)">Room '+esc(r.room||'?')+' &nbsp;<span style="font-size:12px;font-weight:400;color:var(--t3)">'+esc(r.roomType||'')+'</span></div>'+
-              '<div style="font-size:12px;color:var(--t3);margin-top:1px">'+esc(r.booking||'—')+' • Check-in: '+esc(r.checkInDate||r.date||'—')+(r.nightsStayed?' ('+esc(r.nightsStayed)+' night'+(r.nightsStayed!='1'?'s':'')+')':'')+(r.reviewedMonth?' • Reviewed: '+esc(r.reviewedMonth):'')+(r.nationality?' • '+esc(r.nationality):'')+(r.repeatGuest&&(r.repeatGuest||'').toLowerCase()==='yes'?' • <span style="color:var(--purple);font-weight:600">⟳ Repeat guest</span>':'')+'</div>'+
+              '<div style="font-size:12px;color:var(--t3);margin-top:1px">'+esc(r.booking||'—')+' • Check-in: '+esc(DateU.fmt(r.checkInDate||r.date)||'—')+(r.nightsStayed?' ('+esc(r.nightsStayed)+' night'+(r.nightsStayed!='1'?'s':'')+')':'')+(r.reviewedMonth?' • Reviewed: '+esc(r.reviewedMonth):'')+(r.nationality?' • '+esc(r.nationality):'')+(r.repeatGuest&&(r.repeatGuest||'').toLowerCase()==='yes'?' • <span style="color:var(--purple);font-weight:600">⟳ Repeat guest</span>':'')+'</div>'+
             '</div>'+
           '</div>'+
           '<div style="text-align:right">'+
@@ -1455,6 +1516,7 @@ var R={
           (r.cleanFlag===true||r.cleanFlag==='Yes'||r.cleanFlag==='true'?'<span class="badge badge-amber">🧹 Clean</span>':'')+
           (r.staffMentioned?'<span class="badge '+(r.sentiment==='Positive'?'badge-green':'badge-purple')+'">'+(r.sentiment==='Positive'?'⭐':'👤')+' '+esc(r.staffMentioned)+(r.sentiment==='Positive'?' · Recognition':'')+'</span>':'')+
           '<div class="status '+resClass(r.resolutionStatus)+'" style="margin-left:auto">'+esc(r.resolutionStatus||'Open')+'</div>'+
+          (r.lastUpdated&&DateU.relative(r.lastUpdated)?'<span class="upd-tag" title="Last updated '+esc(r.lastUpdated)+'">↻ '+esc(DateU.relative(r.lastUpdated))+'</span>':'')+
         '</div>'+
         '<div class="rev-text collapsed" id="rt-'+r.id+'">'+esc(r.text)+'</div>'+
         '<span class="expand-btn" onclick="R.toggleText(\''+r.id+'\',this)">Show more ▾</span>'+
@@ -1492,7 +1554,7 @@ var R={
     ['revSearch','revDateFrom','revDateTo'].forEach(function(id){document.getElementById(id).value='';});
     ['revSentiment','revSeverity','revCategory','revPlatform'].forEach(function(id){document.getElementById(id).value='';});
     var sortEl=document.getElementById('revSort');
-    if(sortEl)sortEl.value='date-asc';
+    if(sortEl)sortEl.value='updated-desc';
     RevPage.current=0;
     this.renderReviews();
   }
@@ -1711,7 +1773,7 @@ var A={
             '<div class="alert-title">Room '+esc(r.room||'?')+' — '+esc(r.category)+(parseInt(r.severity)>=5?' 🚨':'')+
               (r.id&&State.reviews.filter(function(x){return x.room===r.room&&x.category===r.category;}).length>1?' <span style="font-size:12px;color:var(--red);font-weight:600">⟳ RECURRING</span>':'')+
             '</div>'+
-            '<div class="alert-room">'+esc(r.platform)+' · Booking: '+esc(r.booking||'—')+' · Check-in '+esc(r.checkInDate||r.date||'')+(r.assignedDept?' · '+esc(r.assignedDept):'')+(r.assignedStaff?' → '+esc(r.assignedStaff):'')+'</div>'+
+            '<div class="alert-room">'+esc(r.platform)+' · Booking: '+esc(r.booking||'—')+' · Check-in '+esc(DateU.fmt(r.checkInDate||r.date))+(r.assignedDept?' · '+esc(r.assignedDept):'')+(r.assignedStaff?' → '+esc(r.assignedStaff):'')+'</div>'+
           '</div>'+
           '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">'+
             '<div class="status '+resClass(r.resolutionStatus||'Open')+'">'+esc(r.resolutionStatus||'Open')+'</div>'+
@@ -1722,7 +1784,7 @@ var A={
           '<div class="alert-field"><div class="alert-field-label">Complaint</div><div class="alert-field-val">'+esc(complaint)+'</div></div>'+
           '<div class="alert-field"><div class="alert-field-label">Root Cause</div><div class="alert-field-val" style="color:var(--amber)">'+esc(rootCause)+'</div></div>'+
           '<div class="alert-field" style="grid-column:span 2"><div class="alert-field-label">AI Suggested Action</div><div class="alert-field-val" style="color:var(--teal)">'+esc(r.action||'Review and assign to relevant department')+'</div></div>'+
-          (r.resolvedDate?'<div class="alert-field"><div class="alert-field-label">Resolved Date</div><div class="alert-field-val" style="color:var(--green)">'+esc(r.resolvedDate)+'</div></div>':'')+
+          (r.resolvedDate?'<div class="alert-field"><div class="alert-field-label">Resolved Date</div><div class="alert-field-val" style="color:var(--green)">'+esc(DateU.fmt(r.resolvedDate))+'</div></div>':'')+
           (r.resolutionNotes?'<div class="alert-field" style="grid-column:span 2"><div class="alert-field-label">Resolution Notes</div><div class="alert-field-val" style="color:var(--t3)">'+esc(r.resolutionNotes)+'</div></div>':'')+
         '</div>'+
         '<div style="margin-top:10px">'+
@@ -1823,10 +1885,17 @@ var A={
       if(data.success){
         if(msg){msg.style.color='var(--green)';msg.textContent='✓ Saved to Google Sheet';}
         // Update in-memory state so dashboard reflects change immediately — no sync needed
+        var nowStamp=(function(){
+          var n=new Date();
+          var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          var h=n.getHours(),ap=h>=12?'pm':'am';h=h%12;if(h===0)h=12;
+          return String(n.getDate()).padStart(2,'0')+'-'+months[n.getMonth()]+'-'+n.getFullYear()+' '+h+':'+String(n.getMinutes()).padStart(2,'0')+ap;
+        })();
         State.reviews.forEach(function(r){
           if((r.booking||r.id)===bookingId){
             r.resolutionStatus=status;r.resolvedDate=fmtD(date);
             r.assignedDept=dept;r.assignedStaff=staff;r.resolutionNotes=notes;
+            r.lastUpdated=nowStamp;
           }
         });
         try{LS.set(CACHE_KEY,{reviews:State.reviews,fileName:'Google Sheets',uploadedAt:State.uploadedAt});}catch(e){}
@@ -1984,7 +2053,7 @@ function renderStaff(){
   document.getElementById('staffReviews').innerHTML=srevs.map(function(r){
     return '<div class="rev-card">'+
       '<div class="rev-hd"><div style="display:flex;gap:6px;align-items:center"><span class="badge badge-purple">👤 '+esc(r.staffMentioned)+'</span><span class="badge '+getSentClass(r.sentiment)+'">'+esc(r.sentiment)+'</span></div>'+
-      '<div style="font-size:12px;color:var(--t3)">Room '+esc(r.room)+' • '+esc(r.checkInDate||r.date||'')+'</div></div>'+
+      '<div style="font-size:12px;color:var(--t3)">Room '+esc(r.room)+' • '+esc(DateU.fmt(r.checkInDate||r.date))+'</div></div>'+
       '<div class="rev-text">'+esc(r.text)+'</div></div>';
   }).join('');
 }
@@ -2119,7 +2188,8 @@ function parseCSV(text){
     resolvedDate:col(['resolved_date','resolution_date','resolved_at','date_resolved']),
     assignedDept:col(['assigned_department','department','dept','assigned_dept']),
     assignedStaff:col(['assigned_staff','assigned_to','owner']),
-    resolutionNotes:col(['resolution_notes','notes','resolution_note','remarks'])
+    resolutionNotes:col(['resolution_notes','notes','resolution_note','remarks']),
+    lastUpdated:col(['last_updated','lastupdated','last_update','updated','updated_at','last_modified','modified'])
   };
 
   // Diagnostic: check if any critical column is missing
@@ -2231,6 +2301,7 @@ function parseCSV(text){
       assignedDept:g('assignedDept'),
       assignedStaff:g('assignedStaff'),
       resolutionNotes:g('resolutionNotes'),
+      lastUpdated:g('lastUpdated',''),
       isSample:false
     };
     reviews.push(r);
