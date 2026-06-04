@@ -164,7 +164,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
   </div>
 
   <div class="page-title" id="pageTitle">New Review Entry</div>
-  <div class="page-sub" id="pageSub">Paste a guest review — Sultan AI classifies all 26 fields. Review the suggestions, correct if needed.</div>
+  <div class="page-sub" id="pageSub">Paste a guest review — Claude AI classifies all 26 fields. Review the suggestions, correct if needed, then submit directly to your Google Sheet.</div>
 
   <div class="steps" id="steps">
     <div class="step active" id="s1"><div class="step-num">1</div><span>Review details</span></div>
@@ -191,7 +191,8 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
             <option value="">Select platform</option>
             <option>Google Reviews</option><option>Tripadvisor</option><option>Booking.com</option>
             <option>Agoda</option><option>Expedia</option><option>Trip.com</option>
-            <option>Traveloka</option><option>Others</option>
+            <option>Hotels.com</option><option>Traveloka</option><option>Airbnb</option>
+            <option>Walk-in</option><option>Direct</option>
           </select>
         </div>
       </div>
@@ -206,13 +207,13 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
           <select id="roomType">
             <option value="">Select type</option>
             <option>Standard Single</option><option>Standard Double</option><option>Standard Twin</option>
-            <option>Attic Room</option><option>Sultan Room</option><option>Skylight Room</option>
-            <option>Skylight Loft</option><option>Puteri Room</option><option>Sultan Loft</option>
+            <option>Deluxe Room</option><option>Sultan Room</option><option>Sultan Loft</option>
+            <option>Skylight Room</option><option>Puteri Room</option><option>Suite</option>
           </select>
         </div>
       </div>
       <div class="fr2">
-        <div class="field"><label>Guest Nationality</label><input type="text" id="guestNationality" placeholder="e.g. Singapore"></div>
+        <div class="field"><label>Guest Nationality</label><input type="text" id="guestNationality" placeholder="e.g. Malaysian"></div>
         <div class="field"><label>Rating <span class="req">★</span></label><input type="text" id="rating" placeholder="e.g. 9/10 or 4.5/5"></div>
       </div>
     </div>
@@ -221,11 +222,11 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
       <div class="card-title">Review content</div>
       <div class="field">
         <label>Review Text <span class="req">★</span></label>
-        <textarea id="reviewText" placeholder="Paste the full review exactly as the guest wrote it. Do not summarise or edit — the complete text gives Sultan AI the most accurate classification."></textarea>
+        <textarea id="reviewText" placeholder="Paste the full review exactly as the guest wrote it. Do not summarise or edit — the complete text gives Claude the most accurate classification."></textarea>
         <div class="hint">Copy the complete review from the platform. More text = better AI accuracy.</div>
       </div>
       <div class="fr2">
-        <div class="field"><label>Mentioned Staff</label><input type="text" id="mentionedStaff" placeholder="e.g. Hirzam, Rina"></div>
+        <div class="field"><label>Mentioned Staff</label><input type="text" id="mentionedStaff" placeholder="e.g. Arfa, Liza"></div>
         <div class="field"><label>Verified Stay</label>
           <select id="verifiedStay"><option value="">Unknown</option><option>Yes</option><option>No</option></select>
         </div>
@@ -237,7 +238,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
         ✦ Classify with AI
         <div class="spinner" id="sp1"></div>
       </button>
-      <span style="font-size:12px;color:var(--t3)"> Sultan AI will read the full review and suggest all 26 fields</span>
+      <span style="font-size:12px;color:var(--t3)">Claude will read the full review and suggest all 26 fields</span>
     </div>
   </div>
 
@@ -582,7 +583,7 @@ async function submitToSheet() {
     document.getElementById('roomNumber').value,                     // G
     document.getElementById('roomType').value,                       // H
     document.getElementById('guestNationality').value || '',         // I
-    document.getElementById('rating').value,                         // J
+    "'" + document.getElementById('rating').value,                   // J — apostrophe forces text mode, prevents "7/10" being read as July 10 date
     document.getElementById('reviewText').value,                     // K
     document.getElementById('mentionedStaff').value || '',           // L
     document.getElementById('verifiedStay').value || '',             // M
@@ -711,11 +712,11 @@ function switchMode(mode) {
   document.getElementById('recentCard').style.display = 'none';
   if (isNew) {
     document.getElementById('pageTitle').textContent = 'New Review Entry';
-    document.getElementById('pageSub').textContent   = 'Paste a guest review — Sultan AI classifies all 26 fields. Review the suggestions, correct if needed, then submit directly to your Google Sheet.';
+    document.getElementById('pageSub').textContent   = 'Paste a guest review — Claude AI classifies all 26 fields. Review the suggestions, correct if needed, then submit directly to your Google Sheet.';
     document.getElementById('steps').style.display = 'flex';
   } else {
     document.getElementById('pageTitle').textContent = 'Bulk Classify';
-    document.getElementById('pageSub').textContent   = 'Load your Google Sheet — Sultan AI will classify every review that is missing Sentiment, Category or Severity. Results write directly back to the sheet.';
+    document.getElementById('pageSub').textContent   = 'Load your Google Sheet — Claude will classify every review that is missing Sentiment, Category or Severity. Results write directly back to the sheet.';
     document.getElementById('steps').style.display = 'none';
   }
 }
