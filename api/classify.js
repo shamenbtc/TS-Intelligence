@@ -20,21 +20,28 @@ export default async function handler(req, res) {
   }
 
   const prompt = `You are a hotel operations analyst for The Sultan Hotel Singapore.
-Analyse this guest review and return a JSON object with ALL fields filled.
+Analyse this guest input and return a JSON object with ALL fields filled.
+
+The input may be one of two formats:
+1. A written guest review (narrative text)
+2. A ratings-only entry — sub-category scores copied from a booking platform, e.g.:
+   "Staff 10 / Cleanliness 10 / Location 7.5 / Comfort 10 / Room view 5"
+
+For ratings-only entries: infer sentiment from the overall rating and sub-scores. A sub-score below 6 is a weak point — treat it as a mild complaint signal. No written complaint means severity is at most 2 unless a sub-score is below 5. Set complaint_summary to the weakest sub-category if any score is below 7, otherwise leave empty.
 
 Review details:
 - Platform: ${platform}
 - Room: ${roomNumber} (${roomType || 'unknown'})
 - Rating: ${rating}
 - Check-in: ${checkinDate}
-- Review text: ${reviewText}
+- Review text / ratings: ${reviewText}
 
 Return ONLY valid JSON, no markdown, no explanation. Use exactly these fields:
 {
   "sentiment": "Positive" | "Neutral" | "Negative",
-  "category": "Room Comfort & Quality" | "Cleanliness" | "Staff" | "Facilities" | "Value for Money" | "F&B" | "Other",
+  "category": "Room Comfort & Quality" | "Cleanliness" | "Staff" | "Facilities" | "Value for Money" | "F&B" | "Location" | "Other",
   "subcategory": string,
-  "complaint_summary": string (5-10 words, or empty string if purely positive),
+  "complaint_summary": string (5-10 words, or empty string if no issues),
   "severity": 1 | 2 | 3 | 4 | 5,
   "maintenance_flag": "Yes" | "No",
   "hskp_flag": "Yes" | "No",
@@ -50,12 +57,15 @@ Return ONLY valid JSON, no markdown, no explanation. Use exactly these fields:
 }
 
 Rules:
-- sentiment = overall guest experience, not individual complaints
+- sentiment = overall guest experience, not individual sub-scores
 - A Positive review CAN have maintenance_flag or hskp_flag = Yes if it mentions a physical issue
+- For ratings-only: if Room view, Comfort, or Facilities score < 6 → consider maintenance_flag or hskp_flag
 - severity 5 = pest/mould/health risk, 4 = urgent (broken AC, no hot water), 3 = action within week, 2 = low, 1 = informational
+- Ratings-only with no sub-score below 6: severity = 1, resolution_status = "Resolved"
 - If severity >= 3, default resolution_status to "Open" unless clearly resolved
 - If purely positive with no issues: severity = 1, resolution_status = "Resolved"
-- analyst_note: flag issues masked by service recovery, safety concerns, recurring patterns`;
+- Use "Location" as category when the main signal is about the hotel's location or nearby environment
+- analyst_note: flag issues masked by service recovery, safety concerns, recurring patterns, or low sub-scores worth monitoring`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
