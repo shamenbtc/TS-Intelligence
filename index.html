@@ -828,7 +828,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v31', SRC_KEY='hoi_source_v31';
+var CACHE_KEY='hoi_reviews_v32', SRC_KEY='hoi_source_v32';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1322,17 +1322,27 @@ function renderOverview(){
         '</tbody></table></div>';
     }
   }
-  // ── CATEGORY SENTIMENT TREND (NEW: dual green/red comparison) ──
-  var catNames=['Room Comfort & Quality','Cleanliness','Staff','Facilities','Value for Money'];
+  // ── CATEGORY SENTIMENT TREND ──
+  // "Room Comfort & Quality" displayed as "Room Comfort" to fit chart labels cleanly.
+  // "Location" added — counts reviews where subcategory contains 'Location' or category is 'Location'.
+  var catNames=['Room Comfort & Quality','Cleanliness','Staff','Facilities','Value for Money','Location'];
+  var catDisplayLabels={'Room Comfort & Quality':'Room Comfort','Cleanliness':'Cleanliness','Staff':'Staff','Facilities':'Facilities','Value for Money':'Value for Money','Location':'Location'};
   var catSent={};
   catNames.forEach(function(c){catSent[c]={pos:0,neg:0};});
   rv.forEach(function(r){
-    var c=catNames.indexOf(r.category)>-1?r.category:null;
+    var c=null;
+    if(catNames.indexOf(r.category)>-1&&r.category!=='Location'){
+      c=r.category;
+    } else if(r.category==='Location'){
+      c='Location';
+    } else if(r.subcategory&&(r.subcategory.toLowerCase().includes('location'))){
+      c='Location';
+    }
     if(!c)return;
     if(r.sentiment==='Positive')catSent[c].pos++;
     else if(r.sentiment==='Negative')catSent[c].neg++;
   });
-  makeChart('catSentChart',{type:'bar',data:{labels:catNames.map(function(c){return c.length>18?c.replace(' & ','/').slice(0,18)+'…':c;}),datasets:[
+  makeChart('catSentChart',{type:'bar',data:{labels:catNames.map(function(c){return catDisplayLabels[c]||c;}),datasets:[
     {label:'Positive',data:catNames.map(function(c){return catSent[c].pos;}),backgroundColor:'rgba(42,181,116,.75)',borderColor:'#2ab574',borderWidth:1,borderRadius:4,barPercentage:.7},
     {label:'Negative',data:catNames.map(function(c){return catSent[c].neg;}),backgroundColor:'rgba(220,68,88,.75)',borderColor:'#dc4458',borderWidth:1,borderRadius:4,barPercentage:.7}
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:chartColors().tooltipBg,titleColor:chartColors().tooltipText,bodyColor:chartColors().tooltipText,borderColor:chartColors().tooltipBorder,borderWidth:1,callbacks:{label:function(ctx){return ctx.dataset.label+': '+ctx.parsed.y+' mentions';}}}},scales:{x:{ticks:{color:chartColors().tick,font:{size:14}},grid:{display:false}},y:{ticks:{color:chartColors().tick,font:{size:14},stepSize:1},grid:{color:chartColors().grid},beginAtZero:true}}}});
@@ -1615,11 +1625,11 @@ function renderRooms(){
   }
   document.getElementById('heatmapWrap').innerHTML='<div class="heatmap">'+allRooms.map(function(rm){
     var r=rmap[rm];
-    var score=(r.neg*2+r.maint)/(maxNeg||1);
+    var score=(r.neg*2+r.maint+r.clean)/(maxNeg||1);
     var alpha=0.25+score*0.6;
     var bg,borderColor;
     if(r.neg>0){bg='rgba(220,68,88,'+alpha+')';borderColor='var(--red)';}
-    else if(r.maint>0){bg='rgba(232,163,24,'+alpha+')';borderColor='var(--amber)';}
+    else if(r.maint>0||r.clean>0){bg='rgba(232,163,24,'+alpha+')';borderColor='var(--amber)';}
     else{bg='rgba(42,181,116,0.30)';borderColor='var(--green)';}
     var avgR=r.total?(r.ratingSum/r.total).toFixed(1):'—';
     var pop='';
@@ -1653,8 +1663,8 @@ function renderRooms(){
   }).join('')+'</div>'+
   '<div style="display:flex;gap:14px;margin-top:12px;font-size:12px;color:var(--t2);justify-content:center;flex-wrap:wrap">'+
     '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:rgba(42,181,116,.5);display:inline-block"></span>No complaints</span>'+
-    '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:rgba(232,163,24,.6);display:inline-block"></span>Maintenance issue</span>'+
-    '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:rgba(220,68,88,.7);display:inline-block"></span>Active complaints</span>'+
+    '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:rgba(232,163,24,.6);display:inline-block"></span>Maint / HSKP issues</span>'+
+    '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:rgba(220,68,88,.7);display:inline-block"></span>Complaints</span>'+
     '<span style="color:var(--t3);font-style:italic">· Hover any room for details</span>'+
   '</div>';
 }
