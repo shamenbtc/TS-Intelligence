@@ -132,8 +132,10 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 
 /* ── STAT CARDS ──────────────────────────────────────────────────────────── */
 @keyframes _statIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 15px;position:relative;overflow:hidden;
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 15px;position:relative;overflow:visible;
   animation:_statIn 300ms var(--ease-out) both}
+#kpiCards .stat{cursor:pointer}
+#kpiCards .stat:hover{border-color:var(--bd3);box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .stat:nth-child(1){animation-delay:0ms}
 .stat:nth-child(2){animation-delay:50ms}
 .stat:nth-child(3){animation-delay:100ms}
@@ -833,7 +835,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v34', SRC_KEY='hoi_source_v34';
+var CACHE_KEY='hoi_reviews_v35', SRC_KEY='hoi_source_v35';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1202,8 +1204,8 @@ function renderOverview(){
   var negPct=Math.round(total?neg/total*100:0);
   var satScore=Math.max(0,posPct-negPct);
 
-  function kpi(label,val,sub,color,icon,tip){
-    return '<div class="stat">'+
+  function kpi(label,val,sub,color,icon,tip,drill){
+    return '<div class="stat"'+(drill?' onclick="drillKpi(\''+drill+'\')" title="Click to view the reviews behind this number"':'')+'>'+
       '<div class="stat-label">'+label+'<span class="info" data-tip="'+esc(tip)+'">i</span></div>'+
       '<div class="stat-val"'+(color?' style="color:'+color+'"':'')+'>'+val+'</div>'+
       '<div class="stat-sub">'+sub+'</div>'+
@@ -1213,21 +1215,21 @@ function renderOverview(){
 
   document.getElementById('kpiCards').innerHTML=
     kpi('Total Reviews',total,'Analysed entries','','✉',
-        'Total number of reviews loaded. Higher volume = more reliable trend signals.')+
+        'Total number of reviews loaded. Higher volume = more reliable trend signals.','all')+
     kpi('Avg Rating',avgR+'<span style="font-size:15px;color:var(--t3)">/5</span>','<span class="stars">'+stars(avgR)+'</span>','','★',
-        'Average guest rating across all platforms (normalised to /5 scale). 4+ is good, 3-4 average, below 3 needs attention.')+
+        'Average guest rating across all platforms (normalised to /5 scale). 4+ is good, 3-4 average, below 3 needs attention. Click to see the lowest-rated reviews first.','lowrated')+
     kpi('Positive Sentiment',posPct+'%',pos+' positive reviews','var(--green)','↑',
-        'Percentage of reviews classified as positive. Higher is better. Above 60% indicates healthy guest experience.')+
+        'Percentage of reviews classified as positive. Higher is better. Above 60% indicates healthy guest experience.','positive')+
     kpi('Negative Sentiment',negPct+'%',neg+' negative reviews','var(--red)','↓',
-        'Percentage of reviews classified as negative. Lower is better. Above 20% signals systemic operational issues.')+
+        'Percentage of reviews classified as negative. Lower is better. Above 20% signals systemic operational issues.','negative')+
     kpi('Maint. Flags',maintN,'Rooms need attention','var(--amber)','🔧',
-        'Reviews flagged for engineering follow-up (broken AC, plumbing, electrical, etc).')+
+        'Reviews flagged for engineering follow-up (broken AC, plumbing, electrical, etc). Click to list the affected rooms.','maint')+
     kpi('Cleaning Flags',cleanN,'Housekeeping alerts','var(--teal)','🧹',
-        'Reviews flagged for housekeeping follow-up (dirt, dust, mold, hygiene issues).')+
+        'Reviews flagged for housekeeping follow-up (dirt, dust, mold, hygiene issues). Click to list the affected rooms.','clean')+
     kpi('Open Issues',open,'Unresolved alerts','var(--red)','⚠',
-        'Number of issues still awaiting resolution. Should trend downward week-over-week.')+
+        'Number of issues still awaiting resolution. Should trend downward week-over-week. Click to list them.','open')+
     kpi('Satisfaction Score',satScore,'Positive minus Negative %','var(--blue)','◑',
-        'Net sentiment score: positive % minus negative %. Higher = happier guests overall. Target above 50.');
+        'Net sentiment score: positive % minus negative %. Higher = happier guests overall. Target above 50. Click to see the negative reviews dragging it down.','negative');
 
   document.getElementById('statsLabel').textContent=total+' reviews loaded';
 
@@ -3530,6 +3532,57 @@ Admin.init();
   },true);
 })();
 
+// ── KPI DRILL-DOWN ────────────────────────────────────────────────────────────
+// Clicking a KPI card opens the modal listing the reviews behind that number.
+function drillKpi(key){
+  var rv=State.reviews||[];
+  var list, title;
+  function isMaint(r){return r.maintFlag===true||r.maintFlag==='Yes'||r.maintFlag==='true';}
+  function isClean(r){return r.cleanFlag===true||r.cleanFlag==='Yes'||r.cleanFlag==='true';}
+  if(key==='all'){title='All Reviews';list=rv.slice();}
+  else if(key==='lowrated'){title='Lowest-Rated Reviews';list=rv.slice().filter(function(r){return parseFloat(r.rating)>0;}).sort(function(a,b){return (parseFloat(a.rating)||0)-(parseFloat(b.rating)||0);});}
+  else if(key==='positive'){title='Positive Reviews';list=rv.filter(function(r){return r.sentiment==='Positive';});}
+  else if(key==='negative'){title='Negative Reviews';list=rv.filter(function(r){return r.sentiment==='Negative';});}
+  else if(key==='maint'){title='Maintenance Flags — Rooms Needing Engineering';list=rv.filter(isMaint);}
+  else if(key==='clean'){title='Cleaning Flags — Rooms Needing Housekeeping';list=rv.filter(isClean);}
+  else if(key==='open'){title='Open Issues — Unresolved';list=rv.filter(function(r){return !r.resolutionStatus||r.resolutionStatus==='Open';});}
+  else{title='Reviews';list=rv.slice();}
+
+  // Sort most severe / lowest rating first for the operational lists
+  if(key==='maint'||key==='clean'||key==='open'||key==='negative'){
+    list=list.slice().sort(function(a,b){return (parseInt(b.severity)||0)-(parseInt(a.severity)||0);});
+  }
+
+  var body=document.getElementById('modalBody');
+  document.getElementById('modalTitle').textContent=title+' ('+list.length+')';
+
+  if(!list.length){
+    body.innerHTML='<div class="empty"><span>✓</span>No reviews in this category.</div>';
+  }else{
+    body.innerHTML='<div style="display:flex;flex-direction:column;gap:8px">'+list.map(function(r){
+      var sevN=parseInt(r.severity)||1;
+      var sentCls=r.sentiment==='Positive'?'badge-green':r.sentiment==='Negative'?'badge-red':'badge-amber';
+      var ratingTxt=r.rating?(r.rating+'/5'):'—';
+      var flags=[];
+      if(isMaint(r))flags.push('<span class="badge badge-amber" style="font-size:10px">🔧 Maint</span>');
+      if(isClean(r))flags.push('<span class="badge" style="font-size:10px;background:var(--bs);color:var(--blue)">🧹 HSKP</span>');
+      return '<div style="background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px">'+
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">'+
+          '<span class="sev '+getSevClass(sevN)+'" style="flex-shrink:0">'+sevN+'</span>'+
+          '<strong style="color:var(--t1)">Room '+esc(r.room||'?')+'</strong>'+
+          '<span style="font-size:11px;color:var(--t3)">'+esc(r.roomType||'')+'</span>'+
+          '<span class="badge '+sentCls+'" style="font-size:10px">'+esc(r.sentiment||'—')+'</span>'+
+          flags.join('')+
+          '<span style="margin-left:auto;font-size:12px;font-weight:600;color:var(--t1)">'+ratingTxt+'</span>'+
+        '</div>'+
+        '<div style="font-size:11px;color:var(--t3);margin-bottom:4px">'+esc(r.platform||'')+' · '+esc(DateU.fmt(r.checkInDate||r.date))+' · '+esc(r.resolutionStatus||'Open')+'</div>'+
+        '<div style="font-size:12px;color:var(--t2);line-height:1.5">'+esc(r.complaintSummary||r.subcategory||(r.text||'').slice(0,140)||'—')+'</div>'+
+      '</div>';
+    }).join('')+'</div>';
+  }
+  document.getElementById('reviewModal').classList.add('open');
+}
+
 // Expose to window so inline onclick= handlers can call them
 window.showPage = showPage;
 window.App = App;
@@ -3537,6 +3590,7 @@ window.R = R;
 window.A = A;
 window.generateWeeklyReport = generateWeeklyReport;
 window.openReport = openReport;
+window.drillKpi = drillKpi;
 })();
 </script>
 </body>
