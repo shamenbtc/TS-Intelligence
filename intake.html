@@ -485,15 +485,33 @@ document.getElementById('checkinDate').addEventListener('change', function() {
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const rm = document.getElementById('reviewMonth');
   if (!rm.value) rm.value = months[d.getMonth()] + ' ' + d.getFullYear();
-  calcNights();
+  // If nights already entered, recompute checkout; otherwise if checkout set, compute nights.
+  if (document.getElementById('nightsStayed').value) calcCheckout();
+  else if (document.getElementById('checkoutDate').value) calcNights();
 });
 document.getElementById('checkoutDate').addEventListener('change', calcNights);
+document.getElementById('nightsStayed').addEventListener('input', calcCheckout);
+
+// check-in + check-out → nights
 function calcNights() {
   const ci = document.getElementById('checkinDate').value;
   const co = document.getElementById('checkoutDate').value;
   if (!ci || !co) return;
   const diff = Math.round((new Date(co) - new Date(ci)) / 86400000);
   if (diff > 0) document.getElementById('nightsStayed').value = diff;
+}
+
+// check-in + nights → check-out (programmatic .value set does not fire 'change', so no loop)
+function calcCheckout() {
+  const ci = document.getElementById('checkinDate').value;
+  const nights = parseInt(document.getElementById('nightsStayed').value, 10);
+  if (!ci || !nights || nights < 1) return;
+  const d = new Date(ci + 'T00:00:00');
+  d.setDate(d.getDate() + nights);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  document.getElementById('checkoutDate').value = yyyy + '-' + mm + '-' + dd;
 }
 
 // ── CLASSIFY ──────────────────────────────────────────────────────────────
