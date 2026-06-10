@@ -8,6 +8,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Shared-secret gate: blocks drive-by use from anyone who discovers the URL.
+  // Set TSH_INTAKE_KEY in Vercel env vars. If unset, the gate is skipped.
+  const requiredKey = process.env.TSH_INTAKE_KEY;
+  if (requiredKey && req.headers['x-tsh-key'] !== requiredKey) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured in Vercel environment variables' });
