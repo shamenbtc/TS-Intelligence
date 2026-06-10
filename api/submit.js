@@ -1,121 +1,101 @@
 // api/submit.js
-// Vercel serverless function — appends a row to Google Sheets.
-// Uses service account credentials from environment variables.
-// No credentials ever touch the HTML file or GitHub.
+// Appends a new review row to Supabase.
+// The row array arrives from the intake form in column order (A–AA).
+// We map it to named fields before inserting.
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSH-Key');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  // Shared-secret gate: blocks drive-by writes from anyone who discovers the URL.
-  // Set TSH_INTAKE_KEY in Vercel env vars. If unset, the gate is skipped
-  // (so nothing breaks before the env var is added).
+  // Shared-secret gate
   const requiredKey = process.env.TSH_INTAKE_KEY;
   if (requiredKey && req.headers['x-tsh-key'] !== requiredKey) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const saEmail = process.env.GOOGLE_SA_EMAIL;
-  const saKey = process.env.GOOGLE_SA_PRIVATE_KEY;
-  const spreadsheetId = '15gzSANBAwhZPfNoi3Jh2W4tMTVAHVKjv3g4hGXHq3-w';
-  const sheetTab = 'Review Data';
-
-  if (!saEmail || !saKey) {
-    return res.status(500).json({ error: 'Google service account credentials not configured in Vercel environment variables' });
-  }
+  const SUPABASE_URL = 'https://nhckdbehipfibgesnkwj.supabase.co';
+  const serviceKey   = process.env.SUPABASE_SERVICE_KEY;
+  if (!serviceKey) return res.status(500).json({ error: 'SUPABASE_SERVICE_KEY not configured' });
 
   const { row } = req.body;
   if (!row || !Array.isArray(row)) {
-    return res.status(400).json({ error: 'Missing row data' });
+    return res.status(400).json({ error: 'Missing row array' });
   }
 
-  // Stamp the "Last Updated" timestamp into column AA (position 27).
-  // Pad the row to 26 columns first so the timestamp always lands in AA,
-  // even if the client sent fewer cells.
-  const stampedRow = row.slice(0, 26);
-  while (stampedRow.length < 26) stampedRow.push('');
-  stampedRow.push(sgTimestamp()); // column AA
+  // Column mapping (matches intake form row array order A–AA)
+  // Strip apostrophe prefix used to prevent Google Sheets date interpretation
+  const clean = v => typeof v === 'string' ? v.replace(/^'+/, '').trim() : v;
+  const toDate = v => {
+    if (!v) return null;
+    const s = clean(v);
+    // YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    // DD/MM/YYYY
+    const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+    return null;
+  };
+  const toInt  = v => { const n = parseInt(v); return isNaN(n) ? null : n; };
+  const toBool = v => ['yes','true','1'].includes(String(v||'').toLowerCase().trim());
+
+  const record = {
+    check_in_date:       toDate(row[0]),
+    check_out_date:      toDate(row[1]),
+    nights_stayed:       toInt(row[2]),
+    review_month:        clean(row[3]) || null,
+    platform:            clean(row[4]) || null,
+    booking_number:      clean(row[5]) || null,
+    room_number:         clean(row[6]) || null,
+    room_type:           clean(row[7]) || null,
+    guest_country:       clean(row[8]) || null,
+    rating:              clean(row[9]) || null,
+    review_text:         clean(row[10]) || null,
+    mentioned_staff:     clean(row[11]) || null,
+    // row[12] = Verified Stay — no longer collected, skip
+    sentiment:           clean(row[13]) || null,
+    category:            clean(row[14]) || null,
+    subcategory:         clean(row[15]) || null,
+    complaint_summary:   clean(row[16]) || null,
+    severity:            toInt(row[17]),
+    maintenance_flag:    toBool(row[18]),
+    hskp_flag:           toBool(row[19]),
+    suggested_action:    clean(row[20]) || null,
+    resolution_status:   clean(row[21]) || 'Open',
+    resolved_date:       toDate(row[22]),
+    assigned_department: clean(row[23]) || null,
+    assigned_staff:      clean(row[24]) || null,
+    resolution_notes:    clean(row[25]) || null,
+    last_updated:        new Date().toISOString()
+  };
 
   try {
-    // Build JWT for Google OAuth
-    const token = await getGoogleAccessToken(saEmail, saKey);
-
-    // Append row to sheet — range now extends to AA to include Last Updated
-    const range = encodeURIComponent(sheetTab + '!A:AA');
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
-
-    const response = await fetch(url, {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/reviews`, {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json'
+        'apikey': serviceKey,
+        'Authorization': `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({ values: [stampedRow] })
+      body: JSON.stringify(record)
     });
 
-    const data = await response.json();
-    if (data.error) {
-      return res.status(500).json({ error: 'Sheets API error: ' + data.error.message });
+    if (!resp.ok) {
+      const err = await resp.text();
+      // Duplicate booking number — friendly message
+      if (resp.status === 409 || err.includes('unique_booking_number')) {
+        return res.status(409).json({
+          error: `A review with booking number "${record.booking_number}" already exists. Check the duplicate checker on the Data tab.`
+        });
+      }
+      return res.status(500).json({ error: `Supabase error (${resp.status}): ${err}` });
     }
 
-    return res.status(200).json({ success: true, updatedRange: data.updates?.updatedRange });
-
+    return res.status(200).json({ success: true });
   } catch (err) {
     return res.status(500).json({ error: err.message || 'Submission failed' });
   }
-}
-
-// ── SINGAPORE TIMESTAMP ────────────────────────────────────────────────────────
-// Vercel runs in UTC. Singapore is UTC+8 with no DST, so we add 8 hours and read
-// the UTC components to get Singapore local time. Format: "03-Jun-2026 2:30pm".
-function sgTimestamp() {
-  const sg = new Date(Date.now() + 8 * 60 * 60 * 1000);
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const dd = String(sg.getUTCDate()).padStart(2, '0');
-  const mon = months[sg.getUTCMonth()];
-  const yyyy = sg.getUTCFullYear();
-  let h = sg.getUTCHours();
-  const m = String(sg.getUTCMinutes()).padStart(2, '0');
-  const ampm = h >= 12 ? 'pm' : 'am';
-  h = h % 12; if (h === 0) h = 12;
-  return `${dd}-${mon}-${yyyy} ${h}:${m}${ampm}`;
-}
-
-// ── JWT SIGNING ──────────────────────────────────────────────────────────────
-// Node.js server-side JWT signing using the crypto module
-async function getGoogleAccessToken(email, pemKey) {
-  const { createSign } = await import('crypto');
-
-  const now = Math.floor(Date.now() / 1000);
-  const header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64url');
-  const payload = Buffer.from(JSON.stringify({
-    iss: email,
-    scope: 'https://www.googleapis.com/auth/spreadsheets',
-    aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now
-  })).toString('base64url');
-
-  const sigInput = header + '.' + payload;
-
-  // Fix key formatting — Vercel env vars may collapse \n to literal backslash-n
-  const fixedKey = pemKey.replace(/\\n/g, '\n');
-
-  const sign = createSign('RSA-SHA256');
-  sign.update(sigInput);
-  const signature = sign.sign(fixedKey, 'base64')
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
-  const jwt = sigInput + '.' + signature;
-
-  const resp = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + jwt
-  });
-
-  const data = await resp.json();
-  if (!data.access_token) throw new Error('Google auth failed: ' + JSON.stringify(data));
-  return data.access_token;
 }
