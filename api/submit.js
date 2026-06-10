@@ -8,6 +8,14 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Shared-secret gate: blocks drive-by writes from anyone who discovers the URL.
+  // Set TSH_INTAKE_KEY in Vercel env vars. If unset, the gate is skipped
+  // (so nothing breaks before the env var is added).
+  const requiredKey = process.env.TSH_INTAKE_KEY;
+  if (requiredKey && req.headers['x-tsh-key'] !== requiredKey) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   const saEmail = process.env.GOOGLE_SA_EMAIL;
   const saKey = process.env.GOOGLE_SA_PRIVATE_KEY;
   const spreadsheetId = '15gzSANBAwhZPfNoi3Jh2W4tMTVAHVKjv3g4hGXHq3-w';
