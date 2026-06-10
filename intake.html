@@ -164,7 +164,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
   </div>
 
   <div class="page-title" id="pageTitle">New Review Entry</div>
-  <div class="page-sub" id="pageSub">Paste a guest review — Sultan AI classifies all 26 fields. Review the suggestions, correct if needed, then submit directly to your Google Sheet.</div>
+  <div class="page-sub" id="pageSub">Paste a guest review — Sultan AI classifies all 26 fields. Review the suggestions, correct if needed, then submit directly to your review database.</div>
 
   <div class="steps" id="steps">
     <div class="step active" id="s1"><div class="step-num">1</div><span>Review details</span></div>
@@ -349,7 +349,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 
     <div class="btn-row">
       <button class="btn btn-primary" id="btnSubmit" onclick="submitToSheet()">
-        Submit to Google Sheets →
+        Submit Review →
         <div class="spinner" id="sp2"></div>
       </button>
       <button class="btn" onclick="goBack()">← Edit review</button>
@@ -381,7 +381,7 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 
     <div class="btn-row" style="margin-bottom:16px">
       <button class="btn" id="btnLoad" onclick="loadSheet()">
-        🔄 Load from Google Sheet
+        Load Unclassified Reviews
         <div class="spinner dark" id="spLoad"></div>
       </button>
       <button class="btn btn-primary" id="btnRunBulk" onclick="runBulk()" style="display:none">
@@ -596,8 +596,36 @@ async function runClassification() {
 async function submitToSheet() {
   const btn = document.getElementById('btnSubmit');
   const sp = document.getElementById('sp2');
+
+  // Prevent double-tap/double-click submissions
+  if (btn.dataset.submitting === '1') return;
+  btn.dataset.submitting = '1';
   btn.disabled = true; sp.style.display = 'inline-block';
-  showStatus('Writing to Google Sheets...', 'info'); setProgress(30);
+  showStatus('Checking for duplicates...', 'info'); setProgress(15);
+
+  // Pre-submission duplicate guard — check Supabase for this booking number
+  // before writing. The 409 from submit.js is a second line of defence;
+  // this catches it before the write round-trip even starts.
+  const bookingVal = (document.getElementById('bookingNumber').value || '').trim();
+  if (bookingVal) {
+    try {
+      const chk = await fetch(`/api/check-duplicate?booking=${encodeURIComponent(bookingVal)}`, {
+        headers: { 'X-TSH-Key': 'tsh-sultan-2026' }
+      });
+      if (chk.ok) {
+        const { exists } = await chk.json();
+        if (exists) {
+          showStatus(`⚠ Booking number ${bookingVal} already exists in the database. Check the duplicate checker on the dashboard before submitting again.`, 'error');
+          setProgress(0);
+          btn.disabled = false; btn.dataset.submitting = '0'; sp.style.display = 'none';
+          return;
+        }
+      }
+      // If check-duplicate endpoint not yet deployed, fail open and proceed
+    } catch(e) { /* fail open */ }
+  }
+
+  showStatus('Saving to database...', 'info'); setProgress(30);
 
   // 26-column row — exact sheet column order A through Z
   const row = [
@@ -660,7 +688,7 @@ async function submitToSheet() {
     const status = document.getElementById('ai_status').value;
 
     document.getElementById('successSub').textContent =
-      `Room ${room} · ${platform} · ${sentiment} · Severity ${severity} has been added to your Google Sheet. Sync the dashboard to see it.`;
+      `Room ${room} · ${platform} · ${sentiment} · Severity ${severity} has been saved. Sync the dashboard to see it.`;
 
     document.getElementById('metaBox').innerHTML = [
       ['Room', room + ' (' + document.getElementById('roomType').value + ')'],
@@ -682,7 +710,7 @@ async function submitToSheet() {
     showStatus('Submission failed: ' + err.message, 'error');
     document.getElementById('pb').style.display = 'none';
   } finally {
-    btn.disabled = false; sp.style.display = 'none';
+    btn.disabled = false; btn.dataset.submitting = '0'; sp.style.display = 'none';
   }
 }
 
@@ -740,11 +768,11 @@ function switchMode(mode) {
   document.getElementById('recentCard').style.display = 'none';
   if (isNew) {
     document.getElementById('pageTitle').textContent = 'New Review Entry';
-    document.getElementById('pageSub').textContent   = 'Paste a guest review — Sultan AI classifies all 26 fields. Review the suggestions, correct if needed, then submit directly to your Google Sheet.';
+    document.getElementById('pageSub').textContent   = 'Paste a guest review — Sultan AI classifies all 26 fields. Review the suggestions, correct if needed, then submit directly to your review database.';
     document.getElementById('steps').style.display = 'flex';
   } else {
     document.getElementById('pageTitle').textContent = 'Bulk Classify';
-    document.getElementById('pageSub').textContent   = 'Load your Google Sheet — Sultan AI will classify every review that is missing Sentiment, Category or Severity. Results write directly back to the sheet.';
+    document.getElementById('pageSub').textContent   = 'Load unclassified reviews — Sultan AI will fill in Sentiment, Category, and Severity for every blank row.';
     document.getElementById('steps').style.display = 'none';
   }
 }
@@ -776,7 +804,7 @@ async function loadSheet() {
   const btn = document.getElementById('btnLoad');
   const sp  = document.getElementById('spLoad');
   btn.disabled = true; sp.style.display = 'inline-block';
-  bStatus('Fetching reviews from Google Sheet...', 'info');
+  bStatus('Loading unclassified reviews...', 'info');
   document.getElementById('reviewRowList').innerHTML = '';
   document.getElementById('bulkLog').style.display = 'none';
   document.getElementById('bulkLog').innerHTML = '';
