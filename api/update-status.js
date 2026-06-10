@@ -7,9 +7,17 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-TSH-Key');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  // Shared-secret gate: blocks drive-by writes from anyone who discovers the URL.
+  // Set TSH_INTAKE_KEY in Vercel env vars. If unset, the gate is skipped
+  // (so nothing breaks before the env var is added).
+  const requiredKey = process.env.TSH_INTAKE_KEY;
+  if (requiredKey && req.headers['x-tsh-key'] !== requiredKey) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
   const saEmail = process.env.GOOGLE_SA_EMAIL;
   const saKey   = process.env.GOOGLE_SA_PRIVATE_KEY;
@@ -87,13 +95,22 @@ async function findRowByBookingNumber(bookingNumber, token, spreadsheetId, sheet
   const rows = data.values || [];
   const searchStr = String(bookingNumber).trim().replace(/\.0$/, '');
 
+  // Collect ALL matches — if a booking number appears on more than one row,
+  // writing to "the first one" could silently update the wrong review.
+  const matches = [];
   for (let i = 0; i < rows.length; i++) {
     const cellVal = String(rows[i][0] || '').trim().replace(/\.0$/, '');
     if (cellVal === searchStr) {
-      return i + 1; // 1-based row number
+      matches.push(i + 1); // 1-based row number
     }
   }
-  return null;
+  if (matches.length > 1) {
+    throw new Error(
+      `Booking number "${bookingNumber}" appears on ${matches.length} rows (sheet rows ${matches.join(', ')}). ` +
+      `Fix the duplicate in the Google Sheet first (Data tab → Duplicate Review Check), then retry.`
+    );
+  }
+  return matches.length === 1 ? matches[0] : null;
 }
 
 // ── SINGAPORE TIMESTAMP ────────────────────────────────────────────────────────
