@@ -51,6 +51,10 @@
   --ts-lg:13px;  --ts-xl:14px;  --ts-2xl:16px;
   --ts-3xl:20px; --ts-4xl:28px;
 
+  /* Elevation — wide, low-opacity diffusion shadows */
+  --sh1:0 1px 2px rgba(10,11,16,.04),0 8px 24px -12px rgba(10,11,16,.10);
+  --sh2:0 2px 6px rgba(10,11,16,.06),0 16px 40px -16px rgba(10,11,16,.16);
+
   /* Emil motion tokens */
   --ease-out:cubic-bezier(0.23,1,0.32,1);
   --ease-inout:cubic-bezier(0.77,0,0.175,1);
@@ -58,6 +62,8 @@
 
 /* Dark mode — deep ink + gold. */
 [data-theme="dark"]{
+  --sh1:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  --sh2:0 2px 6px rgba(0,0,0,.4),0 16px 40px -16px rgba(0,0,0,.6);
   --bg0:#0A0B10;  --bg1:#0F1018;  --bg2:#141620;
   --bg3:#1A1C28;  --bg4:#212435;  --bg5:#2A2D42;
 
@@ -84,6 +90,9 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bd3);border-radius:10px}
 
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,.info:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
 /* ── SHELL ───────────────────────────────────────────────────────────────── */
 .shell{display:flex;flex-direction:column;height:100vh;height:100dvh;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}
 
@@ -106,7 +115,7 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 /* ── NAV ─────────────────────────────────────────────────────────────────── */
 .nav{display:flex;align-items:center;padding:0 18px;height:38px;background:var(--bg1);border-bottom:1px solid var(--bd);gap:1px;flex-shrink:0;overflow-x:auto}
 .nav::-webkit-scrollbar{height:0}
-.ntab{padding:5px 11px;border-radius:5px;border:none;background:transparent;color:var(--t3);font-size:var(--ts-sm);font-weight:500;letter-spacing:.03em;cursor:pointer;font-family:var(--fn);white-space:nowrap;position:relative;
+.ntab{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:5px;border:none;background:transparent;color:var(--t3);font-size:var(--ts-sm);font-weight:500;letter-spacing:.03em;cursor:pointer;font-family:var(--fn);white-space:nowrap;position:relative;
   transition:color 150ms var(--ease-out),background 150ms var(--ease-out)}
 .ntab::after{content:'';position:absolute;bottom:-1px;left:50%;right:50%;height:2px;background:var(--gold);border-radius:1px;
   transition:left 180ms var(--ease-out),right 180ms var(--ease-out),opacity 150ms var(--ease-out);opacity:0}
@@ -115,6 +124,9 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 @media(hover:hover) and (pointer:fine){.ntab:hover{color:var(--t1);background:var(--bg3)}}
 .ntab:active{transform:scale(0.96)}
 
+.nicon{width:14px;height:14px;flex-shrink:0;opacity:.9}
+.nlabel{line-height:1}
+
 /* ── MAIN ────────────────────────────────────────────────────────────────── */
 .main{flex:1;overflow:hidden;display:flex;flex-direction:column}
 @keyframes _pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -122,7 +134,7 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 .page.active{display:flex;animation:_pgIn 220ms var(--ease-out) both}
 
 /* ── CARDS ───────────────────────────────────────────────────────────────── */
-.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:15px}
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;box-shadow:var(--sh1)}
 .card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
 .card-title{font-size:var(--ts-xs);font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;font-family:var(--fn)}
 .card-title-serif{font-family:var(--fn);font-size:var(--ts-xl);font-weight:600;color:var(--t1);letter-spacing:-.01em;text-transform:none}
@@ -132,10 +144,11 @@ html,body{height:100%;font-family:var(--fn);background:var(--bg0);color:var(--t1
 
 /* ── STAT CARDS ──────────────────────────────────────────────────────────── */
 @keyframes _statIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 15px;position:relative;overflow:visible;
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 15px;position:relative;overflow:visible;box-shadow:var(--sh1);
   animation:_statIn 300ms var(--ease-out) both}
 #kpiCards .stat{cursor:pointer}
-#kpiCards .stat:hover{border-color:var(--bd3);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+#kpiCards .stat{transition:box-shadow 180ms var(--ease-out),transform 180ms var(--ease-out),border-color 180ms var(--ease-out)}
+#kpiCards .stat:hover{border-color:var(--bd3);box-shadow:var(--sh2);transform:translateY(-1px)}
 /* Lift the hovered/tapped card (and therefore its downward tooltip) above the card
    beneath it — otherwise the next card in the grid paints over the tooltip. */
 #kpiCards .stat:hover,
@@ -329,7 +342,7 @@ tr:hover td{background:var(--bg3)}
 .sev-5{background:var(--rs);color:var(--red)}
 
 /* ── MODAL ───────────────────────────────────────────────────────────────── */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-backdrop{position:fixed;inset:0;background:rgba(10,11,16,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:1000;display:none;align-items:center;justify-content:center}
 .modal-backdrop.open{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--rl);padding:20px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto}
 .modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -536,7 +549,7 @@ body.admin-mode .admin-badge{display:inline-flex}
   <div class="bsub" id="dataSourceLabel" style="font-size:12px;color:var(--t3)">Sample Data Mode</div>
   <div class="bsub" id="statsLabel" style="font-size:11px;color:var(--t3)">Loading...</div>
   <div class="tr">
-    <span class="admin-badge" id="adminBadge">🔓 Admin <button onclick="Admin.exit()">Exit</button></span>
+    <span class="admin-badge" id="adminBadge">Admin <button onclick="Admin.exit()">Exit</button></span>
     <a class="tbtn" href="/intake.html" style="background:var(--gold);color:var(--bg1);border-color:var(--gold);text-decoration:none" title="Add a guest review">＋<span> Add Review</span></a>
     <button class="tbtn" id="themeBtn" onclick="App.toggleTheme()" title="Toggle light / dark theme">☾<span> Theme</span></button>
     <button class="tbtn" onclick="App.refreshLiveData()" title="Re-sync from Supabase">↻<span> Refresh</span></button>
@@ -545,13 +558,13 @@ body.admin-mode .admin-badge{display:inline-flex}
   </div>
 </div>
 <div class="nav">
-  <button class="ntab active" onclick="showPage('overview')" id="tab-overview">⊞<span class="nlabel"> Overview</span></button>
-  <button class="ntab" onclick="showPage('reviews')" id="tab-reviews">✉<span class="nlabel"> Reviews</span></button>
-  <button class="ntab" onclick="showPage('rooms')" id="tab-rooms">▦<span class="nlabel"> Rooms</span></button>
-  <button class="ntab" onclick="showPage('alerts')" id="tab-alerts">🔔<span class="nlabel"> Alerts</span></button>
-  <button class="ntab" onclick="showPage('analytics')" id="tab-analytics">📊<span class="nlabel"> Analytics</span></button>
-  <button class="ntab" onclick="showPage('staff')" id="tab-staff">👤<span class="nlabel"> Staff</span></button>
-  <button class="ntab" data-admin onclick="showPage('import')" id="tab-import">⚙<span class="nlabel"> Data</span></button>
+  <button class="ntab active" onclick="showPage('overview')" id="tab-overview"><svg class="nicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="nlabel"> Overview</span></button>
+  <button class="ntab" onclick="showPage('reviews')" id="tab-reviews"><svg class="nicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nlabel"> Reviews</span></button>
+  <button class="ntab" onclick="showPage('rooms')" id="tab-rooms"><svg class="nicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg><span class="nlabel"> Rooms</span></button>
+  <button class="ntab" onclick="showPage('alerts')" id="tab-alerts"><svg class="nicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="nlabel"> Alerts</span></button>
+  <button class="ntab" onclick="showPage('analytics')" id="tab-analytics"><svg class="nicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span class="nlabel"> Analytics</span></button>
+  <button class="ntab" onclick="showPage('staff')" id="tab-staff"><svg class="nicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="nlabel"> Staff</span></button>
+  <button class="ntab" data-admin onclick="showPage('import')" id="tab-import"><svg class="nicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><span class="nlabel"> Data</span></button>
 </div>
 <div class="main">
 
@@ -768,8 +781,8 @@ body.admin-mode .admin-badge{display:inline-flex}
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px">
       <button class="fbtn" style="background:var(--green);color:#fff;border-color:var(--green);font-weight:600" onclick="App.refreshLiveData()">↻ Sync Now</button>
-      <button class="fbtn" onclick="App.showDiagnostic()">🔍 Diagnostic</button>
-      <button class="fbtn" onclick="App.runLiveTest()">🧪 Run Live Test</button>
+      <button class="fbtn" onclick="App.showDiagnostic()">Diagnostic</button>
+      <button class="fbtn" onclick="App.runLiveTest()">Run Live Test</button>
     </div>
     <div id="liveDiagnostic" style="margin-top:12px;display:none"></div>
   </div>
@@ -785,7 +798,7 @@ body.admin-mode .admin-badge{display:inline-flex}
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px">
       <button class="fbtn" style="background:var(--gold);color:var(--bg1);border-color:var(--gold);font-weight:600" id="btnGenReport" onclick="generateWeeklyReport()">
-        📋 Generate This Week's Reports
+        Generate This Week's Reports
       </button>
     </div>
     <div id="reportStatus" style="display:none;font-size:12px;padding:8px 12px;border-radius:var(--r);margin-top:10px"></div>
@@ -811,7 +824,7 @@ body.admin-mode .admin-badge{display:inline-flex}
   <div class="card">
     <div class="card-hd">
       <span class="card-title">Current Data</span>
-      <button class="fbtn" onclick="App.clearData()">🗑 Reset to sample</button>
+      <button class="fbtn" onclick="App.clearData()">Reset</button>
     </div>
     <div id="dataInfo" style="font-size:12px;color:var(--t2)">Loading...</div>
   </div>
@@ -861,7 +874,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v45', SRC_KEY='hoi_source_v45';
+var CACHE_KEY='hoi_reviews_v46', SRC_KEY='hoi_source_v46';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1240,7 +1253,7 @@ function renderOverview(){
   }
 
   document.getElementById('kpiCards').innerHTML=
-    kpi('Total Reviews',total,'Analysed entries','','✉',
+    kpi('Total Reviews',total,'Analysed entries','','❖',
         'Total number of reviews loaded. Higher volume = more reliable trend signals.','all')+
     kpi('Avg Rating',avgR+'<span style="font-size:15px;color:var(--t3)">/5</span>','<span class="stars">'+stars(avgR)+'</span>','','★',
         'Average guest rating across all platforms (normalised to /5 scale). 4+ is good, 3-4 average, below 3 needs attention. Click to see the lowest-rated reviews first.','lowrated')+
@@ -1248,9 +1261,9 @@ function renderOverview(){
         'Percentage of reviews classified as positive. Higher is better. Above 60% indicates healthy guest experience.','positive')+
     kpi('Negative Sentiment',negPct+'%',neg+' negative reviews','var(--red)','↓',
         'Percentage of reviews classified as negative. Lower is better. Above 20% signals systemic operational issues.','negative')+
-    kpi('Maint. Flags',maintN,'Rooms need attention','var(--amber)','🔧',
+    kpi('Maint. Flags',maintN,'Rooms need attention','var(--amber)','◈',
         'Reviews flagged for engineering follow-up (broken AC, plumbing, electrical, etc). Click to list the affected rooms.','maint')+
-    kpi('Cleaning Flags',cleanN,'Housekeeping alerts','var(--teal)','🧹',
+    kpi('Cleaning Flags',cleanN,'Housekeeping alerts','var(--teal)','◇',
         'Reviews flagged for housekeeping follow-up (dirt, dust, mold, hygiene issues). Click to list the affected rooms.','clean')+
     kpi('Open Issues',open,'Unresolved alerts','var(--red)','⚠',
         'Number of issues still awaiting resolution. Should trend downward week-over-week. Click to list them.','open')+
@@ -1568,7 +1581,7 @@ var R={
           '<span class="badge badge-blue">'+esc(r.platform)+'</span>'+
           '<span class="badge badge-gray">'+esc(r.category)+'</span>'+
           (r.subcategory?'<span class="badge badge-gray">'+esc(r.subcategory)+'</span>':'')+
-          (r.maintFlag===true||r.maintFlag==='Yes'||r.maintFlag==='true'?'<span class="badge badge-red">🔧 Maint</span>':'')+
+          (r.maintFlag===true||r.maintFlag==='Yes'||r.maintFlag==='true'?'<span class="badge badge-red">Maint</span>':'')+
           (r.cleanFlag===true||r.cleanFlag==='Yes'||r.cleanFlag==='true'?'<span class="badge badge-amber">🧹 Clean</span>':'')+
           (r.staffMentioned?'<span class="badge '+(r.sentiment==='Positive'?'badge-green':'badge-purple')+'">'+(r.sentiment==='Positive'?'⭐':'👤')+' '+esc(r.staffMentioned)+(r.sentiment==='Positive'?' · Recognition':'')+'</span>':'')+
           '<div class="status '+resClass(r.resolutionStatus)+'" style="margin-left:auto">'+esc(r.resolutionStatus||'Open')+'</div>'+
@@ -2116,7 +2129,7 @@ function renderAnalytics(){
         '<td>'+(m.neg>0?'<span style="color:var(--red);font-weight:600">'+m.neg+'</span>':'<span style="color:var(--t4)">0</span>')+'</td></tr>';
     }).join('')+'</tbody></table></div>'+
     '<div style="font-size:11px;color:var(--t3);margin-top:8px;font-style:italic">'+totalWithCountry+' of '+rv.length+' reviews have a country recorded. Patterns are indicative only until volume grows.</div>':
-    '<div class="empty"><span>🌐</span>No guest country data yet — add countries via the intake form</div>';
+    '<div class="empty"><span>—</span>No guest country data yet — add countries via the intake form</div>';
 }
 
 // ── STAFF ──
@@ -3593,8 +3606,8 @@ function drillKpi(key){
       var sentCls=r.sentiment==='Positive'?'badge-green':r.sentiment==='Negative'?'badge-red':'badge-amber';
       var ratingTxt=r.rating?(r.rating+'/5'):'—';
       var flags=[];
-      if(isMaint(r))flags.push('<span class="badge badge-amber" style="font-size:10px">🔧 Maint</span>');
-      if(isClean(r))flags.push('<span class="badge" style="font-size:10px;background:var(--bs);color:var(--blue)">🧹 HSKP</span>');
+      if(isMaint(r))flags.push('<span class="badge badge-amber" style="font-size:10px">Maint</span>');
+      if(isClean(r))flags.push('<span class="badge" style="font-size:10px;background:var(--bs);color:var(--blue)">HSKP</span>');
       return '<div style="background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px">'+
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">'+
           '<span class="sev '+getSevClass(sevN)+'" style="flex-shrink:0">'+sevN+'</span>'+
