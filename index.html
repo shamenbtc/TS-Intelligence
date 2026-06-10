@@ -539,7 +539,7 @@ body.admin-mode .admin-badge{display:inline-flex}
     <span class="admin-badge" id="adminBadge">🔓 Admin <button onclick="Admin.exit()">Exit</button></span>
     <a class="tbtn" href="/intake.html" style="background:var(--gold);color:var(--bg1);border-color:var(--gold);text-decoration:none" title="Add a guest review">＋<span> Add Review</span></a>
     <button class="tbtn" id="themeBtn" onclick="App.toggleTheme()" title="Toggle light / dark theme">☾<span> Theme</span></button>
-    <button class="tbtn" onclick="App.refreshLiveData()" title="Re-sync from Google Sheets">↻<span> Refresh</span></button>
+    <button class="tbtn" onclick="App.refreshLiveData()" title="Re-sync from Supabase">↻<span> Refresh</span></button>
     <button class="tbtn" data-admin onclick="App.exportCSV()" title="Download CSV">⬇<span> Export</span></button>
     <button class="tbtn" data-admin style="background:var(--bs);color:var(--blue);border-color:transparent" onclick="showPage('import')" title="Manual upload">⬆<span> Upload</span></button>
   </div>
@@ -764,7 +764,7 @@ body.admin-mode .admin-badge{display:inline-flex}
   <div class="card" style="border-left:3px solid var(--green)">
     <div class="card-hd">
       <span class="card-title">Live Data</span>
-      <span style="font-size:11px;color:var(--t3)">Connected to Google Sheets · auto-syncs on load</span>
+      <span style="font-size:11px;color:var(--t3)">Connected to Supabase · auto-syncs on load</span>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:4px">
       <button class="fbtn" style="background:var(--green);color:#fff;border-color:var(--green);font-weight:600" onclick="App.refreshLiveData()">↻ Sync Now</button>
@@ -861,7 +861,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v43', SRC_KEY='hoi_source_v43';
+var CACHE_KEY='hoi_reviews_v44', SRC_KEY='hoi_source_v44';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1954,7 +1954,7 @@ var A={
             r.lastUpdated=nowStamp;
           }
         });
-        try{LS.set(CACHE_KEY,{reviews:State.reviews,fileName:'Google Sheets',uploadedAt:State.uploadedAt});}catch(e){}
+        try{LS.set(CACHE_KEY,{reviews:State.reviews,fileName:'Supabase',uploadedAt:State.uploadedAt});}catch(e){}
         setTimeout(function(){A.render();renderOverview();},1200);
         toast('✓ Room '+room+' → '+status);
       }else{
@@ -2273,7 +2273,7 @@ function normalizeRating(raw, platform){
   // Bare number — infer scale
   var n=parseFloat(s.replace(/[^0-9.]/g,''));
   if(isNaN(n))return 0;
-  // Google Sheets date serial guard: if a rating like "7/10" was written with
+  // Supabase date serial guard: if a rating like "7/10" was written with
   // USER_ENTERED, Sheets interprets it as a date (July 10) → serial ~46213.
   // Any value above 20 is definitively not a valid hotel rating — return 0.
   if(n>20)return 0;
@@ -2290,9 +2290,51 @@ function normalizeRating(raw, platform){
   return Math.max(0,Math.min(5,n));
 }
 
+// ── SUPABASE ROW MAPPER ───────────────────────────────────────────────────────
+// Converts a raw Supabase JSON row into the review object the dashboard uses.
+function mapSupabaseRow(r){
+  function nr(s){
+    if(!s)return 0;
+    s=String(s).trim().replace(/^'+/,'');
+    var m=s.match(/^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
+    if(m){var n=parseFloat(m[1]),d=parseFloat(m[2]);return d>0?Math.round((n/d)*5*10)/10:0;}
+    var n=parseFloat(s);
+    if(isNaN(n)||n>20)return 0;
+    return n>5?Math.round((n/10)*5*10)/10:Math.round(n*10)/10;
+  }
+  function fmtLU(ts){
+    if(!ts)return '';
+    try{
+      var d=new Date(ts);
+      var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var h=d.getUTCHours()+8; // SGT = UTC+8
+      var day=d.getUTCDate(); var mon=d.getUTCMonth(); var yr=d.getUTCFullYear();
+      if(h>=24){h-=24;day++;}
+      var ap=h>=12?'pm':'am'; h=h%12; if(h===0)h=12;
+      return String(day).padStart(2,'0')+'-'+months[mon]+'-'+yr+' '+h+':'+String(d.getUTCMinutes()).padStart(2,'0')+ap;
+    }catch(e){return '';}
+  }
+  return {
+    id:r.id, date:r.check_in_date||'', checkInDate:r.check_in_date||'',
+    checkOutDate:r.check_out_date||'', nightsStayed:r.nights_stayed||'',
+    reviewedMonth:r.review_month||'', platform:r.platform||'',
+    booking:r.booking_number||'', room:r.room_number||'', roomType:r.room_type||'',
+    nationality:r.guest_country||'', rating:nr(r.rating), text:r.review_text||'',
+    staffMentioned:r.mentioned_staff||'', sentiment:r.sentiment||'',
+    category:r.category||'', subcategory:r.subcategory||'',
+    complaintSummary:r.complaint_summary||'', severity:r.severity||1,
+    maintFlag:r.maintenance_flag===true||r.maintenance_flag==='Yes',
+    cleanFlag:r.hskp_flag===true||r.hskp_flag==='Yes',
+    suggestedAction:r.suggested_action||'', resolutionStatus:r.resolution_status||'Open',
+    resolvedDate:r.resolved_date||'', assignedDept:r.assigned_department||'',
+    assignedStaff:r.assigned_staff||'', resolutionNotes:r.resolution_notes||'',
+    lastUpdated:fmtLU(r.last_updated), isSample:false
+  };
+}
+
 // ── CSV PARSING ──
 function parseCSV(text){
-  // Strip BOM if present (Google Sheets CSV often has one)
+  // Strip BOM if present (Supabase CSV often has one)
   if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
   // Quote-aware line splitter: CSV cells can contain newlines inside double-quoted strings.
   // A naive text.split('\n') would break review text mid-paragraph and shift all subsequent
@@ -2962,216 +3004,85 @@ var App={
     toast('Data cleared — showing sample dataset');
   },
   exportCSV:exportCSV,
-  // Live Google Sheets URL - published CSV from your hotel operations sheet
-  LIVE_SHEET_URL:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRqCAoucSr2sR8pdyLobUytm71UaX2Goibvna-a55Kv2Yj5PAGmRqoMcRnrPaWA6Co4-Y6KAZwbcz17/pub?gid=1245614730&single=true&output=csv',
+  // Live Supabase URL - published CSV from your hotel operations sheet
+  SUPABASE_URL:'https://nhckdbehipfibgesnkwj.supabase.co',
+  SUPABASE_ANON_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oY2tkYmVoaXBmaWJnZXNua3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNDk1MTQsImV4cCI6MjA5NjYyNTUxNH0.EjyXJm41-OfwR7NkDew61TN7_2-zw-1s-ImD3IngHQY',
   lastFetchDiagnostic:null,
-  // Resilient fetch: tries multiple URL variations because Google Sheets sometimes returns
-  // different responses depending on whether output param is first/last, whether single=true
-  // is included, etc. Also handles "TypeError: Failed to fetch" with specific diagnostic info.
   refreshLiveData:function(silent){
     var self=this;
     var statusEl=document.getElementById('dataSourceLabel');
     if(!silent&&statusEl)statusEl.textContent='Loading live data...';
     var startTime=Date.now();
-    var primaryUrl=this.LIVE_SHEET_URL;
-    // Generate alternate URL forms for fallback
-    var altUrls=this.buildFallbackUrls(primaryUrl);
-    var urlsToTry=[primaryUrl].concat(altUrls);
-    var attemptLog=[];
 
-    function tryFetch(idx){
-      if(idx>=urlsToTry.length){
-        // All variants failed — surface a structured error
-        var combined=attemptLog.map(function(a){return'• URL #'+(a.idx+1)+': '+a.error;}).join('\n');
-        throw new Error('All fetch attempts failed. Details:\n'+combined+
-          '\n\nMost likely cause: the Google Sheet tab is not published.'+
-          '\nFix: File → Share → Publish to web → select your tab → CSV → Publish.');
+    return fetch(
+      this.SUPABASE_URL+'/rest/v1/reviews?select=*&order=check_in_date.desc&limit=2000',
+      {
+        headers:{
+          'apikey':this.SUPABASE_ANON_KEY,
+          'Authorization':'Bearer '+this.SUPABASE_ANON_KEY,
+          'Content-Type':'application/json'
+        },
+        cache:'no-store'
       }
-      var url=urlsToTry[idx];
-      // Capture browser environment for diagnostic
-      var envInfo='ua:'+(navigator.userAgent||'').slice(0,60)+' online:'+navigator.onLine;
-      return fetch(url,{cache:'no-store',redirect:'follow',credentials:'omit',mode:'cors'})
-        .then(function(r){
-          if(!r.ok){
-            var err='HTTP '+r.status+' '+(r.statusText||'(no status text)');
-            attemptLog.push({idx:idx,url:url,error:err});
-            return tryFetch(idx+1);
-          }
-          return r.text().then(function(csv){
-            // Detect Google "publish-revoked" HTML response masquerading as success
-            if(csv.indexOf('<!DOCTYPE')===0||csv.indexOf('<html')>-1||csv.indexOf('<HTML')>-1){
-              attemptLog.push({idx:idx,url:url,error:'Got HTML instead of CSV — sheet not published'});
-              return tryFetch(idx+1);
-            }
-            if(!csv||csv.length<10){
-              attemptLog.push({idx:idx,url:url,error:'Empty response ('+csv.length+' bytes)'});
-              return tryFetch(idx+1);
-            }
-            return {csv:csv,url:url,attemptIdx:idx};
-          });
-        })
-        .catch(function(err){
-          // Network-level error: "TypeError: Failed to fetch" → CORS or network unreachable
-          var msg=err.message||String(err);
-          var errType=err.name||(err.constructor&&err.constructor.name)||'Error';
-          // Don't re-catch our own thrown errors from the chain above
-          if(msg.indexOf('All fetch attempts failed')===0)throw err;
-          attemptLog.push({idx:idx,url:url,error:'['+errType+'] '+msg+' ['+envInfo+']'});
-          // Only retry on network errors, not on parse/logic errors
-          if(msg.indexOf('Failed to fetch')>-1||msg.indexOf('NetworkError')>-1||msg.indexOf('HTTP')===0||msg.indexOf('Got HTML')>-1||msg.indexOf('Empty response')>-1){
-            return tryFetch(idx+1);
-          }
-          throw err;
-        });
-    }
-
-    return tryFetch(0)
-      .then(function(result){
-        var csv=result.csv;
-        var elapsed=Date.now()-startTime;
-        self.lastFetchDiagnostic={
-          time:new Date().toLocaleString(),
-          status:'success',
-          elapsedMs:elapsed,
-          csvBytes:csv.length,
-          csvPreview:csv.slice(0,500),
-          error:null,
-          urlUsed:result.url,
-          attempts:attemptLog
-        };
-        var reviews=parseCSV(csv);
-        if(!reviews.length)throw new Error('Parsed 0 reviews from sheet — CSV downloaded but no valid rows found');
-        if(parseCSV.lastDiagnostic){
-          self.lastFetchDiagnostic.parseDiagnostic=parseCSV.lastDiagnostic;
-        }
-        State.reviews=reviews;State.source='live';State.fileName='Google Sheets';State.uploadedAt=new Date().toLocaleString();
-        LS.set(CACHE_KEY,{reviews:reviews,fileName:'Google Sheets',uploadedAt:State.uploadedAt});
-        if(statusEl)statusEl.textContent='Live · '+reviews.length+' reviews · '+new Date().toLocaleTimeString();
-        if(!silent)toast('✓ Synced '+reviews.length+' reviews from Google Sheets');
-        // Destroy ALL existing chart instances so they fully rebuild with fresh data
-        // (Chart.js holds internal references to old datasets otherwise)
-        Object.keys(Charts).forEach(function(k){
-          try{Charts[k].destroy();}catch(e){}
-          delete Charts[k];
-        });
-        // Re-render the currently active page with FRESH data
-        var active=document.querySelector('.page.active');
-        if(active){
-          var id=active.id.replace('page-','');
-          try{showPage(id);}catch(e){renderOverview();}
-        }else{
-          renderOverview();
-        }
-        return reviews;
-      })
-      .catch(function(err){
-        self.lastFetchDiagnostic={
-          time:new Date().toLocaleString(),
-          status:'failed',
-          elapsedMs:Date.now()-startTime,
-          error:err.message,
-          csvBytes:0,
-          csvPreview:'',
-          attempts:attemptLog
-        };
-        // Surface a concise message in the status bar (truncated)
-        var shortMsg=err.message.split('\n')[0].slice(0,80);
-        if(statusEl)statusEl.textContent='⚠ '+shortMsg;
-        if(!silent)toast('⚠ '+shortMsg+' · See Data tab → Diagnostic for full details');
-        throw err;
-      });
+    )
+    .then(function(r){
+      if(!r.ok)throw new Error('Supabase returned HTTP '+r.status);
+      return r.json();
+    })
+    .then(function(rows){
+      var elapsed=Date.now()-startTime;
+      self.lastFetchDiagnostic={
+        time:new Date().toLocaleString(),status:'success',
+        elapsedMs:elapsed,rowCount:rows.length,error:null,source:'Supabase'
+      };
+      if(!rows.length)throw new Error('No reviews found in Supabase');
+      var reviews=rows.map(function(r){return mapSupabaseRow(r);});
+      State.reviews=reviews;State.source='live';State.fileName='Supabase';State.uploadedAt=new Date().toLocaleString();
+      LS.set(CACHE_KEY,{reviews:reviews,fileName:'Supabase',uploadedAt:State.uploadedAt});
+      if(statusEl)statusEl.textContent='Live · '+reviews.length+' reviews · '+new Date().toLocaleTimeString();
+      if(!silent)toast('✓ Synced '+reviews.length+' reviews from Supabase ('+elapsed+'ms)');
+      Object.keys(Charts).forEach(function(k){try{Charts[k].destroy();}catch(e){}delete Charts[k];});
+      var active=document.querySelector('.page.active');
+      if(active){var id=active.id.replace('page-','');try{showPage(id);}catch(e){renderOverview();}}
+      else{renderOverview();}
+      return reviews;
+    })
+    .catch(function(err){
+      self.lastFetchDiagnostic={
+        time:new Date().toLocaleString(),status:'failed',
+        elapsedMs:Date.now()-startTime,error:err.message,source:'Supabase'
+      };
+      var shortMsg=err.message.slice(0,80);
+      if(statusEl)statusEl.textContent='⚠ '+shortMsg;
+      if(!silent)toast('⚠ '+shortMsg+' · See Data tab → Diagnostic');
+      throw err;
+    });
   },
-  // Build alternate URL forms to try if primary fails.
-  // Google Sheets occasionally serves different responses for the same content via
-  // different URL formats (with/without single=true, parameter order variations).
-  // As a last resort we also try public CORS proxies in case browser blocks direct fetch.
-  buildFallbackUrls:function(primaryUrl){
-    var alts=[];
-    try{
-      var match=primaryUrl.match(/pub\?(.+)$/);
-      if(!match)return alts;
-      var params={};
-      match[1].split('&').forEach(function(p){
-        var kv=p.split('=');
-        params[kv[0]]=kv[1];
-      });
-      var base=primaryUrl.split('?')[0];
-      // Alt 1: gid + output only (drop single=true)
-      if(params.gid){
-        alts.push(base+'?gid='+params.gid+'&output='+(params.output||'csv'));
-      }
-      // Alt 2: rearrange parameter order
-      if(params.gid){
-        alts.push(base+'?output=csv&gid='+params.gid+'&single=true');
-      }
-      // Alt 3: just output=csv (whole document published)
-      alts.push(base+'?output=csv');
-      // Alt 4-5: CORS proxy fallbacks (used only if direct fetch fails on user's network)
-      // These proxies forward the request through their own server so CORS doesn't apply.
-      // Performance & reliability is best-effort. Only triggered when all direct URLs fail.
-      var encoded=encodeURIComponent(primaryUrl);
-      alts.push('https://api.allorigins.win/raw?url='+encoded);
-      alts.push('https://corsproxy.io/?'+encoded);
-    }catch(e){}
-    return alts;
-  },
-  // Runs an inline transparent test of each fetch method and shows the per-URL outcome.
-  // Useful when "Failed to fetch" persists and we need to see exactly which mechanism works.
+  // Runs a quick connectivity test against Supabase and shows the result.
   runLiveTest:function(){
+    var self=this;
     var el=document.getElementById('liveDiagnostic');
     if(!el)return;
     el.style.display='block';
-    var primary=this.LIVE_SHEET_URL;
-    var alts=this.buildFallbackUrls(primary);
-    var allUrls=[primary].concat(alts);
-    el.innerHTML='<div style="background:var(--bg3);padding:14px;border-radius:8px"><strong>Running live test... probing '+allUrls.length+' URL variations</strong><div id="testResults" style="margin-top:10px"></div></div>';
+    el.innerHTML='<div style="background:var(--bg3);padding:14px;border-radius:8px"><strong>Testing Supabase connection...</strong><div id="testResults" style="margin-top:10px;font-size:12px;font-family:var(--fn-mono)"></div></div>';
     var results=document.getElementById('testResults');
-    var promises=allUrls.map(function(url,idx){
-      var start=Date.now();
-      return fetch(url,{cache:'no-store',redirect:'follow',credentials:'omit',mode:'cors'})
-        .then(function(r){
-          var elapsed=Date.now()-start;
-          return r.text().then(function(t){
-            var ok=r.ok;
-            var bytes=t.length;
-            var isHtml=t.indexOf('<!DOCTYPE')===0||t.indexOf('<html')>-1;
-            var status='success';
-            var msg='HTTP '+r.status+' • '+bytes+' bytes • '+elapsed+'ms';
-            if(!ok){status='fail';msg='HTTP '+r.status+' '+r.statusText+' • '+elapsed+'ms';}
-            else if(isHtml){status='fail';msg='Got HTML (sheet not published as CSV) • '+bytes+' bytes • '+elapsed+'ms';}
-            else if(bytes<10){status='fail';msg='Response too short ('+bytes+' bytes)';}
-            return {idx:idx,url:url,status:status,msg:msg,sample:t.slice(0,120)};
-          });
-        })
-        .catch(function(err){
-          return {idx:idx,url:url,status:'fail',msg:'['+(err.name||'Error')+'] '+(err.message||String(err))+' • '+(Date.now()-start)+'ms',sample:''};
-        });
-    });
-    Promise.all(promises).then(function(arr){
-      var html='';
-      arr.forEach(function(r){
-        var color=r.status==='success'?'var(--green)':'var(--red)';
-        var icon=r.status==='success'?'✓':'✗';
-        var urlLabel=r.idx===0?'Primary':'Fallback #'+r.idx;
-        var urlShort=r.url.replace(/^https?:\/\//,'').slice(0,90);
-        html+='<div style="border-left:3px solid '+color+';padding:8px 10px;margin-bottom:8px;background:var(--bg4);border-radius:4px;font-size:12px">'+
-          '<div style="font-weight:600;color:'+color+';margin-bottom:3px">'+icon+' '+esc(urlLabel)+': '+esc(r.status.toUpperCase())+'</div>'+
-          '<div style="color:var(--t3);font-size:11px;margin-bottom:3px">'+esc(urlShort)+'</div>'+
-          '<div style="color:var(--t2)">'+esc(r.msg)+'</div>'+
-          (r.sample?'<div style="font-family:monospace;font-size:10px;color:var(--t3);margin-top:4px;background:var(--bg5);padding:4px;border-radius:3px;max-height:60px;overflow:hidden">'+esc(r.sample)+'…</div>':'')+
-        '</div>';
+    var start=Date.now();
+    fetch(this.SUPABASE_URL+'/rest/v1/reviews?select=id&limit=1',{
+      headers:{'apikey':this.SUPABASE_ANON_KEY,'Authorization':'Bearer '+this.SUPABASE_ANON_KEY},
+      cache:'no-store'
+    })
+    .then(function(r){
+      var elapsed=Date.now()-start;
+      return r.json().then(function(data){
+        var ok=r.ok&&Array.isArray(data);
+        results.innerHTML='<div style="color:'+(ok?'var(--green)':'var(--red)')+'">'+
+          (ok?'✓ Supabase OK':'✗ Supabase error')+' · HTTP '+r.status+' · '+elapsed+'ms</div>'+
+          '<div style="color:var(--t3);margin-top:4px">URL: '+self.SUPABASE_URL+'</div>'+
+          '<div style="color:var(--t3)">Response: '+JSON.stringify(data).slice(0,100)+'</div>';
       });
-      var successCount=arr.filter(function(r){return r.status==='success';}).length;
-      var summary='<div style="font-size:13px;font-weight:600;margin-bottom:10px;padding:8px;background:'+(successCount>0?'var(--gs)':'var(--rs)')+';border-radius:5px;color:'+(successCount>0?'var(--green)':'var(--red)')+'">'+(successCount>0?'✓ '+successCount+' / '+arr.length+' URL methods succeeded — live fetch CAN work':'✗ All '+arr.length+' URL methods failed — see details below')+'</div>';
-      var advice='';
-      if(successCount===0){
-        advice='<div style="margin-top:10px;padding:10px;background:var(--as);border-radius:5px;font-size:12px;color:var(--t2)"><strong style="color:var(--amber)">All fetch methods failed.</strong> Likely causes in order of probability:<ol style="margin:6px 0 0 18px;padding:0">'+
-          '<li><strong>Browser extension blocking</strong> (uBlock Origin, Privacy Badger, ad-blockers) — try in incognito/private window</li>'+
-          '<li><strong>Service worker stuck</strong> — clear browsing data and hard refresh</li>'+
-          '<li><strong>Corporate or ISP firewall</strong> blocking docs.google.com</li>'+
-          '<li><strong>Sheet not actually published</strong> — re-publish from File → Share → Publish to web</li></ol></div>';
-      }
-      results.innerHTML=summary+html+advice;
+    })
+    .catch(function(err){
+      results.innerHTML='<div style="color:var(--red)">✗ Connection failed: '+err.message+'</div>';
     });
   },
   showDiagnostic:function(){
@@ -3184,7 +3095,7 @@ var App={
       return;
     }    var statusColor=d.status==='success'?'var(--green)':'var(--red)';
     var statusIcon=d.status==='success'?'✓':'✗';
-    var url=this.LIVE_SHEET_URL;
+    var url=this.SUPABASE_URL+'/rest/v1/reviews';
     var html='<div style="background:var(--bg3);border-radius:8px;padding:14px;font-size:13px;line-height:1.6">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--bd2)">'+
         '<span style="font-weight:600;color:'+statusColor+';font-size:14px">'+statusIcon+' Last fetch: '+d.status.toUpperCase()+'</span>'+
@@ -3203,7 +3114,7 @@ var App={
       }
       html+='<div style="font-size:12px;color:var(--t2);background:var(--as);padding:10px;border-radius:6px;margin-top:10px"><strong style="color:var(--amber)">📋 How to fix "Failed to fetch":</strong><ol style="margin:6px 0 0 18px;padding:0">'+
         '<li><strong>Click the Live URL above</strong> — does it download a CSV file directly?<ul style="margin-top:3px"><li>If yes → CORS issue. Re-publish from the sheet.</li><li>If it opens an HTML page or login → sheet is not actually published as CSV.</li></ul></li>'+
-        '<li><strong>In Google Sheets:</strong> File → Share → Publish to web</li>'+
+        '<li><strong>In Supabase:</strong> File → Share → Publish to web</li>'+
         '<li><strong>Critical:</strong> in the "Link" dropdown, select your specific tab name (not "Entire Document"), and the format must be "Comma-separated values (.csv)"</li>'+
         '<li>If already published → click "Stop publishing", wait 5 seconds, then publish again</li>'+
         '<li>If you renamed the tab → the gid in the URL may now be wrong. Get the new URL by republishing.</li></ol></div>';
@@ -3269,13 +3180,13 @@ var App={
         if(!r.resolutionStatus)r.resolutionStatus='Open';
       });
       State.reviews=cached.reviews;
-      State.source=cached.fileName==='Google Sheets'?'live':'csv';
+      State.source=cached.fileName==='Supabase'?'live':'csv';
       State.fileName=cached.fileName||null;State.uploadedAt=cached.uploadedAt||null;
       if(statusEl)statusEl.textContent=State.source==='live'?'Live · '+cached.reviews.length+' reviews (cached) · refreshing...':'CSV: '+(cached.fileName||'uploaded');
     }else{
       // No cache — start empty rather than show fictional sample-data months
       State.reviews=[];State.source='loading';
-      if(statusEl)statusEl.textContent='Loading live data from Google Sheets...';
+      if(statusEl)statusEl.textContent='Loading live data from Supabase...';
     }
 
     // Wait for Chart.js with polling
@@ -3287,7 +3198,7 @@ var App={
     }
     tryRender();
 
-    // Now fetch fresh data from Google Sheets in background
+    // Now fetch fresh data from Supabase in background
     setTimeout(function(){
       self.refreshLiveData(true).catch(function(){
         // Fetch failed AND no cache → fall back to sample so user sees something
