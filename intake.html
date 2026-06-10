@@ -529,7 +529,7 @@ async function runClassification() {
     setProgress(40);
     const resp = await fetch('/api/classify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-TSH-Key': 'tsh-sultan-2026' },
       body: JSON.stringify({
         platform: document.getElementById('platform').value,
         roomNumber: document.getElementById('roomNumber').value,
@@ -632,7 +632,7 @@ async function submitToSheet() {
   try {
     const resp = await fetch('/api/submit', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-TSH-Key': 'tsh-sultan-2026' },
       body: JSON.stringify({ row })
     });
     setProgress(80);
@@ -784,7 +784,7 @@ async function loadSheet() {
   try {
     const resp = await fetch('/api/bulk-classify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-TSH-Key': 'tsh-sultan-2026' },
       body: JSON.stringify({ action: 'preview' })
     });
     const data = await resp.json();
@@ -866,7 +866,7 @@ async function runBulk() {
       // Step 1: Classify with Sultan AI
       const cResp = await fetch('/api/bulk-classify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-TSH-Key': 'tsh-sultan-2026' },
         body: JSON.stringify({ action: 'classify-one', row: r })
       });
       const classification = await cResp.json();
@@ -875,7 +875,7 @@ async function runBulk() {
       // Step 2: Write back to sheet
       const wResp = await fetch('/api/bulk-classify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-TSH-Key': 'tsh-sultan-2026' },
         body: JSON.stringify({ action: 'write', row: { sheetRow: r.sheetRow, classification } })
       });
       const wData = await wResp.json();
