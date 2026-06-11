@@ -571,6 +571,15 @@ body.admin-mode .admin-badge{display:inline-flex}
   .modal{padding:14px;max-height:90vh;width:94%}
   /* Chart heights more reasonable on mobile */
   .chart-wrap{min-height:180px}
+  /* Tables: compress on mobile so they fit without horizontal overflow */
+  table{font-size:11px}
+  th{padding:6px 7px;font-size:10px;letter-spacing:.06em;white-space:normal}
+  td{padding:6px 7px;font-size:11px}
+  .tbl-wrap{border-radius:8px}
+  /* Let room type badges wrap on mobile */
+  td .badge{white-space:normal;text-align:left}
+  /* Hide non-essential columns on mobile */
+  .hide-mobile{display:none}
 }
 @media(max-width:420px){
   /* Collapse all multi-column grids to single column on narrow phones */
@@ -767,7 +776,7 @@ body.admin-mode .admin-badge{display:inline-flex}
   <div class="grid-2">
     <div class="card">
       <div class="card-hd"><span class="card-title">Rooms Requiring Attention</span></div>
-      <div class="tbl-wrap"><table><thead><tr><th>Room</th><th>Type</th><th>Complaints</th><th>Maint</th><th>Clean</th><th>Avg Rating</th><th>Last Review</th></tr></thead><tbody id="roomAlertTbl"></tbody></table></div>
+      <div class="tbl-wrap"><table><thead><tr><th>Room</th><th>Type</th><th>Complaints</th><th>Maint</th><th>Clean</th><th>Avg Rating</th><th class="hide-mobile">Last Review</th></tr></thead><tbody id="roomAlertTbl"></tbody></table></div>
     </div>
     <div class="card">
       <div class="card-hd"><span class="card-title">Top Rated Rooms</span></div>
@@ -955,7 +964,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v50', SRC_KEY='hoi_source_v50';
+var CACHE_KEY='hoi_reviews_v51', SRC_KEY='hoi_source_v51';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1731,7 +1740,7 @@ function renderRooms(){
       '<td>'+(r.maint?'<span class="badge badge-red">'+r.maint+'</span>':'<span style="color:var(--t4)">—</span>')+'</td>'+
       '<td>'+(r.clean?'<span class="badge badge-amber">'+r.clean+'</span>':'<span style="color:var(--t4)">—</span>')+'</td>'+
       '<td><span class="stars" style="font-size:12px">'+stars(avgR)+'</span> '+avgR+'</td>'+
-      '<td style="color:var(--t3)">'+esc(DateU.fmt(r.lastDate))+'</td></tr>';
+      '<td class="hide-mobile" style="color:var(--t3)">'+esc(DateU.fmt(r.lastDate))+'</td></tr>';
   }).join('');
 
   var topRooms=rooms.filter(function(r){return r.pos>0;}).sort(function(a,b){return(b.ratingSum/b.total)-(a.ratingSum/a.total);}).slice(0,8);
@@ -2118,7 +2127,7 @@ function renderAnalytics(){
   // Platform sentiment heatmap
   var pdata=Agg.byPlatform(rv);
   var platforms=Object.keys(pdata);
-  var phHtml='<div style="overflow-x:auto"><table style="width:100%;font-size:12px"><thead><tr><th>Platform</th><th>Reviews</th><th>Avg Rating</th><th>Positive</th><th>Neutral</th><th>Negative</th><th>Sentiment Score</th></tr></thead><tbody>';
+  var phHtml='<div class="tbl-wrap"><table><thead><tr><th>Platform</th><th>Reviews</th><th>Avg Rating</th><th>Pos</th><th>Neu</th><th>Neg</th></tr></thead><tbody>';
   platforms.forEach(function(p){
     var d=pdata[p];
     var avg=d.total?Math.round(d.ratingSum/d.total*10)/10:0;
@@ -2132,8 +2141,7 @@ function renderAnalytics(){
       '<td><span class="badge badge-green">'+posP+'%</span></td>'+
       '<td><span class="badge badge-amber">'+neuP+'%</span></td>'+
       '<td><span class="badge badge-red">'+negP+'%</span></td>'+
-      '<td><div class="bar-track" style="height:8px"><div class="bar-fill" style="width:'+posP+'%;background:var(--green)"></div></div></td>'+
-    '</tr>';
+      '</tr>';
   });
   phHtml+='</tbody></table></div>';
   document.getElementById('platformSentHeatmap').innerHTML=phHtml;
