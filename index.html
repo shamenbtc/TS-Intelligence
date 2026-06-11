@@ -515,6 +515,8 @@ body.admin-mode .admin-badge{display:inline-flex}
   .card-title{font-size:var(--ts-xs)}
   .card-subtitle{font-size:var(--ts-xs);margin-bottom:8px}
   .grid-3,.grid-4{grid-template-columns:repeat(2,1fr);gap:8px}
+  /* 3-column grids collapse fully on mobile — those cards need full width to be readable */
+  .grid-3{grid-template-columns:1fr}
   /* KPI cards smaller on mobile */
   .stat{padding:10px 11px}
   .stat-label{font-size:var(--ts-xs)}
@@ -569,6 +571,12 @@ body.admin-mode .admin-badge{display:inline-flex}
   .modal{padding:14px;max-height:90vh;width:94%}
   /* Chart heights more reasonable on mobile */
   .chart-wrap{min-height:180px}
+}
+@media(max-width:420px){
+  /* Collapse all multi-column grids to single column on narrow phones */
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;gap:10px}
+  /* KPI boxes stay 2-col since they're designed compact */
+  #kpiCards.grid-4{grid-template-columns:repeat(2,1fr)}
 }
 
 /* Small phone: 380px and below */
@@ -947,7 +955,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v48', SRC_KEY='hoi_source_v48';
+var CACHE_KEY='hoi_reviews_v50', SRC_KEY='hoi_source_v50';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -3861,7 +3869,9 @@ var Chat={
     var div=document.createElement('div');
     div.className='chat-bubble '+role;
     var now=new Date().toLocaleTimeString('en-SG',{hour:'numeric',minute:'2-digit',hour12:true});
-    div.innerHTML='<div class="chat-bubble-text">'+this.escHtml(text)+'</div>'+
+    // Strip any stray markdown from assistant replies so chat reads as plain conversation
+    var display=(role==='assistant')?this.cleanText(text):text;
+    div.innerHTML='<div class="chat-bubble-text">'+this.escHtml(display)+'</div>'+
       '<div class="chat-bubble-meta">'+now+'</div>';
     msgs.appendChild(div);
     msgs.scrollTop=msgs.scrollHeight;
@@ -3888,6 +3898,16 @@ var Chat={
   },
   escHtml:function(s){
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  },
+  // Strips stray markdown the model might emit, so chat reads as plain conversation.
+  cleanText:function(s){
+    s=String(s);
+    s=s.replace(/\*\*(.+?)\*\*/g,'$1');   // **bold** → bold
+    s=s.replace(/\*(.+?)\*/g,'$1');        // *italic* → italic
+    s=s.replace(/^#{1,6}\s+/gm,'');        // ## headers → plain
+    s=s.replace(/^\s*[-*]\s+/gm,'• ');     // markdown bullets → simple dot
+    s=s.replace(/`(.+?)`/g,'$1');          // `code` → plain
+    return s.trim();
   }
 };
 window.Chat=Chat;
