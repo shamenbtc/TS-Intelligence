@@ -383,6 +383,79 @@ body:not(.admin-mode) [data-admin]{display:none!important}
 body.admin-mode .admin-badge{display:inline-flex}
 .admin-badge button{background:none;border:none;color:var(--gold);cursor:pointer;font-size:11px;font-weight:600;font-family:var(--fn);padding:0;text-decoration:underline}
 .admin-badge button:hover{color:var(--gold2)}
+
+/* ── SULTAN INTELLIGENCE CHAT ────────────────────────────────────────────── */
+.chat-fab{position:fixed;bottom:22px;right:22px;width:52px;height:52px;border-radius:50%;
+  background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.18);z-index:900;
+  transition:transform 200ms var(--ease-out),box-shadow 200ms var(--ease-out)}
+.chat-fab:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(0,0,0,.24)}
+.chat-fab:active{transform:scale(0.96)}
+.chat-fab-icon{width:22px;height:22px;color:#fff;position:absolute;
+  transition:opacity 180ms,transform 180ms var(--ease-out)}
+.chat-fab-close{opacity:0;transform:rotate(-90deg) scale(.7)}
+.chat-fab.open .chat-fab-open{opacity:0;transform:rotate(90deg) scale(.7)}
+.chat-fab.open .chat-fab-close{opacity:1;transform:rotate(0deg) scale(1)}
+.chat-fab-unread{position:absolute;top:3px;right:3px;width:10px;height:10px;background:var(--red);border-radius:50%;border:2px solid var(--bg0)}
+.chat-panel{position:fixed;bottom:84px;right:22px;width:360px;max-width:calc(100vw - 28px);
+  background:var(--bg1);border:1px solid var(--bd2);border-radius:16px;
+  box-shadow:0 8px 40px rgba(0,0,0,.18);z-index:899;
+  display:flex;flex-direction:column;overflow:hidden;
+  max-height:calc(100dvh - 110px);
+  opacity:0;transform:translateY(16px) scale(.97);pointer-events:none;
+  transition:opacity 220ms var(--ease-out),transform 220ms var(--ease-out)}
+.chat-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.chat-header{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 14px;border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--bg2)}
+.chat-avatar{width:32px;height:32px;border-radius:50%;background:var(--as);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-avatar svg{width:16px;height:16px;color:var(--gold)}
+.chat-ctrl{width:26px;height:26px;border-radius:6px;border:1px solid var(--bd);
+  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--t3);transition:background 150ms,color 150ms}
+.chat-ctrl:hover{background:var(--bg3);color:var(--t1)}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.chat-messages::-webkit-scrollbar{width:3px}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:10px}
+.chat-welcome{display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 10px 8px}
+.chat-welcome-icon{width:44px;height:44px;border-radius:50%;background:var(--as);
+  display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.chat-welcome-icon svg{width:22px;height:22px;color:var(--gold)}
+.chat-suggestions{display:flex;flex-direction:column;gap:6px;margin-top:14px;width:100%}
+.chat-suggest{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;
+  padding:8px 12px;font-size:12px;color:var(--t2);cursor:pointer;text-align:left;
+  font-family:var(--fn);transition:background 150ms,border-color 150ms,color 150ms}
+.chat-suggest:hover{background:var(--bg4);border-color:var(--gold);color:var(--t1)}
+.chat-bubble{display:flex;flex-direction:column;max-width:88%}
+.chat-bubble.user{align-self:flex-end;align-items:flex-end}
+.chat-bubble.assistant{align-self:flex-start;align-items:flex-start}
+.chat-bubble-text{padding:9px 12px;border-radius:12px;font-size:12.5px;line-height:1.6;word-break:break-word;white-space:pre-wrap}
+.chat-bubble.user .chat-bubble-text{background:var(--gold);color:#fff;border-bottom-right-radius:4px}
+.chat-bubble.assistant .chat-bubble-text{background:var(--bg3);color:var(--t1);border-bottom-left-radius:4px;border:1px solid var(--bd)}
+.chat-bubble-meta{font-size:10px;color:var(--t4);margin-top:3px;padding:0 2px}
+.chat-typing{display:flex;align-items:center;gap:4px;padding:10px 12px;
+  background:var(--bg3);border:1px solid var(--bd);border-radius:12px;border-bottom-left-radius:4px;align-self:flex-start}
+.chat-typing span{width:6px;height:6px;border-radius:50%;background:var(--t3);animation:chatTyping 1.2s ease-in-out infinite}
+.chat-typing span:nth-child(2){animation-delay:.2s}
+.chat-typing span:nth-child(3){animation-delay:.4s}
+@keyframes chatTyping{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-footer{padding:10px 12px 12px;border-top:1px solid var(--bd);flex-shrink:0;background:var(--bg2)}
+.chat-input-wrap{display:flex;align-items:flex-end;gap:8px;background:var(--bg3);
+  border:1px solid var(--bd2);border-radius:10px;padding:8px 8px 8px 12px;transition:border-color 150ms}
+.chat-input-wrap:focus-within{border-color:var(--gold)}
+.chat-input{flex:1;background:none;border:none;outline:none;font-family:var(--fn);
+  font-size:13px;color:var(--t1);resize:none;line-height:1.5;max-height:120px;scrollbar-width:none}
+.chat-input::placeholder{color:var(--t4)}
+.chat-input::-webkit-scrollbar{display:none}
+.chat-send{width:30px;height:30px;border-radius:7px;border:none;background:var(--gold);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background 150ms,transform 150ms;color:#fff}
+.chat-send:hover{background:var(--gold2)}
+.chat-send:active{transform:scale(0.93)}
+.chat-send:disabled{opacity:.4;cursor:not-allowed}
+.chat-error{font-size:12px;color:var(--red);padding:8px 12px;background:var(--rs);
+  border-radius:8px;border:1px solid var(--red);align-self:stretch}
+@media(max-width:480px){.chat-panel{right:8px;left:8px;width:auto;bottom:78px}.chat-fab{bottom:16px;right:16px}}
 /* Inline status update panel */
 .update-panel{background:var(--bg3);border-radius:var(--r);padding:12px 14px;margin-top:10px;border:1px solid var(--bd);display:none}
 .update-panel.open{display:block}
@@ -874,7 +947,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v47', SRC_KEY='hoi_source_v47';
+var CACHE_KEY='hoi_reviews_v48', SRC_KEY='hoi_source_v48';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -3625,6 +3698,200 @@ function drillKpi(key){
   document.getElementById('reviewModal').classList.add('open');
 }
 
+// ── SULTAN INTELLIGENCE CHAT ─────────────────────────────────────────────────
+// Conversational AI chatbot using Claude Haiku with full message history (Option B).
+// Builds a rich context object from State.reviews on every message so Claude
+// always has up-to-date dashboard data without sending every review verbatim.
+var Chat={
+  history:[],  // full conversation history for memory
+  open:false,
+
+  toggle:function(){
+    this.open=!this.open;
+    document.getElementById('chatPanel').classList.toggle('open',this.open);
+    document.getElementById('chatFab').classList.toggle('open',this.open);
+    if(this.open){
+      document.getElementById('chatUnread').style.display='none';
+      setTimeout(function(){document.getElementById('chatInput').focus();},250);
+    }
+  },
+  close:function(){
+    this.open=false;
+    document.getElementById('chatPanel').classList.remove('open');
+    document.getElementById('chatFab').classList.remove('open');
+  },
+  clear:function(){
+    this.history=[];
+    var msgs=document.getElementById('chatMessages');
+    msgs.innerHTML=document.querySelector('.chat-welcome')?msgs.innerHTML:'';
+    // Re-render welcome state
+    msgs.innerHTML='<div class="chat-welcome">'+
+      '<div class="chat-welcome-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 12-8 12S4 15.25 4 10a8 8 0 0 1 8-8z"/><circle cx="12" cy="10" r="2.5"/></svg></div>'+
+      '<div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Sultan Intelligence</div>'+
+      '<div style="font-size:12px;color:var(--t3);line-height:1.6">Ask me anything about your guest reviews, analytics, or how to read a chart.</div>'+
+      '<div class="chat-suggestions">'+
+      '<button class="chat-suggest" onclick="Chat.suggest(this)">Which room has the most complaints?</button>'+
+      '<button class="chat-suggest" onclick="Chat.suggest(this)">Summarise this month\'s issues</button>'+
+      '<button class="chat-suggest" onclick="Chat.suggest(this)">How do I read the severity trend?</button>'+
+      '<button class="chat-suggest" onclick="Chat.suggest(this)">What are guests praising most?</button>'+
+      '</div></div>';
+  },
+  suggest:function(btn){
+    document.getElementById('chatInput').value=btn.textContent;
+    // Hide suggestions
+    var sug=document.getElementById('chatSuggestions');
+    if(sug)sug.style.display='none';
+    this.send();
+  },
+
+  // Build a compact context object from live State.reviews
+  buildContext:function(){
+    var rv=State.reviews||[];
+    if(!rv.length)return{};
+
+    // Platform counts
+    var platforms={};
+    rv.forEach(function(r){if(r.platform)platforms[r.platform]=(platforms[r.platform]||0)+1;});
+
+    // Category counts (negative reviews only — where the problems are)
+    var categories={};
+    rv.forEach(function(r){
+      if(r.category&&(r.sentiment==='Negative'||parseInt(r.severity)>=3)){
+        categories[r.category]=(categories[r.category]||0)+1;
+      }
+    });
+
+    // Room problem summary
+    var roomMap={};
+    rv.forEach(function(r){
+      if(!r.room)return;
+      if(!roomMap[r.room])roomMap[r.room]={room:r.room,type:r.roomType||'',complaints:0,maint:0,clean:0,ratingSum:0,rated:0};
+      if(r.sentiment==='Negative')roomMap[r.room].complaints++;
+      if(r.maintFlag)roomMap[r.room].maint++;
+      if(r.cleanFlag)roomMap[r.room].clean++;
+      var rn=parseFloat(r.rating)||0;
+      if(rn>0){roomMap[r.room].ratingSum+=rn;roomMap[r.room].rated++;}
+    });
+    var topRooms=Object.values(roomMap)
+      .map(function(r){return Object.assign({},r,{avg:r.rated?Math.round(r.ratingSum/r.rated*10)/10:0,score:r.complaints*2+r.maint+r.clean});})
+      .sort(function(a,b){return b.score-a.score;}).slice(0,6);
+
+    // Recent reviews (last 10, newest first)
+    var recent=rv.slice().sort(function(a,b){
+      var da=a.checkInDate||a.date||'';var db=b.checkInDate||b.date||'';
+      return da>db?-1:da<db?1:0;
+    }).slice(0,10).map(function(r){
+      return{room:r.room,platform:r.platform,rating:r.rating,sentiment:r.sentiment,
+        date:DateU.fmt(r.checkInDate||r.date),text:(r.text||'').slice(0,120)};
+    });
+
+    // Stats
+    var pos=rv.filter(function(r){return r.sentiment==='Positive';}).length;
+    var neg=rv.filter(function(r){return r.sentiment==='Negative';}).length;
+    var maint=rv.filter(function(r){return r.maintFlag===true||r.maintFlag==='Yes';}).length;
+    var clean=rv.filter(function(r){return r.cleanFlag===true||r.cleanFlag==='Yes';}).length;
+    var open=rv.filter(function(r){return !r.resolutionStatus||r.resolutionStatus==='Open';}).length;
+    var ratings=rv.map(function(r){return parseFloat(r.rating)||0;}).filter(function(n){return n>0;});
+    var avgR=ratings.length?Math.round(ratings.reduce(function(s,n){return s+n;},0)/ratings.length*10)/10:0;
+
+    return{
+      totalReviews:rv.length, avgRating:avgR,
+      positivePct:Math.round(pos/rv.length*100),
+      negativePct:Math.round(neg/rv.length*100),
+      maintFlags:maint, cleanFlags:clean, openIssues:open,
+      platforms:platforms, categories:categories,
+      topRooms:topRooms, recentReviews:recent
+    };
+  },
+
+  send:function(){
+    var input=document.getElementById('chatInput');
+    var text=(input.value||'').trim();
+    if(!text)return;
+
+    // Clear suggestions on first message
+    var sug=document.querySelector('.chat-suggestions');
+    if(sug)sug.style.display='none';
+
+    input.value=''; input.style.height='auto';
+    document.getElementById('chatSendBtn').disabled=true;
+
+    // Add to history and render user bubble
+    this.history.push({role:'user',content:text});
+    this.appendBubble('user',text);
+
+    // Show typing indicator
+    var typingId='typing_'+Date.now();
+    this.appendTyping(typingId);
+
+    var self=this;
+    var ctx=this.buildContext();
+
+    fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-TSH-Key':'tsh-sultan-2026'},
+      body:JSON.stringify({messages:self.history,context:ctx})
+    })
+    .then(function(r){return r.json();})
+    .then(function(data){
+      self.removeTyping(typingId);
+      if(data.error){
+        self.appendError(data.error);
+        self.history.pop(); // remove failed user message from history
+      } else {
+        self.history.push({role:'assistant',content:data.reply});
+        self.appendBubble('assistant',data.reply);
+        // Show unread badge if panel closed
+        if(!self.open){
+          document.getElementById('chatUnread').style.display='block';
+        }
+      }
+      document.getElementById('chatSendBtn').disabled=false;
+    })
+    .catch(function(err){
+      self.removeTyping(typingId);
+      self.appendError('Connection error: '+err.message);
+      self.history.pop();
+      document.getElementById('chatSendBtn').disabled=false;
+    });
+  },
+
+  appendBubble:function(role,text){
+    var msgs=document.getElementById('chatMessages');
+    var div=document.createElement('div');
+    div.className='chat-bubble '+role;
+    var now=new Date().toLocaleTimeString('en-SG',{hour:'numeric',minute:'2-digit',hour12:true});
+    div.innerHTML='<div class="chat-bubble-text">'+this.escHtml(text)+'</div>'+
+      '<div class="chat-bubble-meta">'+now+'</div>';
+    msgs.appendChild(div);
+    msgs.scrollTop=msgs.scrollHeight;
+  },
+  appendTyping:function(id){
+    var msgs=document.getElementById('chatMessages');
+    var div=document.createElement('div');
+    div.id=id; div.className='chat-typing';
+    div.innerHTML='<span></span><span></span><span></span>';
+    msgs.appendChild(div);
+    msgs.scrollTop=msgs.scrollHeight;
+  },
+  removeTyping:function(id){
+    var el=document.getElementById(id);
+    if(el)el.remove();
+  },
+  appendError:function(msg){
+    var msgs=document.getElementById('chatMessages');
+    var div=document.createElement('div');
+    div.className='chat-error';
+    div.textContent='Error: '+msg;
+    msgs.appendChild(div);
+    msgs.scrollTop=msgs.scrollHeight;
+  },
+  escHtml:function(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+};
+window.Chat=Chat;
+
 // Expose to window so inline onclick= handlers can call them
 window.showPage = showPage;
 window.App = App;
@@ -3636,5 +3903,61 @@ window.drillKpi = drillKpi;
 window.renderDuplicateCheck = renderDuplicateCheck;
 })();
 </script>
+<!-- ── SULTAN INTELLIGENCE CHAT ─────────────────────────────────────────── -->
+<div id="chatPanel" class="chat-panel" role="dialog" aria-label="Sultan Intelligence chat">
+  <div class="chat-header">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div class="chat-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 12-8 12S4 15.25 4 10a8 8 0 0 1 8-8z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1);line-height:1.2">Sultan Intelligence</div>
+        <div style="font-size:10px;color:var(--t3)">Ask anything about your reviews</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <button class="chat-ctrl" id="chatClearBtn" onclick="Chat.clear()" title="Clear conversation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+      </button>
+      <button class="chat-ctrl" onclick="Chat.close()" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-welcome">
+      <div class="chat-welcome-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 12-8 12S4 15.25 4 10a8 8 0 0 1 8-8z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px">Sultan Intelligence</div>
+      <div style="font-size:12px;color:var(--t3);line-height:1.6">Ask me anything about your guest reviews, analytics, or how to read a chart.</div>
+      <div class="chat-suggestions" id="chatSuggestions">
+        <button class="chat-suggest" onclick="Chat.suggest(this)">Which room has the most complaints?</button>
+        <button class="chat-suggest" onclick="Chat.suggest(this)">Summarise this month's issues</button>
+        <button class="chat-suggest" onclick="Chat.suggest(this)">How do I read the severity trend?</button>
+        <button class="chat-suggest" onclick="Chat.suggest(this)">What are guests praising most?</button>
+      </div>
+    </div>
+  </div>
+  <div class="chat-footer">
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="chatInput" placeholder="Ask about your reviews…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();Chat.send();}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+      <button class="chat-send" id="chatSendBtn" onclick="Chat.send()" title="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+      </button>
+    </div>
+    <div style="font-size:10px;color:var(--t4);text-align:center;margin-top:5px">Powered by Claude · answers based on your review data</div>
+  </div>
+</div>
+
+<!-- Floating trigger button -->
+<button class="chat-fab" id="chatFab" onclick="Chat.toggle()" title="Ask Sultan Intelligence" aria-label="Open chat">
+  <svg class="chat-fab-icon chat-fab-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 12-8 12S4 15.25 4 10a8 8 0 0 1 8-8z"/><circle cx="12" cy="10" r="2.5"/></svg>
+  <svg class="chat-fab-icon chat-fab-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  <span class="chat-fab-unread" id="chatUnread" style="display:none"></span>
+</button>
+
 </body>
 </html>
