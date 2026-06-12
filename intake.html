@@ -83,6 +83,11 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
 .action-label{font-size:9px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
 .action-text{font-size:12px;color:var(--t2);line-height:1.55}
 .mixed-alert{background:rgba(133,79,11,.08);border:1px solid rgba(133,79,11,.2);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--amber);display:none;line-height:1.5}
+/* ── FIELD VALIDATION ── */
+.field-err{font-size:11px;color:var(--red);margin-top:4px;display:none;line-height:1.4}
+.field-err.show{display:block}
+input.invalid,select.invalid,textarea.invalid{border-color:var(--red)!important;background:rgba(220,68,88,.04)!important}
+input.valid{border-color:var(--green)!important}
 .analyst-note{background:var(--bg3);border-radius:var(--r);padding:10px 12px;border-left:3px solid var(--gold);margin-bottom:12px;font-size:12px;color:var(--t2);line-height:1.55;display:none}
 .an-title{font-size:9px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
 .btn-row{display:flex;gap:10px;align-items:center;margin-top:20px;flex-wrap:wrap}
@@ -180,9 +185,21 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
     <div class="card">
       <div class="card-title">Stay information</div>
       <div class="fr3">
-        <div class="field"><label>Check-in Date <span class="req">★</span></label><input type="date" id="checkinDate"></div>
-        <div class="field"><label>Check-out Date</label><input type="date" id="checkoutDate"></div>
-        <div class="field"><label>Nights Stayed</label><input type="number" id="nightsStayed" placeholder="e.g. 2" min="1"></div>
+        <div class="field">
+          <label>Check-in Date <span class="req">★</span></label>
+          <input type="date" id="checkinDate" onchange="V.checkin(this)">
+          <span class="field-err" id="err-checkinDate">Check-in date can't be in the future.</span>
+        </div>
+        <div class="field">
+          <label>Check-out Date</label>
+          <input type="date" id="checkoutDate" onchange="V.checkout(this)">
+          <span class="field-err" id="err-checkoutDate">Check-out must be after check-in.</span>
+        </div>
+        <div class="field">
+          <label>Nights Stayed</label>
+          <input type="number" id="nightsStayed" placeholder="e.g. 2" min="1" max="60" oninput="calcCheckout();V.nights(this)">
+          <span class="field-err" id="err-nightsStayed">Must be between 1 and 60 nights.</span>
+        </div>
       </div>
       <div class="fr2">
         <div class="field"><label>Review Month <span class="req">★</span></label><input type="text" id="reviewMonth" placeholder="e.g. May 2026"></div>
@@ -204,8 +221,12 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
     <div class="card">
       <div class="card-title">Booking details</div>
       <div class="fr3">
-        <div class="field"><label>Booking Number <span class="req">★</span></label><input type="text" id="bookingNumber" placeholder="e.g. 4180726177645"></div>
-        <div class="field"><label>Room Number <span class="req">★</span></label><input type="text" id="roomNumber" placeholder="e.g. 214" oninput="autoFillRoomType()"></div>
+        <div class="field"><label>Booking Number <span class="req">★</span></label><input type="text" id="bookingNumber" placeholder="e.g. 4180726177645" oninput="V.booking(this)">
+          <span class="field-err" id="err-bookingNumber">Booking number should be numeric only — no spaces or special characters.</span>
+        </div>
+        <div class="field"><label>Room Number <span class="req">★</span></label><input type="text" id="roomNumber" placeholder="e.g. 214" oninput="autoFillRoomType();V.room(this)">
+          <span class="field-err" id="err-roomNumber">Room number not recognised — check the number and try again.</span>
+        </div>
         <div class="field"><label>Room Type <span class="req">★</span></label>
           <select id="roomType">
             <option value="">Select type</option>
@@ -226,7 +247,9 @@ select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='htt
         <div class="field"><label>Guest Country</label>
           <select id="guestNationality"><option value="">Select country</option></select>
         </div>
-        <div class="field"><label>Rating <span class="req">★</span></label><input type="text" id="rating" placeholder="e.g. 9/10 or 4.5/5"></div>
+        <div class="field"><label>Rating <span class="req">★</span></label><input type="text" id="rating" placeholder="e.g. 9/10 or 4.5/5" oninput="V.rating(this)">
+          <span class="field-err" id="err-rating">Use format like 9/10, 4.5/5, or 8.5/10 — not a plain number.</span>
+        </div>
       </div>
     </div>
 
@@ -471,6 +494,14 @@ function validate() {
     showStatus('Review text is too short — paste the full review.', 'error');
     return false;
   }
+  // Run format validators — they show inline errors next to the fields
+  if (!V.all()) {
+    showStatus('Some fields have errors — check the fields highlighted in red.', 'error');
+    // Scroll to first invalid field
+    const firstInvalid = document.querySelector('input.invalid, select.invalid');
+    if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return false;
+  }
   return true;
 }
 
@@ -483,16 +514,18 @@ function fmtDate(iso) {
 
 // Auto-helpers
 document.getElementById('checkinDate').addEventListener('change', function() {
+  V.checkin(this);
   if (!this.value) return;
   const d = new Date(this.value + 'T00:00:00');
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const rm = document.getElementById('reviewMonth');
   if (!rm.value) rm.value = months[d.getMonth()] + ' ' + d.getFullYear();
-  // If nights already entered, recompute checkout; otherwise if checkout set, compute nights.
   if (document.getElementById('nightsStayed').value) calcCheckout();
   else if (document.getElementById('checkoutDate').value) calcNights();
 });
-document.getElementById('checkoutDate').addEventListener('change', calcNights);
+document.getElementById('checkoutDate').addEventListener('change', function() {
+  calcNights(); V.checkout(this);
+});
 document.getElementById('nightsStayed').addEventListener('input', calcCheckout);
 
 // check-in + check-out → nights
@@ -732,7 +765,12 @@ function goBack() {
 
 function resetForm() {
   ['checkinDate','checkoutDate','nightsStayed','bookingNumber','roomNumber',
-   'guestNationality','rating','reviewText','mentionedStaff'].forEach(id => document.getElementById(id).value = '');
+   'guestNationality','rating','reviewText','mentionedStaff'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = ''; el.classList.remove('invalid','valid'); }
+  });
+  // Clear all field error messages
+  document.querySelectorAll('.field-err').forEach(e => e.classList.remove('show'));
   ['platform','roomType'].forEach(id => document.getElementById(id).selectedIndex = 0);
   var rth=document.getElementById('roomTypeHint'); if(rth)rth.style.display='none';
   document.getElementById('pSuccess').style.display = 'none';
@@ -948,7 +986,106 @@ async function runBulk() {
 
 function stopBulk() { bulkStop = true; }
 
-// ── ROOM NUMBER → ROOM TYPE MAP ────────────────────────────────────────────
+// ── FIELD VALIDATION ─────────────────────────────────────────────────────────
+// V = validator object. Each method validates one field, shows/hides its error
+// span, and marks the input red/green. Returns true if valid.
+const V = {
+  _err(id, show, msg) {
+    const el = document.getElementById('err-' + id);
+    const inp = document.getElementById(id);
+    if (!el || !inp) return !show;
+    if (msg) el.textContent = msg;
+    el.classList.toggle('show', show);
+    inp.classList.toggle('invalid', show);
+    inp.classList.toggle('valid', !show && inp.value.trim() !== '');
+    return !show;
+  },
+
+  rating(inp) {
+    const v = (inp.value || '').trim();
+    if (!v) return this._err('rating', false);
+    // Must be X/Y format — plain numbers not accepted
+    const m = v.match(/^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/);
+    if (!m) {
+      return this._err('rating', true,
+        `"${v}" isn't a valid format. Use something like 9/10, 4.5/5, or 8/10.`);
+    }
+    const n = parseFloat(m[1]), d = parseFloat(m[2]);
+    if (d === 0) return this._err('rating', true, 'Denominator can\'t be zero.');
+    if (n > d) return this._err('rating', true, `${n} is higher than the max ${d} — check the rating.`);
+    if (d > 10) return this._err('rating', true, 'Rating scale seems too large — use /5 or /10.');
+    return this._err('rating', false);
+  },
+
+  booking(inp) {
+    const v = (inp.value || '').trim();
+    if (!v) return this._err('bookingNumber', false);
+    // Allow digits, optional dashes — no spaces, letters, or special chars
+    if (!/^[\d\-]+$/.test(v)) {
+      return this._err('bookingNumber', true,
+        'Booking number should only contain digits (and optional dashes). Remove any spaces or letters.');
+    }
+    if (v.replace(/\D/g,'').length < 5) {
+      return this._err('bookingNumber', true, 'Booking number looks too short — double-check it.');
+    }
+    return this._err('bookingNumber', false);
+  },
+
+  room(inp) {
+    const v = (inp.value || '').trim();
+    if (!v) return this._err('roomNumber', false);
+    if (!ROOM_TYPE_MAP[v]) {
+      return this._err('roomNumber', true,
+        `Room ${v} isn't in the hotel inventory. Check for typos (letter l vs number 1, etc).`);
+    }
+    return this._err('roomNumber', false);
+  },
+
+  nights(inp) {
+    const v = parseInt(inp.value);
+    if (!inp.value) return this._err('nightsStayed', false);
+    if (isNaN(v) || v < 1 || v > 60) {
+      return this._err('nightsStayed', true, 'Nights should be between 1 and 60.');
+    }
+    return this._err('nightsStayed', false);
+  },
+
+  checkin(inp) {
+    const v = inp.value;
+    if (!v) return this._err('checkinDate', false);
+    const d = new Date(v + 'T00:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    if (d > today) {
+      return this._err('checkinDate', true, 'Check-in date is in the future — reviews are for completed stays.');
+    }
+    return this._err('checkinDate', false);
+  },
+
+  checkout(inp) {
+    const v = inp.value;
+    const ci = document.getElementById('checkinDate').value;
+    if (!v || !ci) return this._err('checkoutDate', false);
+    if (new Date(v) <= new Date(ci)) {
+      return this._err('checkoutDate', true, 'Check-out must be after check-in.');
+    }
+    return this._err('checkoutDate', false);
+  },
+
+  // Run all validators on submit — returns true only if everything passes
+  all() {
+    const results = [
+      this.rating(document.getElementById('rating')),
+      this.booking(document.getElementById('bookingNumber')),
+      this.room(document.getElementById('roomNumber')),
+      this.nights(document.getElementById('nightsStayed')),
+      this.checkin(document.getElementById('checkinDate')),
+      this.checkout(document.getElementById('checkoutDate')),
+    ];
+    return results.every(r => r !== false);
+  }
+};
+
+
 // The Sultan Hotel Singapore room inventory. Typing a known room number
 // auto-fills its type (still editable for exceptions).
 const ROOM_TYPE_MAP = {
