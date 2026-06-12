@@ -964,7 +964,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v51', SRC_KEY='hoi_source_v51';
+var CACHE_KEY='hoi_reviews_v52', SRC_KEY='hoi_source_v52';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1405,15 +1405,7 @@ function renderOverview(){
       tabEl.innerHTML='<div class="empty" style="padding:20px"><span>📅</span>No check-in months to tabulate</div>';
     }else{
       var revMonthMap=Agg.byReviewedMonth(rv);
-      // For each stay-month, also tabulate which reviewed-months guests posted from
-      var stayToRevMonth={};
-      rv.forEach(function(r){
-        var stayKey=DateU.toKey(r.checkInDate||r.date);
-        if(!stayKey)return;
-        if(!stayToRevMonth[stayKey])stayToRevMonth[stayKey]={};
-        var rm=(r.reviewedMonth||'—').trim()||'—';
-        stayToRevMonth[stayKey][rm]=(stayToRevMonth[stayKey][rm]||0)+1;
-      });
+
       var totalAll=0,posAll=0,negAll=0,neuAll=0,ratingSumAll=0,ratingCountAll=0;
       var rowsHtml=mkeys.map(function(k){
         var m=mdata.map[k];
@@ -1422,7 +1414,6 @@ function renderOverview(){
         var avg=m.total?(m.ratingSum/m.total).toFixed(2):'—';
         var posP=m.total?Math.round(m.pos/m.total*100):0;
         var negP=m.total?Math.round(m.neg/m.total*100):0;
-        var rmBreakdown=stayToRevMonth[k]?Object.entries(stayToRevMonth[k]).sort(function(a,b){return b[1]-a[1];}).map(function(e){return e[0]+' ('+e[1]+')';}).join(', '):'—';
         return '<tr>'+
           '<td style="font-weight:600;color:var(--t1)">'+DateU.toLabel(k)+'</td>'+
           '<td style="text-align:center">'+m.total+'</td>'+
@@ -1430,7 +1421,6 @@ function renderOverview(){
           '<td style="text-align:center;color:var(--amber)">'+m.neu+'</td>'+
           '<td style="text-align:center;color:var(--red)">'+m.neg+' <span style="color:var(--t3);font-size:12px">('+negP+'%)</span></td>'+
           '<td style="text-align:center;font-weight:600;color:'+(avg>=4?'var(--green)':avg>=3?'var(--amber)':'var(--red)')+'">'+avg+'<span style="color:var(--t3);font-size:11px">/5</span></td>'+
-          '<td style="color:var(--t3);font-size:12px">'+esc(rmBreakdown)+'</td>'+
         '</tr>';
       }).join('');
       var avgAll=ratingCountAll?(ratingSumAll/ratingCountAll).toFixed(2):'—';
@@ -1444,7 +1434,7 @@ function renderOverview(){
           '<th style="text-align:center;color:var(--amber)">Neutral</th>'+
           '<th style="text-align:center;color:var(--red)">Negative</th>'+
           '<th style="text-align:center">Avg Rating</th>'+
-          '<th>Reviewed In (when posted online)</th>'+
+
         '</tr></thead><tbody>'+rowsHtml+
         '<tr style="background:var(--bg3);font-weight:600">'+
           '<td style="color:var(--t1)">TOTAL</td>'+
@@ -1453,7 +1443,7 @@ function renderOverview(){
           '<td style="text-align:center;color:var(--amber)">'+neuAll+'</td>'+
           '<td style="text-align:center;color:var(--red)">'+negAll+' ('+negAllP+'%)</td>'+
           '<td style="text-align:center;color:var(--t1)">'+avgAll+'<span style="color:var(--t3);font-size:11px">/5</span></td>'+
-          '<td style="color:var(--t3)">—</td>'+
+
         '</tr>'+
         '</tbody></table></div>';
     }
