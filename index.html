@@ -144,7 +144,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 
 /* ── STAT CARDS ──────────────────────────────────────────────────────────── */
 @keyframes _statIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 15px;position:relative;overflow:visible;box-shadow:var(--sh1);
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 15px;position:relative;overflow:visible;box-shadow:var(--sh1);z-index:1;
   animation:_statIn 300ms var(--ease-out) both}
 #kpiCards .stat{cursor:pointer}
 #kpiCards .stat{transition:box-shadow 180ms var(--ease-out),transform 180ms var(--ease-out),border-color 180ms var(--ease-out)}
@@ -179,6 +179,8 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 .info[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg5);color:var(--t1);font-size:12px;font-family:var(--fn);font-style:normal;font-weight:400;padding:8px 10px;border-radius:6px;border:1px solid var(--bd3);width:220px;white-space:normal;text-align:left;line-height:1.5;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,.3);pointer-events:none}
 .info[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--bg5);z-index:1000;pointer-events:none}
 /* tip-below: drop the tooltip downward (used for icons near the top, under the sticky header) */
+.stat:hover,.stat:focus-within,.card:hover,.card:focus-within{z-index:50}
+.stat:has(.info:hover),.stat:has(.info.active),.card:has(.info:hover),.card:has(.info.active){z-index:1001}
 .info.tip-below[data-tip]:hover::after{bottom:auto;top:calc(100% + 8px)}
 .info.tip-below[data-tip]:hover::before{bottom:auto;top:calc(100% + 2px);border-top-color:transparent;border-bottom-color:var(--bg5)}
 .card-subtitle{font-size:var(--ts-sm);color:var(--t3);font-weight:400;margin-top:-6px;margin-bottom:10px;letter-spacing:0}
@@ -269,6 +271,7 @@ tr:hover td{background:var(--bg3)}
 @media(hover:hover) and (pointer:fine){.rev-card:hover{border-color:var(--gold)}}
 .rev-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
 .rev-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.rev-status-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;padding-top:2px}
 .rev-text{font-size:var(--ts-md);color:var(--t2);line-height:1.7;font-weight:400}
 .rev-text.collapsed{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .expand-btn{font-size:var(--ts-sm);color:var(--gold);cursor:pointer;margin-top:4px;display:inline-block;font-family:var(--fn);font-weight:500;letter-spacing:.02em;
@@ -728,7 +731,7 @@ body.admin-mode .admin-badge{display:inline-flex}
 <div class="page" id="page-reviews">
   <div class="card" style="padding:12px">
     <div class="filter-bar" style="margin-bottom:8px">
-      <input class="finput" id="revSearch" placeholder="🔍 Search: keyword, country, room, platform, staff..." oninput="R.onFilterChange()" style="min-width:240px;max-width:400px">
+      <input class="finput" id="revSearch" placeholder="Search: keyword, country, room, platform, staff..." oninput="R.onFilterChange()" style="min-width:240px;max-width:400px">
       <select class="fselect" id="revSentiment" onchange="R.onFilterChange()">
         <option value="">All Sentiment</option>
         <option>Positive</option><option>Neutral</option><option>Negative</option>
@@ -967,7 +970,7 @@ var SAMPLE = [
   {id:'r020',platform:'Traveloka',date:'2026-04-22',rating:3,booking:'BK-10040',room:'204',roomType:'Superior Room',text:'The room air conditioner was set to cool but was actually blowing warm air. Called engineering who came quickly and said they fixed it but it started doing the same thing again after an hour. Had an uncomfortable night.',sentiment:'Neutral',category:'Room Comfort & Quality',subcategory:'HVAC',severity:4,maintFlag:true,cleanFlag:false,staffMentioned:'',action:'Replace AC thermostat and inspect refrigerant levels for Room 204. Follow up same day to confirm fix is permanent.',resolutionStatus:'In Progress',resolvedDate:'',assignedDept:'Engineering',assignedStaff:'',resolutionNotes:'Thermostat replaced. Refrigerant topped up. Monitoring.',isSample:true}
 ];
 
-var CACHE_KEY='hoi_reviews_v53', SRC_KEY='hoi_source_v53';
+var CACHE_KEY='hoi_reviews_v54', SRC_KEY='hoi_source_v54';
 var State={reviews:[],source:'sample',fileName:null,uploadedAt:null,alertFilter:'all'};
 var RevPage={current:0,perPage:10};
 
@@ -1667,15 +1670,17 @@ var R={
           '<span class="badge badge-gray">'+esc(r.category)+'</span>'+
           (r.subcategory?'<span class="badge badge-gray">'+esc(r.subcategory)+'</span>':'')+
           (r.maintFlag===true||r.maintFlag==='Yes'||r.maintFlag==='true'?'<span class="badge badge-red">Maint</span>':'')+
-          (r.cleanFlag===true||r.cleanFlag==='Yes'||r.cleanFlag==='true'?'<span class="badge badge-amber">🧹 Clean</span>':'')+
-          (r.staffMentioned?'<span class="badge '+(r.sentiment==='Positive'?'badge-green':'badge-purple')+'">'+(r.sentiment==='Positive'?'⭐':'👤')+' '+esc(r.staffMentioned)+(r.sentiment==='Positive'?' · Recognition':'')+'</span>':'')+
-          '<div class="status '+resClass(r.resolutionStatus)+'" style="margin-left:auto">'+esc(r.resolutionStatus||'Open')+'</div>'+
+          (r.cleanFlag===true||r.cleanFlag==='Yes'||r.cleanFlag==='true'?'<span class="badge badge-amber">Clean</span>':'')+
+          (r.staffMentioned?'<span class="badge '+(r.sentiment==='Positive'?'badge-green':'badge-purple')+'">'+(r.sentiment==='Positive'?'★ ':'')+esc(r.staffMentioned)+(r.sentiment==='Positive'?' · Recognition':'')+'</span>':'')+
+        '</div>'+
+        '<div class="rev-status-row">'+
+          '<div class="status '+resClass(r.resolutionStatus)+'">'+esc(r.resolutionStatus||'Open')+'</div>'+
           (r.lastUpdated&&DateU.relative(r.lastUpdated)?'<span class="upd-tag" title="Last updated '+esc(r.lastUpdated)+'">↻ '+esc(DateU.relative(r.lastUpdated))+'</span>':'')+
         '</div>'+
         '<div class="rev-text collapsed" id="rt-'+r.id+'">'+esc(r.text)+'</div>'+
         '<span class="expand-btn" onclick="R.toggleText(\''+r.id+'\',this)">Show more ▾</span>'+
-        (r.action?'<div style="margin-top:6px;font-size:12px;color:var(--teal);background:rgba(37,191,191,.08);border-radius:5px;padding:5px 8px">💡 '+esc(r.action)+'</div>':'')+
-        (r.resolutionNotes?'<div style="margin-top:4px;font-size:12px;color:var(--t3);padding:4px 8px;background:var(--bg4);border-radius:5px">📋 '+esc(r.resolutionNotes)+'</div>':'')+
+        (r.action?'<div style="margin-top:6px;font-size:12px;color:var(--teal);background:rgba(37,191,191,.08);border-radius:5px;padding:6px 9px"><span style="font-weight:600;letter-spacing:.04em;font-size:10px;text-transform:uppercase;opacity:.8">Suggested action</span><br>'+esc(r.action)+'</div>':'')+
+        (r.resolutionNotes?'<div style="margin-top:4px;font-size:12px;color:var(--t3);padding:6px 9px;background:var(--bg4);border-radius:5px"><span style="font-weight:600;letter-spacing:.04em;font-size:10px;text-transform:uppercase;opacity:.8">Resolution notes</span><br>'+esc(r.resolutionNotes)+'</div>':'')+
       '</div>';
     });
     document.getElementById('revList').innerHTML=html||'<div class="empty"><span>🔍</span>No reviews match your filters</div>';
@@ -2399,7 +2404,7 @@ function mapSupabaseRow(r){
     id:r.id, date:r.check_in_date||'', checkInDate:r.check_in_date||'',
     checkOutDate:r.check_out_date||'', nightsStayed:r.nights_stayed||'',
     reviewedMonth:r.review_month||'', platform:r.platform||'',
-    booking:r.booking_number||'', room:r.room_number||'', roomType:r.room_type||'',
+    booking:r.booking_number||'', room:r.room_number||'', roomType:(r.room_type||'').replace(/Attic Room \(No Windows\)/i,'Attic Room'),
     nationality:r.guest_country||'', rating:nr(r.rating), ratingRaw:r.rating||'', text:r.review_text||'',
     staffMentioned:r.mentioned_staff||'', sentiment:r.sentiment||'',
     category:r.category||'', subcategory:r.subcategory||'',
